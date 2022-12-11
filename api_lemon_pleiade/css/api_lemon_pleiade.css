@@ -1,0 +1,12 @@
+#menuTestLemon2 .sidebar-link {
+    padding: 14px 35px 14px 8px;
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    position: relative;
+    line-height: 25px;
+    font-size: 16px;
+    opacity: 0.6;
+    color: #fff;
+    border-left: 3px solid transparent;
+}

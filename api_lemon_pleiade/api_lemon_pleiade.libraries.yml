@@ -9,8 +9,8 @@ api_lemon_pleiade_test_js:
     - core/drupal.ajax
     - core/views.ajax
     - core/jquery.ui
-    - core/jquery.ui.effects.core
-    - core/jquery.ui.autocomplete
+    # - core/jquery.ui.effects.core
+    # - core/jquery.ui.autocomplete
 api_lemon_pleiade_test_css:
   version: 1.x
   css:
