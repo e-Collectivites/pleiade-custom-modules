@@ -5,6 +5,7 @@ api_lemon_pleiade.settings:
     _title: 'API LemonLDAP Pléiade Settings'
   requirements:
     _permission: 'administer site configuration'
+    
 api_lemon_pleiade.pleiade_data_autocomplete:
   path: '/api_lemon_pleiade/pleiade-data-autocomplete'
   defaults:

@@ -76,6 +76,7 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
 
     return parent::buildForm($form, $form_state);
   }
+  
 
   /** 
    * {@inheritdoc}

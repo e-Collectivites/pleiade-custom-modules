@@ -1,0 +1,6 @@
+api_lemon_pleiade.admin:
+  title: 'API Pléiade - LemonLDAP module settings'
+  description: 'Page de configuration du module API Lemon Pléiade'
+  parent: system.admin_config_development
+  route_name: api_lemon_pleiade.settings
+  weight: 100
