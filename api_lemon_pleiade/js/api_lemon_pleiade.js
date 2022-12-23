@@ -26,15 +26,15 @@
             // console.log(donnees);
 
             // on l'affiche dans une tab des settings du theme pour voir (et pour le fun :))
-            const obj = JSON.stringify(donnees);
+            const objJsonLemon = JSON.stringify(donnees);
             document.getElementById("lemonApps").innerHTML = 
-              "<pre>" + obj + "</pre>";
+              "<pre>" + objJsonLemon + "</pre>";
 
             // div #menuTestLemon
             var menuHtml = "<ul>";
 
             for (var i = 0; i < donnees.myapplications.length; i++) {
-              // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos lien du menu
+              // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
               menuHtml +=
                 '<li class="nav-small-cap"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
                 donnees.myapplications[i].Category + // on récupère toute les catégories du json qu'on stocke dans une liste
@@ -54,7 +54,7 @@
                   temp[0].AppDesc +
                   '" href="' +
                   temp[0].AppUri +
-                  '" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-corner-down-right"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg><span class="hide-menu">' +
+                  '" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">' +
                   Object.keys(donnees.myapplications[i].Applications[f]) +
                   " </span></a>";
               }
@@ -62,8 +62,12 @@
             }
             menuHtml += "</ul>";
 
-            document.getElementById("menuTestLemon2").innerHTML = menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuTestLemon2
+           
 
+            document.getElementById("menuTestLemon2").innerHTML = menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuTestLemon2
+            // Pour avoir les icones remplacées dans le innerHTML
+            feather.replace();
+            
             // Ajout du bloc a la page accueil
 
             var blocLemon = "";
@@ -103,11 +107,11 @@
 
             // récupère le nombre de div enfante de l'element blocLemonCustom
             const htmlDoc = document.getElementById("blocLemonCustom");
-            const box = htmlDoc.children.length;
-            for (var f = 0; f < box; f++) {
+            const nbObjinBlocLemon = htmlDoc.children.length;
+            for (var f = 0; f < nbObjinBlocLemon; f++) {
               // récup des éléments du bloc dont l'id contient row-n
-              var temps = document.getElementById("row-" + f);
-              Sortable.create(temps, {
+              var nbBloc = document.getElementById("row-" + f);
+              Sortable.create(nbBloc, {
                 animation: 150,
                 store: {
                   // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
@@ -136,9 +140,9 @@
               });
             }
 
-            var el = document.getElementById("blocLemonCustom");
+            var recupBlocForDragAndDrop = document.getElementById("blocLemonCustom");
 
-            new Sortable.create(el, {
+            new Sortable.create(recupBlocForDragAndDrop, {
               animation: 150,
               store: {
                 // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement

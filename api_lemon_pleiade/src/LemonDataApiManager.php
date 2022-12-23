@@ -46,7 +46,8 @@ class LemonDataApiManager {
       \Drupal::logger('api_lemon_pleiade')->error($msg);
       return NULL;
     }
-
+    +
+    // Si on a le cookie Lemon on le loggue dans Drupal pour test - TODO : supprimer
     \Drupal::logger('api_lemon_pleiade')->info($_COOKIE['lemonldap']);
 
     if(is_array($resource)){
