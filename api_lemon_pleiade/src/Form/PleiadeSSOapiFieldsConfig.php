@@ -46,11 +46,11 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
       '#description' => $this->t('Enter the auth LemonLDAP endpoint url'),
     ];  
 
-    $form['field_lemon_myapplications_url'] = [
+    $form['field_zimbra_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Field LemonLDAP Myapplications  url'),
+      '#title' => $this->t('Field Zimbra mail url'),
       '#default_value' => $config->get('field_lemon_myapplications_url'),
-      '#description' => $this->t('Enter  the auth LemonLDAP myapplications endpoint url (usually myapplications)'),
+      '#description' => $this->t('Enter Zimbra mail url'),
     ];
 
     $form['field_pastell_url'] = [
@@ -85,8 +85,8 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
     // Retrieve the configuration.
     $this->configFactory->getEditable(static::SETTINGS)
       // Set the submitted configuration setting.
-      ->set('field_lemon_myapplications_url', $form_state->getValue('field_lemon_myapplications_url'))
       ->set('field_lemon_url', $form_state->getValue('field_lemon_url'))
+      ->set('field_zimbra_url', $form_state->getValue('field_zimbra_url'))
       ->set('field_pastell_url', $form_state->getValue('field_pastell_url'))
       ->set('field_parapheur_url', $form_state->getValue('field_parapheur_url'))
       ->set('field_ged_url', $form_state->getValue('field_ged_url'))

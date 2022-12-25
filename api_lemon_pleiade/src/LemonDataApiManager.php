@@ -8,11 +8,11 @@ use GuzzleHttp\Exception\RequestException;
  * Basic manager of module.
  */
 class LemonDataApiManager {
-  /**
-   * The request url of the API.
+
+   /**
+   * Drupal's settings manager.
    */
-  // @TODO : get from admin param settings, hardcoded for the moment !
-  const LEMON_API_URL = 'https://authdev.ecollectivites.fr/myapplications';
+  protected $settings;
  
   public $client;
   /**
@@ -25,6 +25,9 @@ class LemonDataApiManager {
       return;
     }
     $this->client = \Drupal::httpClient();
+    // get our custom module settings
+    $this->settings = \Drupal::config('api_lemon_pleiade.settings');
+
   }
 
   /**
@@ -46,17 +49,23 @@ class LemonDataApiManager {
       \Drupal::logger('api_lemon_pleiade')->error($msg);
       return NULL;
     }
-    +
+    
     // Si on a le cookie Lemon on le loggue dans Drupal pour test - TODO : supprimer
-    \Drupal::logger('api_lemon_pleiade')->info($_COOKIE['lemonldap']);
+    // \Drupal::logger('api_lemon_pleiade')->info($_COOKIE['lemonldap']);
+    \Drupal::logger('api_lemon_pleiade')->info('Cookie Lemon: @cookie', ['@cookie' => $_COOKIE['lemonldap']]);
 
+    // Si notre fonction AJAX envoie un array dans sa requête
     if(is_array($resource)){
       $LEMON_API_URL =  $api;
       foreach ($resource as $res){
         $LEMON_API_URL.="/".$res;
+        \Drupal::logger('api_lemon_pleiade')->info('Ressource called: @res', ['@res' => $res ]);
       }
-    }else{
+    }
+    // Sinon on ajoute le param à l'url
+    else { 
       $LEMON_API_URL = $api . "/" . $resource;
+      \Drupal::logger('api_lemon_pleiade')->info('LEMON_API_URL: @api', ['@api' => $LEMON_API_URL ]);
     }
     
     $options = [
@@ -67,6 +76,8 @@ class LemonDataApiManager {
     ];
 
     if (!empty($inputs)) {
+
+      \Drupal::logger('api_lemon_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
       
       if($method == 'GET'){
         $LEMON_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
@@ -75,7 +86,7 @@ class LemonDataApiManager {
         }
       }else{
         //POST request send data in array index form_params.
-        //$options['body'] = $inputs;
+        $options['body'] = $inputs;
       }
     }
 
@@ -101,6 +112,7 @@ class LemonDataApiManager {
    *   A respond data.
    */
   public function curlGet($resource, $inputs, $api) {
+   // \Drupal::logger('api_lemon_pleiade')->info('Ressource, inputs, api: @res @inputs @api', ['@res' => $resource, '@inputs' => $inputs, '@api' => $api]);
     return $this->executeCurl($resource, "GET", $inputs, $api);
   }
 
@@ -122,17 +134,15 @@ class LemonDataApiManager {
   public function searchByGroupes($groupes) {
     $resources = [
       "groupes",
-      $siret,
-    ];
-    return $this->curlGet($resources, [], self::LEMON_API_URL);
-  }
-
-  public function searchMyApps($null) {
-    $resources = [
-      "myapplications",
       $null,
     ];
-    return $this->curlGet($resources, [], self::LEMON_API_URL);
+    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
+  }
+
+  public function searchMyApps() {
+    $resources = "myapplications"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
   }
   
   public function searchByName($name) {
@@ -140,7 +150,7 @@ class LemonDataApiManager {
       "full_text",
       $name,
     ];
-    return $this->curlGet($resources, [], self::LEMON_API_URL);
+    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
   }
   
   /**

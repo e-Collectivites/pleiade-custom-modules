@@ -1,4 +1,4 @@
-api_lemon_pleiade_test_js:
+api_lemon_pleiade_js:
   js:
     js/api_lemon_pleiade.js: {}
   dependencies:
@@ -9,8 +9,7 @@ api_lemon_pleiade_test_js:
     - core/drupal.ajax
     - core/views.ajax
     - core/jquery.ui
-    - jquery_ui_sortable/sortable
-api_lemon_pleiade_test_css:
+api_lemon_pleiade_css:
   version: 1.x
   css:
     theme:

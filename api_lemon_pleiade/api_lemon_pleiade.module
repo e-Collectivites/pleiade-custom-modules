@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * @param $variables
  */
@@ -13,7 +14,7 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $field_parapheur_url = $config->get('field_parapheur_url');
   $field_ged_url = $config->get('field_ged_url');
   //Add the JS library
-  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_test_js';
+  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
   //Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_myapplications_url'] = $field_lemon_myapplications_url;

@@ -1,25 +1,27 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.APIlemonDataPleiadeBehavior = {
     attach: function (context, settings) {
+      // On peut récupérer les paramètres et les injecter dans le JS si besoin (pas utile pour l'instant)
       // var field_lemon_url = drupalSettings.api_lemon_pleiade.field_lemon_url;
-      // var field_lemon_myapplications_url = drupalSettings.api_lemon_pleiade.field_lemon_myapplications_url;
+      // var field_zimbra_url = drupalSettings.api_lemon_pleiade.field_zimbra_url;
       // var field_pastell_url = drupalSettings.api_lemon_pleiade.field_pastell_url;
       // var field_parapheur_url = drupalSettings.api_lemon_pleiade.field_parapheur_url;
       // var field_ged_url = drupalSettings.api_lemon_pleiade.field_ged_url;
 
       $(document).ready(function () {
         
-        // $( "#blocLemonCustom" ).sortable();
-
         console.log("Module Pléiade API/Lemon --> hello :))");
 
+        // Pour les différents appels d'API, il faudra revoir en mode séquentiel / intégrer à des fonctions
+        // https://www.cognizantsoftvision.com/blog/handling-sequential-ajax-calls-using-jquery/
+
         $.ajax({
-          url: Drupal.url("api_lemon_pleiade/pleiade-data-autocomplete"), // on appelle le script JSON
+          url: Drupal.url("api_lemon_pleiade/pleiade-data-autocomplete"), // on appelle l'API de notre module LemonDataApiManager.php
           dataType: "json", // on spécifie bien que le type de données est en JSON
           type: "POST",
           data: {
             //variable envoyé avec la requête vers le serveur
-            myapplications: "", // pour le moment on recupere tout ce que renvoie myapplications de lemon
+            myapplications: null // on envoie myapplications à notre API, qui saura que c'est l'URL Lemon qu'on appelle en ajoutant ce param à l'URL
           },
           success: function (donnees) {
             //donnees est le reçu du serveur avec les résultats
@@ -168,6 +170,7 @@
             });
           },
         });
+        // fin $ajax
       });
     },
   };
