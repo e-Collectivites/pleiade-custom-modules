@@ -1,8 +1,27 @@
+
 # Module Pléiade - Bureau virtuel
 
 ## Contexte
 
 Ce module est développé pour fonctionner dans un contexte SSO (Single Sign On) avec LemonLDAP et les applications compatibles avec ce dernier.
+
+```mermaid
+graph LR
+A[OpenLDAP] ----> B((LemonLDAP))
+B --> C(Zimbra)
+B --> D(Pastell)
+B --> E(iParapheur)
+B --> F(Glpi)
+B --> G(...)
+B --> Z{Pléiade}
+C --> Z
+D --> Z
+E --> Z
+F --> Z
+G --> Z
+```
+
+L'objectif est de fournir à l'utilisateur un bureau virtuel qui affiche et formatte les informations métiers pour l'assister dans son travail quotidien.
 
 ## SSO, utilisateurs LDAP et Drupal
 
