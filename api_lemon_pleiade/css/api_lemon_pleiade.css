@@ -1,5 +1,5 @@
 #menuTestLemon2 .sidebar-link {
-    padding: 14px 35px 14px 8px;
+    padding: 2px 0 0 8px;
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -9,4 +9,17 @@
     opacity: 0.6;
     color: #fff;
     border-left: 3px solid transparent;
+}
+
+.sidebar-nav ul .nav-small-cap {
+    font-size: 12px;
+    line-height: 30px;
+    color: #fff;
+    opacity: 1;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0px 14px 0px 15px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 }

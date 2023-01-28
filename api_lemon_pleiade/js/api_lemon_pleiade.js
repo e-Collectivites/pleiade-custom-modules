@@ -7,10 +7,10 @@
       // var field_pastell_url = drupalSettings.api_lemon_pleiade.field_pastell_url;
       // var field_parapheur_url = drupalSettings.api_lemon_pleiade.field_parapheur_url;
       // var field_ged_url = drupalSettings.api_lemon_pleiade.field_ged_url;
-
+      
+      console.log("Module Pléiade API/Lemon --> hello :))");
       $(document).ready(function () {
         
-        console.log("Module Pléiade API/Lemon --> hello :))");
 
         // Pour les différents appels d'API, il faudra revoir en mode séquentiel / intégrer à des fonctions
         // https://www.cognizantsoftvision.com/blog/handling-sequential-ajax-calls-using-jquery/
@@ -33,14 +33,14 @@
               "<pre>" + objJsonLemon + "</pre>";
 
             // div #menuTestLemon
-            var menuHtml = "<ul>";
+            var menuHtml = '<div class="accordion" id="accordionExample">';
 
             for (var i = 0; i < donnees.myapplications.length; i++) {
               // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
               menuHtml +=
-                '<li class="nav-small-cap"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
+                '<div><div class="nav-small-cap has-arrow collapsed" data-bs-toggle="collapse" data-bs-target="#collapse'+ i +'" aria-expanded="false" aria-controls="collapse'+ i +'">' +
                 donnees.myapplications[i].Category + // on récupère toute les catégories du json qu'on stocke dans une liste
-                "</span></li>";
+                '</div><ul><div id="collapse'+ i +'" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample"><div class="accordion-body">';
               for (
                 var f = 0;
                 f < donnees.myapplications[i].Applications.length;
@@ -60,9 +60,9 @@
                   Object.keys(donnees.myapplications[i].Applications[f]) +
                   " </span></a>";
               }
-              menuHtml += '<li class="nav-devider"></li>';
+              menuHtml += '</div></div></div>';
             }
-            menuHtml += "</ul>";
+            menuHtml += "</div>";
 
            
 
@@ -104,9 +104,10 @@
               }
               blocLemon += "</div></div></div></div></div></div>";
             }
+            // blocLemon += '<div class="col-lg-12" id="tempo-test"></div>';
 
             document.getElementById("blocLemonCustom").innerHTML = blocLemon; // ajout du html dans la div avec l'id blocLemonCustom
-
+            
             // récupère le nombre de div enfante de l'element blocLemonCustom
             const htmlDoc = document.getElementById("blocLemonCustom");
             const nbObjinBlocLemon = htmlDoc.children.length;
@@ -168,9 +169,37 @@
                 },
               },
             });
+
+            var recupBlocForDrag = document.getElementById("testdrag");
+
+            new Sortable.create(recupBlocForDrag, {
+              animation: 150,
+              store: {
+                // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement
+                /**
+                 * Get the order of elements. Called once during initialization.
+                 * @param   {Sortable}  sortable
+                 * @returns {Array}
+                 */
+                get: function (sortable) {
+                  var order = localStorage.getItem(sortable.options.group);
+                  return order ? order.split("|") : [];
+                },
+
+                /**
+                 * Save the order of elements. Called onEnd (when the item is dropped).
+                 * @param {Sortable}  sortable
+                 */
+                set: function (sortable) {
+                  var order = sortable.toArray();
+                  localStorage.setItem(sortable.options.group, order.join("|"));
+                },
+              },
+            });
           },
         });
-        // fin $ajax
+        
+        
       });
     },
   };
