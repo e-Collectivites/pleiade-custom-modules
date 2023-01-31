@@ -27,7 +27,7 @@ class LemonDataApiManager {
     $this->client = \Drupal::httpClient();
     // get our custom module settings
     $this->settings = \Drupal::config('api_lemon_pleiade.settings');
-
+    
   }
 
   /**
@@ -49,6 +49,7 @@ class LemonDataApiManager {
       \Drupal::logger('api_lemon_pleiade')->error($msg);
       return NULL;
     }
+    
     
     // Si on a le cookie Lemon on le loggue dans Drupal pour test - TODO : supprimer
     // \Drupal::logger('api_lemon_pleiade')->info($_COOKIE['lemonldap']);
@@ -142,6 +143,11 @@ class LemonDataApiManager {
   public function searchMyApps() {
     $resources = "myapplications"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
+  }
+  public function searchMySession() {
+    $resources = "session/my/global"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
     return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
   }
   

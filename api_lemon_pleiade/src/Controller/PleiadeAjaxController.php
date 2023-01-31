@@ -15,7 +15,7 @@ class PleiadeAjaxController extends ControllerBase {
   //function for autocomplete
   public function pleiade_data_autocomplete(Request $request){
     $return = []; //our variable to fill with data to return to autocomplete result
-    
+  
     $search = "global"; // all apps rights in lemon
     // $search_string = \Drupal::request()->request->get('myapplications');
     // if(strlen($search_string)) $search = "myapplications";
@@ -24,6 +24,22 @@ class PleiadeAjaxController extends ControllerBase {
     switch($search){
       case 'global':
         $return = $edataApi->searchMyApps($search_string); // empty param default
+        break;
+    }
+
+    return new JsonResponse(json_encode($return), 200, [], true);
+  }
+  public function pleiade_data_session(Request $request){
+    $return = []; //our variable to fill with data to return to autocomplete result
+  
+    $search = "global"; // all apps rights in lemon
+    // $search_string = \Drupal::request()->request->get('myapplications');
+    // if(strlen($search_string)) $search = "myapplications";
+
+    $edataApi = new LemonDataApiManager();
+    switch($search){
+      case 'global':
+        $return = $edataApi->searchMySession($search_string); // empty param default
         break;
     }
 

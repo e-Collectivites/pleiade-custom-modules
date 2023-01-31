@@ -38,7 +38,7 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(static::SETTINGS);
-
+    
     $form['field_lemon_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Field LemonLDAP url'),
