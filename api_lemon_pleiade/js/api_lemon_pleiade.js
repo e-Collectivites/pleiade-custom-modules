@@ -14,10 +14,9 @@
 
       // On peut récupérer les paramètres et les injecter dans le JS si besoin (pas utile pour l'instant)
       // var field_lemon_url = drupalSettings.api_lemon_pleiade.field_lemon_url;
-      // var field_zimbra_url = drupalSettings.api_lemon_pleiade.field_zimbra_url;
-      // var field_pastell_url = drupalSettings.api_lemon_pleiade.field_pastell_url;
-      // var field_parapheur_url = drupalSettings.api_lemon_pleiade.field_parapheur_url;
-      // var field_ged_url = drupalSettings.api_lemon_pleiade.field_ged_url;
+      // var field_lemon_myapps_url = drupalSettings.api_lemon_pleiade.field_lemon_myapps_url;
+      // var field_lemon_sessioninfo_url = drupalSettings.api_lemon_pleiade.field_lemon_sessioninfo_url;
+      // var field_lemon_totp_url = drupalSettings.api_lemon_pleiade.field_lemon_totp_url;
 
       // Le bureau = frontpage; on lance le get myapplications que sur la frontpage 
      if( drupalSettings.path.currentPath === 'node') {

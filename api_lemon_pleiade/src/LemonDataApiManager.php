@@ -123,14 +123,14 @@ class LemonDataApiManager {
   }
 
   public function searchMyApps() {
-    $endpoints = "myapplications"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    $endpoints = $this->settings->get('field_lemon_myapps_url');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
-    return $this->curlGet($endpoints, [],$this->settings->get('field_lemon_url'));
+    return $this->curlGet($endpoints, [], $this->settings->get('field_lemon_url'));
   }
   public function searchMySession() {
-    $endpoints = "session/my/global"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    $endpoints =  $this->settings->get('field_lemon_sessioninfo_url');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
-    return $this->curlGet($endpoints, [],$this->settings->get('field_lemon_url'));
+    return $this->curlGet($endpoints, [], $this->settings->get('field_lemon_url'));
   }
   
   

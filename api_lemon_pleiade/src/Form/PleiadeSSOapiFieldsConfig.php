@@ -41,38 +41,36 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
     
     $form['field_lemon_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Field LemonLDAP url'),
-      '#default_value' => $config->get('field_lemon_url'),
-      '#description' => $this->t('Enter the auth LemonLDAP endpoint url'),
+      '#title' => $this->t('LemonLDAP url'),
+      '#default_value' => 'https://auth.mydomain.com',
+      '#value' => $config->get('field_lemon_url'),
+      '#description' => $this->t('Enter the full auth LemonLDAP endpoint url, ex: https://auth.mydomain.com'),
     ];  
 
-    $form['field_zimbra_url'] = [
+    $form['field_lemon_myapps_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Field Zimbra mail url'),
-      '#default_value' => $config->get('field_lemon_myapplications_url'),
-      '#description' => $this->t('Enter Zimbra mail url'),
+      '#title' => $this->t('LemonLDAP : myapplications endpoint'),
+      '#default_value' => 'myapplications',
+      '#value' => $config->get('field_lemon_myapps_url'),
+      '#description' => $this->t('Enter the applications LemonLDAP endpoint url, ex: myapplications'),
     ];
 
-    $form['field_pastell_url'] = [
+    $form['field_lemon_sessioninfo_url'] = [
         '#type' => 'textfield',
-        '#title' => $this->t('Field Pastell url'),
-        '#default_value' => $config->get('field_pastell_url'),
-        '#description' => $this->t('Enter the Pastell url'),
+        '#title' => $this->t('LemonLDAP : global session info url'),
+        '#default_value' => 'session/my/global',
+        '#value' => $config->get('field_lemon_sessioninfo_url'),
+        '#description' => $this->t('Enter the session info LemonLDAP endpoint url, ex: session/my/global'),
     ];  
 
-    $form['field_parapheur_url'] = [
+    $form['field_lemon_totp_url'] = [
         '#type' => 'textfield',
-        '#title' => $this->t('Field parapheur url'),
-        '#default_value' => $config->get('field_parapheur_url'),
-        '#description' => $this->t('Enter the base parapheur url'),
+        '#title' => $this->t('LemonLDAP : TOTP info url'),
+        '#default_value' => 'totp',
+        '#value' => $config->get('field_lemon_totp_url'),
+        '#description' => $this->t('Enter the TOTP info LemonLDAP endpoint url, ex: totp'),
     ];
 
-    $form['field_ged_url'] = [
-        '#type' => 'textfield',
-        '#title' => $this->t('Field GED url'),
-        '#default_value' => $config->get('field_ged_url'),
-        '#description' => $this->t('Enter the GED url'),
-    ];
 
     return parent::buildForm($form, $form_state);
   }
@@ -86,10 +84,9 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
     $this->configFactory->getEditable(static::SETTINGS)
       // Set the submitted configuration setting.
       ->set('field_lemon_url', $form_state->getValue('field_lemon_url'))
-      ->set('field_zimbra_url', $form_state->getValue('field_zimbra_url'))
-      ->set('field_pastell_url', $form_state->getValue('field_pastell_url'))
-      ->set('field_parapheur_url', $form_state->getValue('field_parapheur_url'))
-      ->set('field_ged_url', $form_state->getValue('field_ged_url'))
+      ->set('field_lemon_myapps_url', $form_state->getValue('field_lemon_myapps_url'))
+      ->set('field_lemon_sessioninfo_url', $form_state->getValue('field_lemon_sessioninfo_url'))
+      ->set('field_lemon_totp_url', $form_state->getValue('field_lemon_totp_url'))
       ->save();
 
     parent::submitForm($form, $form_state);
