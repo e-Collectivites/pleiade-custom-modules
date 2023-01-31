@@ -36,10 +36,7 @@
             url: Drupal.url("api_lemon_pleiade/lemon-myapps-query"), // on appelle l'API de notre module LemonDataApiManager.php
             dataType: "json", // on spécifie bien que le type de données est en JSON
             type: "POST",
-            data: {
-              //variable envoyé avec la requête vers le serveur
-             // myapplications: null // on envoie myapplications à notre API, qui saura que c'est l'URL Lemon qu'on appelle en ajoutant ce param à l'URL
-            },
+            data: {},
             success: function (donnees) {
               //donnees est le reçu du serveur avec les résultats
                console.log(donnees);
@@ -223,6 +220,26 @@
         flag = true;  
       } // fin if false flag méthode temporaire
      } // fin si frontpage
+
+     // Si page history
+     if( drupalSettings.path.currentPath === 'history') {
+
+      console.log('We are on page : history!!');
+
+      $.ajax({
+        url: Drupal.url("api_lemon_pleiade/lemon-session-query"), // on appelle l'API de notre module LemonDataApiManager.php
+        dataType: "json", // on spécifie bien que le type de données est en JSON
+        type: "POST",
+        data: {},
+
+        success: function (history) {
+          //historique en json
+           console.log(history);
+        }
+
+      });
+
+     } // fin si page history
       
     },
     
