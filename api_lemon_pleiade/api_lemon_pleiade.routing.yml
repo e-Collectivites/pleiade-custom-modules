@@ -23,3 +23,11 @@ api_lemon_pleiade.lemon_session_query:
     _format: json
   requirements:
     _access: 'TRUE'
+
+api_lemon_pleiade.my_history:
+  path: '/history'
+  defaults:
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::myHistory'
+    _title: 'Historique de connexion'
+  requirements:
+    _permission: 'access content'

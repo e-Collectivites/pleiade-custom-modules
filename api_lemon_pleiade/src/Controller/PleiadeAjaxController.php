@@ -35,5 +35,17 @@ class PleiadeAjaxController extends ControllerBase {
   }
 
   // TODO : TOTP query if possible
+
+   /**
+   * Returns our session history page.
+   *
+   * @return array
+   *   A simple renderable array.
+   */
+  public function myHistory() {
+    return [
+      '#markup' => '<div id="history>Historique à remplir via Ajax dans div#history</div>',
+    ];
+  }
   
 }
