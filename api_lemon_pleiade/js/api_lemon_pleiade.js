@@ -1,18 +1,31 @@
 (function ($, Drupal, drupalSettings) {
-  let flag = false;// Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+
+  
+      console.log("Module Pléiade API/Lemon --> hello :))");
+      // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+      let flag = false;
+      // Return path as it can be usefull
+      console.log('Current path = ' + drupalSettings.path.currentPath);
+
+
   Drupal.behaviors.APIlemonDataPleiadeBehavior = {
     attach: function (context, settings) {
+
+
       // On peut récupérer les paramètres et les injecter dans le JS si besoin (pas utile pour l'instant)
       // var field_lemon_url = drupalSettings.api_lemon_pleiade.field_lemon_url;
       // var field_zimbra_url = drupalSettings.api_lemon_pleiade.field_zimbra_url;
       // var field_pastell_url = drupalSettings.api_lemon_pleiade.field_pastell_url;
       // var field_parapheur_url = drupalSettings.api_lemon_pleiade.field_parapheur_url;
       // var field_ged_url = drupalSettings.api_lemon_pleiade.field_ged_url;
-      if (flag === false) {// Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
-        // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
-        flag = true;  // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
 
-        console.log("Module Pléiade API/Lemon --> hello :))");
+      // Le bureau = frontpage; on lance le get myapplications que sur la frontpage 
+     if( drupalSettings.path.currentPath === 'node') {
+
+
+      if (flag === false) { // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+        // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+
         $(document).ready(function () {
           
 
@@ -20,12 +33,12 @@
           // https://www.cognizantsoftvision.com/blog/handling-sequential-ajax-calls-using-jquery/
 
           $.ajax({
-            url: Drupal.url("api_lemon_pleiade/pleiade-data-autocomplete"), // on appelle l'API de notre module LemonDataApiManager.php
+            url: Drupal.url("api_lemon_pleiade/lemon-myapps-query"), // on appelle l'API de notre module LemonDataApiManager.php
             dataType: "json", // on spécifie bien que le type de données est en JSON
             type: "POST",
             data: {
               //variable envoyé avec la requête vers le serveur
-              myapplications: null // on envoie myapplications à notre API, qui saura que c'est l'URL Lemon qu'on appelle en ajoutant ce param à l'URL
+             // myapplications: null // on envoie myapplications à notre API, qui saura que c'est l'URL Lemon qu'on appelle en ajoutant ce param à l'URL
             },
             success: function (donnees) {
               //donnees est le reçu du serveur avec les résultats
@@ -206,7 +219,10 @@
 
           
         });
-      }
+        // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+        flag = true;  
+      } // fin if false flag méthode temporaire
+     } // fin si frontpage
       
     },
     

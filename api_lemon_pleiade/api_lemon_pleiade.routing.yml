@@ -6,12 +6,20 @@ api_lemon_pleiade.settings:
   requirements:
     _permission: 'administer site configuration'
     
-api_lemon_pleiade.pleiade_data_autocomplete:
-  path: '/api_lemon_pleiade/pleiade-data-autocomplete'
+api_lemon_pleiade.lemon_myapps_query:
+  path: '/api_lemon_pleiade/lemon-myapps-query'
   defaults:
-    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::pleiade_data_autocomplete'
-    _title: 'Search'
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::lemon_myapps_query'
+    _title: 'LemonLDAP API Myapplications Query'
     _format: json
   requirements:
     _access: 'TRUE'
 
+api_lemon_pleiade.lemon_session_query:
+  path: '/api_lemon_pleiade/lemon-session-query'
+  defaults:
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::lemon_session_query'
+    _title: 'LemonLDAP API Session Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'

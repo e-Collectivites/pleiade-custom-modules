@@ -33,7 +33,7 @@ class LemonDataApiManager {
   /**
    * Do CURL request with authorization.
    *
-   * @param string $resource
+   * @param string $endpoint
    *   A request action of api.
    * @param string $method
    *   A method of curl request.
@@ -43,7 +43,7 @@ class LemonDataApiManager {
    * @return array
    *   An associate array with respond data.
    */
-  private function executeCurl($resource, $method, $inputs, $api) {
+  private function executeCurl($endpoint, $method, $inputs, $api) {
     if (!isset($_COOKIE['lemonldap'])) {
       $msg = 'Pas authentifié dans le SSO Lemon';
       \Drupal::logger('api_lemon_pleiade')->error($msg);
@@ -55,19 +55,9 @@ class LemonDataApiManager {
     // \Drupal::logger('api_lemon_pleiade')->info($_COOKIE['lemonldap']);
     \Drupal::logger('api_lemon_pleiade')->info('Cookie Lemon: @cookie', ['@cookie' => $_COOKIE['lemonldap']]);
 
-    // Si notre fonction AJAX envoie un array dans sa requête
-    if(is_array($resource)){
-      $LEMON_API_URL =  $api;
-      foreach ($resource as $res){
-        $LEMON_API_URL.="/".$res;
-        \Drupal::logger('api_lemon_pleiade')->info('Ressource called: @res', ['@res' => $res ]);
-      }
-    }
-    // Sinon on ajoute le param à l'url
-    else { 
-      $LEMON_API_URL = $api . "/" . $resource;
+
+      $LEMON_API_URL = $api . "/" . $endpoint;
       \Drupal::logger('api_lemon_pleiade')->info('LEMON_API_URL: @api', ['@api' => $LEMON_API_URL ]);
-    }
     
     $options = [
       'headers' => [
@@ -104,7 +94,7 @@ class LemonDataApiManager {
   /**
    * Get Request of API.
    *
-   * @param string $resource
+   * @param string $endpoint
    *   A request action.
    * @param string $input
    *   A data of curl request.
@@ -112,15 +102,15 @@ class LemonDataApiManager {
    * @return array
    *   A respond data.
    */
-  public function curlGet($resource, $inputs, $api) {
-   // \Drupal::logger('api_lemon_pleiade')->info('Ressource, inputs, api: @res @inputs @api', ['@res' => $resource, '@inputs' => $inputs, '@api' => $api]);
-    return $this->executeCurl($resource, "GET", $inputs, $api);
+  public function curlGet($endpoint, $inputs, $api) {
+   // \Drupal::logger('api_lemon_pleiade')->info('Ressource, inputs, api: @res @inputs @api', ['@res' => $endpoint, '@inputs' => $inputs, '@api' => $api]);
+    return $this->executeCurl($endpoint, "GET", $inputs, $api);
   }
 
   /**
    * Post Request of API.
    *
-   * @param string $resource
+   * @param string $endpoint
    *   A request action.
    * @param string $inputs
    *   A data of curl request.
@@ -128,36 +118,21 @@ class LemonDataApiManager {
    * @return array
    *   A respond data.
    */
-  public function curlPost($resource, $inputs, $api) {
-    return $this->executeCurl($resource, "POST", $inputs, $api);
-  }
-
-  public function searchByGroupes($groupes) {
-    $resources = [
-      "groupes",
-      $null,
-    ];
-    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
+  public function curlPost($endpoint, $inputs, $api) {
+    return $this->executeCurl($endpoint, "POST", $inputs, $api);
   }
 
   public function searchMyApps() {
-    $resources = "myapplications"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    $endpoints = "myapplications"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
-    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
+    return $this->curlGet($endpoints, [],$this->settings->get('field_lemon_url'));
   }
   public function searchMySession() {
-    $resources = "session/my/global"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+    $endpoints = "session/my/global"; // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
-    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
+    return $this->curlGet($endpoints, [],$this->settings->get('field_lemon_url'));
   }
   
-  public function searchByName($name) {
-    $resources = [
-      "full_text",
-      $name,
-    ];
-    return $this->curlGet($resources, [],$this->settings->get('field_lemon_url'));
-  }
   
   /**
    * Function to return first element of the array, compatability with PHP 5, note that array_key_first is only available for PHP > 7.3.
