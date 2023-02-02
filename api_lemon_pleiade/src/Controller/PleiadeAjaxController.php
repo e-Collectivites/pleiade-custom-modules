@@ -44,7 +44,12 @@ class PleiadeAjaxController extends ControllerBase {
    */
   public function myHistory() {
     return [
-      '#markup' => '<div id="history>Historique à remplir via Ajax dans div#history</div>',
+      '#markup' => '
+      <div class="d-flex justify-content-center">
+        <div id="spinner-history" class="spinner-border text-primary" role="status">
+        </div>
+      </div>
+      <div id="history-connexion"></div>',
     ];
   }
   
