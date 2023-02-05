@@ -3,7 +3,7 @@
   Drupal.behaviors.APIlemonDataPleiadeBehavior = {
     attach: function (context, settings) {
 
-      // eclude admin pages
+      // exclude admin pages
       if (!drupalSettings.path.currentPath.includes("admin")) {
 
         once('APIlemonDataPleiadeBehavior', 'body', context).forEach(function () {
