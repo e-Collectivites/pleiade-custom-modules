@@ -1,4 +1,5 @@
 (function ($, Drupal, once) {
+  'use strict';
   Drupal.behaviors.APIlemonDataPleiadeBehavior = {
     attach: function (context, settings) {
 
