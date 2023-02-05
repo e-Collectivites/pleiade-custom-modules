@@ -1,6 +1,6 @@
 (function ($, Drupal, drupalSettings) {
 
-  
+  'use strict';
       console.log("Module Pléiade API/Lemon --> hello :))");
       // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
       let flag = false;
@@ -81,7 +81,7 @@
               
 
                 document.getElementById("menuTestLemon2").innerHTML = menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuTestLemon2
-                // Pour avoir les icones remplacées dans le innerHTML
+                document.getElementById("droptest").innerHTML += '<li><a class="dropdown-item" href="#">Collectivité Démo</a></li>'; // Pour avoir les icones remplacées dans le innerHTML
                 feather.replace();
                 
                 // Ajout du bloc a la page accueil
@@ -224,17 +224,17 @@
 
           
         
-        // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
-        flag = true;  
-       // fin if false flag méthode temporaire
-      // fin si frontpage
+            // Méthode temporaire pour éviter les multiples boucles js au chargement d'une page
+            flag = true;  
+          // fin if false flag méthode temporaire
+          // fin si frontpage
 
-     // Si page history
-      if( drupalSettings.path.currentPath === 'history') {
+          // Si page history
+            if( drupalSettings.path.currentPath === 'history') {
 
-        console.log('We are on page : history!!');
-      
-        $.ajax({
+          console.log('We are on page : history!!');
+        
+          $.ajax({
           url: Drupal.url("api_lemon_pleiade/lemon-session-query"), // on appelle l'API de notre module LemonDataApiManager.php
           dataType: "json", // on spécifie bien que le type de données est en JSON
           type: "POST",
