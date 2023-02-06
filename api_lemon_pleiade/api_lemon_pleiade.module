@@ -15,6 +15,12 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   
   //Add the JS library
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
+
+  //using the method from the pathmatcherinterface
+  if (\Drupal::service('path.matcher')->isFrontPage()) {
+  $variables['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
+  }
+
   //Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_myapps_url'] = $field_lemon_myapps_url;

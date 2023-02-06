@@ -1,7 +1,7 @@
 api_lemon_pleiade_js:
   js:
     js/api_lemon_pleiade.js: {}
-    js/Sortable.min.js: {}
+#    js/Sortable.min.js: {}
   dependencies:
     - core/drupal
     - core/jquery
@@ -15,3 +15,6 @@ api_lemon_pleiade_css:
   css:
     theme:
       css/api_lemon_pleiade.css: {}
+sortable_pleiade_js:
+  js:
+    js/Sortable.min.js: {}
