@@ -224,7 +224,7 @@
               success: function (history) {
                 //historique en json
                 //console.log(history);
-                history_table = '<table class="table"><thead><tr><th scope="row">Connexions réussies</th></tr><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
+                var history_table = '<table class="table"><thead><tr><th scope="row">Connexions réussies</th></tr><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
                 for (var i = 0; i < history._loginHistory.successLogin.length; i++) {
 
                   var objectDate = new Date(history._loginHistory.successLogin[i]._utime * 1000);
