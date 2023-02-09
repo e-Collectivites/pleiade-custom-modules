@@ -7,7 +7,7 @@ api_lemon_pleiade.settings:
     _permission: 'administer site configuration'
     
 api_lemon_pleiade.lemon_myapps_query:
-  path: '/api_lemon_pleiade/lemon-myapps-query'
+  path: '/v1/api_lemon_pleiade/lemon-myapps-query'
   defaults:
     _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::lemon_myapps_query'
     _title: 'LemonLDAP API Myapplications Query'
@@ -16,7 +16,7 @@ api_lemon_pleiade.lemon_myapps_query:
     _access: 'TRUE'
 
 api_lemon_pleiade.lemon_session_query:
-  path: '/api_lemon_pleiade/lemon-session-query'
+  path: '/v1/api_lemon_pleiade/lemon-session-query'
   defaults:
     _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::lemon_session_query'
     _title: 'LemonLDAP API Session Query'
