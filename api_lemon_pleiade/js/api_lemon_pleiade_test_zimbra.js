@@ -54,7 +54,7 @@
                                                 String(objectDate.getMinutes()).padStart(2, "0") +
                                             '</th>\
                                             <th class="col d-flex align-items-center">\
-                                                <a class="bidule hover-zoom" alt="constulter le mail" href="https://courriel.sitiv.fr/modern/email/Inbox/conversation/-'+ id_expediteur +'"><i data-feather="mail" class="feather-icon"></i></a>\
+                                                <a class="bidule hover-zoom" alt="constulter le mail" target="_blank" href="https://courriel.sitiv.fr/modern/email/Inbox/conversation/-'+ id_expediteur +'"><i data-feather="mail" class="feather-icon"></i></a>\
                                             </th>\
                                         </tr>\
                                         ';

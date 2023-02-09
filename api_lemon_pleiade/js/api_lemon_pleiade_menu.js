@@ -17,11 +17,11 @@
               for (var i = 0; i < donnees.myapplications.length; i++) {
                 // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
                 menuHtml +=
-                  '<div><div class="nav-small-cap has-arrow collapsed" data-bs-toggle="collapse" data-bs-target="#collapse' +
+                  '<div style="max-width: 240px;"><div class="nav-small-cap has-arrow collapsed" data-bs-toggle="collapse" data-bs-target="#collapse' +
                   i +
                   '" aria-expanded="false" aria-controls="collapse' +
                   i +
-                  '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
+                  '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">crflcdtydftdtygdtylu' +
                   donnees.myapplications[i].Category + // on récupère toute les catégories du json qu'on stocke dans une liste
                   '</span></div><ul><div id="collapse' +
                   i +
