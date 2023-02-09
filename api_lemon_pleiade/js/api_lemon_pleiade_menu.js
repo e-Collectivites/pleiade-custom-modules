@@ -21,7 +21,7 @@
                   i +
                   '" aria-expanded="false" aria-controls="collapse' +
                   i +
-                  '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">crflcdtydftdtygdtylu' +
+                  '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
                   donnees.myapplications[i].Category + // on récupère toute les catégories du json qu'on stocke dans une liste
                   '</span></div><ul><div id="collapse' +
                   i +
