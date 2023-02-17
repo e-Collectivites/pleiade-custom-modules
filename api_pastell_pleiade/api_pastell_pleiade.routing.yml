@@ -1,0 +1,25 @@
+api_pastell_pleiade.settings:
+  path: '/admin/config/api_pastell_pleiade/settings'
+  defaults:
+    _form: '\Drupal\api_pastell_pleiade\Form\PleiadePastellapiFieldsConfig'
+    _title: 'API Pastell Pléiade Settings'
+  requirements:
+    _permission: 'administer site configuration'
+    
+api_pastell_pleiade.pastell_entities_query:
+  path: '/api_pastell_pleiade/pastell_entities_query'
+  defaults:
+    _controller: '\Drupal\api_pastell_pleiade\Controller\PleiadeAjaxPastellController::pastell_entities_query'
+    _title: 'Pastell API Entities Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+
+api_pastell_pleiade.pastell_document_query:
+  path: '/api_pastell_pleiade/pastell_document_query'
+  defaults:
+    _controller: '\Drupal\api_pastell_pleiade\Controller\PleiadeAjaxPastellController::pastell_document_query'
+    _title: 'Pastell API Documents Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'

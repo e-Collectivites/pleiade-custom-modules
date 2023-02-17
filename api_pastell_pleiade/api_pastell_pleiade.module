@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @param $variables
+ */
+function api_pastell_pleiade_preprocess_page(&$variables){
+
+
+  $config = \Drupal::config('api_pastell_pleiade.settings');
+  
+  $field_pastell_url = $config->get('field_pastell_url');
+  $field_pastell_documents_url = $config->get('field_pastell_documents_url');
+  $field_pastell_entitites_url = $config->get('field_pastell_entities_url');
+  $limit_documents = $config->get('field_pastell_limit_documents');
+  //Add the JS library
+  $variables['#attached']['library'][] = 'api_pastell_pleiade/api_pastell_pleiade_js';
+  
+  //Pass variables to Drupal.Settings
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_url'] = $field_pastell_url;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_documents_url'] = $field_pastell_documents_url;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_entities_url'] = $field_pastell_entitites_url;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_limit_documents'] = $limit_documents;
+}
