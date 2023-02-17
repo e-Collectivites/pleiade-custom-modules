@@ -3,6 +3,7 @@
   Drupal.behaviors.APIlemonHomeBlocksBehavior = {
     attach: function (context, settings) {
       // exclude admin pages
+      
       if (!drupalSettings.path.currentPath.includes("admin")) {
         once("APIlemonHomeBlocksBehavior", "body", context).forEach(
           function () {

@@ -4,6 +4,7 @@
     attach: function (context, settings) {
       // exclude admin pages
       if (!drupalSettings.path.currentPath.includes("admin")) {
+       
         once("APIlemonMenuBehavior", "body", context).forEach(function () {
           
           $.ajax({
@@ -58,6 +59,7 @@
               $("#spinner-div").hide(); //Request is complete so hide spinner
             },
           });
+
         }); // fin once
       } // fin exlude admin pages
     },

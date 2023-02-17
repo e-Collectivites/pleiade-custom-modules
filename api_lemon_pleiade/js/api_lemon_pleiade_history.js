@@ -6,6 +6,21 @@
       if (!drupalSettings.path.currentPath.includes("admin")) {
         once("APIlemonDataHistoryeBehavior", "body", context).forEach(
           function () {
+            $.ajax({
+              url: Drupal.url("v1/api_lemon_pleiade/lemon-session-query"), // on appelle l'API de notre module LemonDataApiManager.php
+              dataType: "json", // on spécifie bien que le type de données est en JSON
+              type: "POST",
+              data: {},
+
+              success: function (history) {
+                //historique en json
+                //console.log(history);
+
+                localStorage.setItem("groups", history.groups);
+              }
+            });  
+
+
             // Si on est sur la page historique des connexions
             if (drupalSettings.path.currentPath === "history") {
               console.log("We are on page : history!!");
