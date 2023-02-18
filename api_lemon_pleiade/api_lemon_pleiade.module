@@ -17,9 +17,9 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
 
   //using the method from the pathmatcherinterface
-  if (\Drupal::service('path.matcher')->isFrontPage()) {
-  $variables['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
-  }
+  // if (\Drupal::service('path.matcher')->isFrontPage()) {
+  // $variables['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
+  // }
 
   //Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
@@ -28,3 +28,33 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_totp_url'] = $field_lemon_totp_url;
 
 } 
+
+
+function api_lemon_pleiade_page_attachments(array &$page) {
+
+  if (\Drupal::service('path.matcher')->isFrontPage()) {
+  $page['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
+  }
+}
+
+
+
+/**
+ * Implements hook_library_info_alter().
+ * 
+ * https://www.drupal.org/project/drupal/issues/3274688
+ * 
+ */
+function api_lemon_pleiade_library_info_alter(&$libraries, $extension) {
+  foreach ($libraries as &$library) {
+    if (!in_array('core/jquery.once', $library['dependencies'] ?? [])) {
+      continue;
+    }
+    $dependencies = array_filter($library['dependencies'] ?? [], function ($item) {
+      return $item != 'core/jquery.once';
+    });
+    $dependencies[] = 'core/once';
+    $dependencies[] = 'core/jquery.once.bc';
+    $library['dependencies'] = $dependencies;
+  }
+}
