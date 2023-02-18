@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\api_lemon_pleiade\LemonDataApiManager;
 
+use Drupal\user\PrivateTempStoreFactory;
+
+
 class PleiadeAjaxController extends ControllerBase {
   
   // function to query LemonLDAP API, myapplications endpoint
@@ -31,6 +34,11 @@ class PleiadeAjaxController extends ControllerBase {
 
     $lemondataApi = new LemonDataApiManager();
     $return = $lemondataApi->searchMySession(); 
+
+    // Store groups in Drupal private tempstore to serve to other modules later
+    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+    $tempstore->set('groups', $return["groups"]);
+
     return new JsonResponse(json_encode($return), 200, [], true);
   }
 

@@ -2,7 +2,7 @@
     "use strict";
     Drupal.behaviors.APIlemonDataHistoryBehavior = {
       attach: function (context, settings) {
-        // Load on front page to get and set groups in local storage,
+        // Load on front page to be able to get and set groups in Drupal private tempstore,
         // and on history page to show sessions history table
         if (drupalSettings.path.isFront || drupalSettings.path.currentPath.includes("history")) {
           once("APIlemonDataHistoryBehavior", "body", context).forEach(
@@ -17,8 +17,7 @@
             request.onload = function () {
               if (this.status >= 200 && this.status < 400) {
                 var response = JSON.parse(this.response);
-                localStorage.setItem("groups", response.groups);
-  
+                
                 // Si on est sur la page historique des connexions
                 if (drupalSettings.path.currentPath === "history") {
                   console.log("We are on page : history!!");
