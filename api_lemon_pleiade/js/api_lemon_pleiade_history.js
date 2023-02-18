@@ -1,10 +1,12 @@
 (function (Drupal, drupalSettings) {
     "use strict";
-    Drupal.behaviors.APIlemonDataHistoryeBehavior = {
+    Drupal.behaviors.APIlemonDataHistoryBehavior = {
       attach: function (context, settings) {
-        // exclude admin pages
-        if (drupalSettings.path.currentPath.includes("history")) {
-        //  once("APIlemonDataHistoryeBehavior", function () {
+        // Load on front page to get and set groups in local storage,
+        // and on history page to show sessions history table
+        if (drupalSettings.path.currentPath.includes("node") || drupalSettings.path.currentPath.includes("history") ) {
+          once("APIlemonDataHistoryBehavior", "body", context).forEach(
+            function () {
             var request = new XMLHttpRequest();
             request.open(
               "POST",
@@ -86,7 +88,7 @@
               }
             };
             request.send();
-         // });
+          });
         }
       },
     };
