@@ -73,72 +73,72 @@
               // }
 
               // Sortable here ?
-              const htmlDoc = document.getElementById("blocLemonCustom");
-              const nbObjinBlocLemon = htmlDoc.children.length;
-              for (var f = 0; f < nbObjinBlocLemon; f++) {
-                // récup des éléments du bloc dont l'id contient row-n
-                var nbBloc = document.getElementById("row-" + f);
-                Sortable.create(nbBloc, {
-                  animation: 150,
-                  store: {
-                    // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
-                    /**
-                     * Get the order of elements. Called once during initialization.
-                     * @param   {Sortable}  sortable
-                     * @returns {Array}
-                     */
-                    get: function (sortable) {
-                      var order = localStorage.getItem(
-                        sortable.options.group
-                      );
-                      return order ? order.split("|") : [];
-                    },
+              // const htmlDoc = document.getElementById("blocLemonCustom");
+              // const nbObjinBlocLemon = htmlDoc.children.length;
+              // for (var f = 0; f < nbObjinBlocLemon; f++) {
+              //   // récup des éléments du bloc dont l'id contient row-n
+              //   var nbBloc = document.getElementById("row-" + f);
+              //   Sortable.create(nbBloc, {
+              //     animation: 150,
+              //     store: {
+              //       // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
+              //       /**
+              //        * Get the order of elements. Called once during initialization.
+              //        * @param   {Sortable}  sortable
+              //        * @returns {Array}
+              //        */
+              //       get: function (sortable) {
+              //         var order = localStorage.getItem(
+              //           sortable.options.group
+              //         );
+              //         return order ? order.split("|") : [];
+              //       },
 
-                    /**
-                     * Save the order of elements. Called onEnd (when the item is dropped).
-                     * @param {Sortable}  sortable
-                     */
-                    set: function (sortable) {
-                      var order = sortable.toArray();
-                      localStorage.setItem(
-                        sortable.options.group,
-                        order.join("|")
-                      );
-                    },
-                  },
-                });
-                var recupBlocForDragAndDrop = document.getElementById("blocLemonCustom");
+              //       /**
+              //        * Save the order of elements. Called onEnd (when the item is dropped).
+              //        * @param {Sortable}  sortable
+              //        */
+              //       set: function (sortable) {
+              //         var order = sortable.toArray();
+              //         localStorage.setItem(
+              //           sortable.options.group,
+              //           order.join("|")
+              //         );
+              //       },
+              //     },
+              //   });
+              //   var recupBlocForDragAndDrop = document.getElementById("blocLemonCustom");
 
-                new Sortable.create(recupBlocForDragAndDrop, {
-                  animation: 150,
-                  store: {
-                    // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement
-                    /**
-                     * Get the order of elements. Called once during initialization.
-                     * @param   {Sortable}  sortable
-                     * @returns {Array}
-                     */
-                    get: function (sortable) {
-                      var order = localStorage.getItem(
-                        sortable.options.group
-                      );
-                      return order ? order.split("|") : [];
-                    },
+              //   new Sortable.create(recupBlocForDragAndDrop, {
+              //     animation: 150,
+              //     store: {
+              //       // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement
+              //       /**
+              //        * Get the order of elements. Called once during initialization.
+              //        * @param   {Sortable}  sortable
+              //        * @returns {Array}
+              //        */
+              //       get: function (sortable) {
+              //         var order = localStorage.getItem(
+              //           sortable.options.group
+              //         );
+              //         return order ? order.split("|") : [];
+              //       },
 
-                    /**
-                     * Save the order of elements. Called onEnd (when the item is dropped).
-                     * @param {Sortable}  sortable
-                     */
-                    set: function (sortable) {
-                      var order = sortable.toArray();
-                      localStorage.setItem(
-                        sortable.options.group,
-                        order.join("|")
-                      );
-                    },
-                  },
-                });
-              }
+              //       /**
+              //        * Save the order of elements. Called onEnd (when the item is dropped).
+              //        * @param {Sortable}  sortable
+              //        */
+              //       set: function (sortable) {
+              //         var order = sortable.toArray();
+              //         localStorage.setItem(
+              //           sortable.options.group,
+              //           order.join("|")
+              //         );
+              //       },
+              //     },
+              //   });
+              // }
 
             };
             xhr.send();
