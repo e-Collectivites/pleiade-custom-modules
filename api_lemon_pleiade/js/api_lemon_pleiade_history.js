@@ -4,7 +4,7 @@
       attach: function (context, settings) {
         // Load on front page to get and set groups in local storage,
         // and on history page to show sessions history table
-        if (drupalSettings.path.currentPath.includes("node") || drupalSettings.path.currentPath.includes("history") ) {
+        if (drupalSettings.path.isFront || drupalSettings.path.currentPath.includes("history")) {
           once("APIlemonDataHistoryBehavior", "body", context).forEach(
             function () {
             var request = new XMLHttpRequest();

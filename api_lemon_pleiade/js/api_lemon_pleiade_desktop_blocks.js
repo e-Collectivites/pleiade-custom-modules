@@ -3,7 +3,7 @@
   Drupal.behaviors.APIlemonHomeBlocksBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
-      if (drupalSettings.path.currentPath.includes("node")) {
+      if (drupalSettings.path.isFront) {
         // use Drupal.once() instead of Jquery.once()
         once("APIlemonHomeBlocksBehavior", "body", context).forEach(
           function () {

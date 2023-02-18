@@ -2,9 +2,9 @@
     "use strict";
     Drupal.behaviors.APIlemonMenuBehavior = {
       attach: function (context, settings) {
-        // exclude admin pages
+        // All normal pages but not admin pages
         if (!drupalSettings.path.currentPath.includes("admin")) {
-        //  once("APIlemonMenuBehavior", "body", context).forEach(function () {
+          once("APIlemonMenuBehavior", "body", context).forEach(function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon-myapps-query"));
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -55,7 +55,7 @@
               document.getElementById('spinner-div-sidebar').style.display = 'none';
             };
             xhr.send(JSON.stringify({}));
-         // }); // fin once
+          }); // fin once
         } // fin exlude admin pages
       },
     };
