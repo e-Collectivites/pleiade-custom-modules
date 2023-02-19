@@ -36,30 +36,36 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
         '#type' => 'textfield',
         '#title' => $this->t('Pastell url'),
         '#default_value' => $config->get('field_pastell_url'),
-        // '#value' => $config->get('field_pastell_url'),
-        '#description' => $this->t('Enter the full Pastell url, ex: https://pastell.mydomain.com'),
+        '#description' => $this->t('Enter the full Pastell url with / at the end, ex: https://pastell.mydomain.com/'),
       ]; 
+
     $form['field_pastell_documents_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Pastell docs endpoint'),
       '#default_value' => $config->get('field_pastell_documents_url'),
-      // '#value' => $config->get('field_pastell_documents_url'),
-      '#description' => $this->t('Enter the endpoint for documents'),
+      '#description' => $this->t('Enter the endpoint for documents with / at the end, i.e: api/v2/Document/'),
     ];  
 
     $form['field_pastell_entities_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Pastell entities endpoint'),
       '#default_value' => $config->get('field_pastell_entities_url'),
-      // '#value' => $config->get('field_pastell_entities_url'),
-      '#description' => $this->t('Enter the Pastell entities endpoint url'),
+      '#description' => $this->t('Enter the Pastell entities endpoint url (no / at the end), i.e: api/v2/entite'),
     ];
+
     $form['field_pastell_limit_documents'] = [
       '#type' => 'number',
       '#title' => $this->t('Limite de document à récupérer'),
       '#default_value' => $config->get('field_pastell_limit_documents'),
-      // '#value' => $config->get('field_pastell_entities_url'),
-      '#description' => $this->t('Limite de document à récupérer'),
+      '#description' => $this->t('Number of max docs retrieved during Pastell API request'),
+    ];
+
+    $form['field_pastell_ldap_group'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Nom du groupe Pastell dans LDAP'),
+      '#default_value' => $config->get('field_pastell_ldap_group'),
+
+      '#description' => $this->t('Name of the LDAP Pastell group, usually "pastell"'),
     ];
     
     return parent::buildForm($form, $form_state);
@@ -78,6 +84,7 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
     $config->set('field_pastell_documents_url', $form_state->getValue('field_pastell_documents_url'));
     $config->set('field_pastell_entities_url', $form_state->getValue('field_pastell_entities_url'));
     $config->set('field_pastell_limit_documents', $form_state->getValue('field_pastell_limit_documents'));
+    $config->set('field_pastell_ldap_group', $form_state->getValue('field_pastell_ldap_group'));
     $config->save();
     
     parent::submitForm($form, $form_state);

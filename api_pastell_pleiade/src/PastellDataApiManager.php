@@ -23,7 +23,7 @@ class PastellDataApiManager {
   public function __construct() {
     if (!isset($_COOKIE['lemonldap'])) {
       $msg = 'Pas authentifié dans le SSO Lemon';
-    //  \Drupal::logger('api_pastell_pleiade')->error($msg);
+      \Drupal::logger('api_pastell_pleiade')->error($msg);
       return;
     }
     $this->client = \Drupal::httpClient();
@@ -48,7 +48,7 @@ class PastellDataApiManager {
   private function executeCurl($endpoint, $method, $inputs, $api) {
     if (!isset($_COOKIE['lemonldap'])) {
       $msg = 'Pas authentifié dans le SSO ';
-   //   \Drupal::logger('api_pastell_pleiade')->error($msg);
+      \Drupal::logger('api_pastell_pleiade')->error($msg);
       return NULL;
     }
 
@@ -59,7 +59,6 @@ class PastellDataApiManager {
     $proxy_ticket = \Drupal::service('cas.proxy_helper')->getProxyTicket($PT_request_url);
     $PASTELL_API_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
     
-   // var_dump($PASTELL_API_URL);
 
     $options = [
       'headers' => [
@@ -89,7 +88,6 @@ class PastellDataApiManager {
     } catch (RequestException $e) {
       \Drupal::logger('api_pastell_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
     }
-    // var_dump($body);
     return Json::decode($body);
   }
 
@@ -105,7 +103,6 @@ class PastellDataApiManager {
    *   A respond data.
    */
   public function curlGet($endpoint, $inputs, $api) {
-   // \Drupal::logger('api_pastell_pleiade')->info('Ressource, inputs, api: @res @inputs @api', ['@res' => $endpoint, '@inputs' => $inputs, '@api' => $api]);
     return $this->executeCurl($endpoint, "GET", $inputs, $api);
   }
 
@@ -124,15 +121,15 @@ class PastellDataApiManager {
     return $this->executeCurl($endpoint, "POST", $inputs, $api);
   }
 
-  public function searchMyDocs() {
+  public function searchMyDocs($id_e) {
     $endpoints = $this->settings->get('field_pastell_documents_url');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-    \Drupal::logger('api_pastell_pleiade')->info('function searchMyApps triggered !');
-    return $this->curlGet($endpoints, [], $this->settings->get('field_pastell_url') . $this->settings->get('field_pastell_documents_url') . $_COOKIE['coll_id'] . '&limit=' . $this->settings->get('field_pastell_limit_documents') );
+  //  \Drupal::logger('api_pastell_documents')->info('function searchMyApps triggered !');
+    return $this->curlGet($endpoints, [], $this->settings->get('field_pastell_url') . $this->settings->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings->get('field_pastell_limit_documents') );
   }
   public function searchMyEntities() {
     
     $endpoints =  $this->settings->get('field_pastell_entities_url');
-    \Drupal::logger('api_pastell_pleiade')->info('function searchMyentities triggered !');
+   // \Drupal::logger('api_pastell_entites')->info('function searchMyentities triggered !');
     return $this->curlGet($endpoints, [], $this->settings->get('field_pastell_url') . $this->settings->get('field_pastell_entities_url') );
   }
   
@@ -156,5 +153,4 @@ class PastellDataApiManager {
         return array_key_first($array);
     }
   }
-
 }
