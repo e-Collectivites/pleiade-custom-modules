@@ -45,7 +45,7 @@
                                                     option_child.id = "entitie_number_" + value_child.id_e;
                                                     option_child.className = "dropdown-item text-uppercase";
                                                     option_child.value = value_child.id_e;
-                                                    option_child.text = "⌊" + unescape(value_child.denomination);
+                                                    option_child.text = "—" + unescape(value_child.denomination);
                                                     linkEntitie.appendChild(option_child);
                                                 }
                                             });
