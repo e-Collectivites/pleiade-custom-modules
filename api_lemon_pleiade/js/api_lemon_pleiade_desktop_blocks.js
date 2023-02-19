@@ -4,15 +4,10 @@
     attach: function (context, settings) {
       // only on frontpage (desktop)
       if (drupalSettings.path.isFront) {
-        // use Drupal.once() instead of Jquery.once()
-        once("APIlemonHomeBlocksBehavior", "body", context).forEach(
+        once("APIlemonHomeBlocksBehavior", "#lemon_block_id", context).forEach(
           function () {
-            // TODO : blocks DOES NOT EXIST ??!! fix in theme ?
-            var spinner = document.querySelector("#spinner-div-lemon_apps");
             // show spinner while ajax is loading
-            if (spinner) {
-              spinner.style.display = "block";
-            }
+            document.getElementById("lemon_block_id").innerHTML = drupalSettings.api_lemon_pleiade.spinner;
             // make ajax call
             var xhr = new XMLHttpRequest();
             xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon-myapps-query"));
@@ -53,8 +48,8 @@
                   }
                   blocLemon += "</div></div></div></div></div></div>";
                 }
-                // ajout du html dans la div avec l'id blocLemonCustom
-                document.getElementById("blocLemonCustom").innerHTML += blocLemon;
+                // ajout du html dans la div du bloc lemon du thème au lieu du spinner
+                document.getElementById("lemon_block_id").innerHTML = blocLemon;
               }
             };
             xhr.onerror = function () {
@@ -67,78 +62,74 @@
               console.log("AJAX call timed out");
             };
             xhr.onloadend = function () {
-              // hide spinner when ajax is complete
-              // if(spinner) {
-              // spinner.style.display = "none";
-              // }
 
-              // Sortable here ?
-              // const htmlDoc = document.getElementById("blocLemonCustom");
-              // const nbObjinBlocLemon = htmlDoc.children.length;
-              // for (var f = 0; f < nbObjinBlocLemon; f++) {
-              //   // récup des éléments du bloc dont l'id contient row-n
-              //   var nbBloc = document.getElementById("row-" + f);
-              //   Sortable.create(nbBloc, {
-              //     animation: 150,
-              //     store: {
-              //       // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
-              //       /**
-              //        * Get the order of elements. Called once during initialization.
-              //        * @param   {Sortable}  sortable
-              //        * @returns {Array}
-              //        */
-              //       get: function (sortable) {
-              //         var order = localStorage.getItem(
-              //           sortable.options.group
-              //         );
-              //         return order ? order.split("|") : [];
-              //       },
+              //Sortable management inside the Lemon apps blocs
+              const htmlDoc = document.getElementById("lemon_block_id");
+              const nbObjinBlocLemon = htmlDoc.children.length;
+              for (var f = 0; f < nbObjinBlocLemon; f++) {
+                // récup des éléments du bloc dont l'id contient row-n
+                var nbBloc = document.getElementById("row-" + f);
+                Sortable.create(nbBloc, {
+                  animation: 150,
+                  store: {
+                    // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
+                    /**
+                     * Get the order of elements. Called once during initialization.
+                     * @param   {Sortable}  sortable
+                     * @returns {Array}
+                     */
+                    get: function (sortable) {
+                      var order = localStorage.getItem(
+                        sortable.options.group
+                      );
+                      return order ? order.split("|") : [];
+                    },
 
-              //       /**
-              //        * Save the order of elements. Called onEnd (when the item is dropped).
-              //        * @param {Sortable}  sortable
-              //        */
-              //       set: function (sortable) {
-              //         var order = sortable.toArray();
-              //         localStorage.setItem(
-              //           sortable.options.group,
-              //           order.join("|")
-              //         );
-              //       },
-              //     },
-              //   });
-              //   var recupBlocForDragAndDrop = document.getElementById("blocLemonCustom");
+                    /**
+                     * Save the order of elements. Called onEnd (when the item is dropped).
+                     * @param {Sortable}  sortable
+                     */
+                    set: function (sortable) {
+                      var order = sortable.toArray();
+                      localStorage.setItem(
+                        sortable.options.group,
+                        order.join("|")
+                      );
+                    },
+                  },
+                });
+                var recupBlocForDragAndDrop = document.getElementById("lemon_block_id");
 
-              //   new Sortable.create(recupBlocForDragAndDrop, {
-              //     animation: 150,
-              //     store: {
-              //       // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement
-              //       /**
-              //        * Get the order of elements. Called once during initialization.
-              //        * @param   {Sortable}  sortable
-              //        * @returns {Array}
-              //        */
-              //       get: function (sortable) {
-              //         var order = localStorage.getItem(
-              //           sortable.options.group
-              //         );
-              //         return order ? order.split("|") : [];
-              //       },
+                new Sortable.create(recupBlocForDragAndDrop, {
+                  animation: 150,
+                  store: {
+                    // ajout de la sauvegarde des emplacement de chaque blocs au rafraichissement
+                    /**
+                     * Get the order of elements. Called once during initialization.
+                     * @param   {Sortable}  sortable
+                     * @returns {Array}
+                     */
+                    get: function (sortable) {
+                      var order = localStorage.getItem(
+                        sortable.options.group
+                      );
+                      return order ? order.split("|") : [];
+                    },
 
-              //       /**
-              //        * Save the order of elements. Called onEnd (when the item is dropped).
-              //        * @param {Sortable}  sortable
-              //        */
-              //       set: function (sortable) {
-              //         var order = sortable.toArray();
-              //         localStorage.setItem(
-              //           sortable.options.group,
-              //           order.join("|")
-              //         );
-              //       },
-              //     },
-              //   });
-              // }
+                    /**
+                     * Save the order of elements. Called onEnd (when the item is dropped).
+                     * @param {Sortable}  sortable
+                     */
+                    set: function (sortable) {
+                      var order = sortable.toArray();
+                      localStorage.setItem(
+                        sortable.options.group,
+                        order.join("|")
+                      );
+                    },
+                  },
+                });
+              }
 
             };
             xhr.send();
