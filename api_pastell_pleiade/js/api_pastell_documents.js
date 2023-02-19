@@ -2,17 +2,19 @@
     // we use Jquery '$' just...for Datatables plugin :/ Whatever it's included and needed in our custom Bootstrap theme.
     "use strict";
     Drupal.behaviors.APIpastellDocumentsBehavior = {};
-    Drupal.behaviors.APIpastellDocumentsBehavior.get_documents = function() {
+    Drupal.behaviors.APIpastellDocumentsBehavior.get_documents = function(id_e) {
+        // do we have id_e ?
+        console.log('id_e call : ' + id_e);
         // show spinner while ajax is loading
         document.getElementById("pastell_block_id").innerHTML = drupalSettings.api_lemon_pleiade.spinner;
-        // console.log('Pastell Documents target function called...');
-        // console.log('Retrieve localStorage collectivite id : '+localStorage.getItem('collectivite_id'));
+        console.log('Pastell Documents target function called...');
+        console.log('Retrieve localStorage collectivite id : '+localStorage.getItem('collectivite_id'));
         var xhr = new XMLHttpRequest();
         // Pass collectivite ID to our PHP endpoint as a param as server side, it can not access cookie set on client side
-        xhr.open("GET", Drupal.url("v1/api_pastell_pleiade/pastell_documents_query?id_e="+localStorage.getItem('collectivite_id')));
+        xhr.open("GET", Drupal.url("v1/api_pastell_pleiade/pastell_documents_query?id_e=" + id_e));
         // Pastell pas en UTF8 :/
         // xhr.overrideMimeType('text/xml; charset=iso-8859-1');
-        xhr.responseType = "json";
+        xhr.responseType = "json"; 
         xhr.onload = function () {
             if (xhr.status === 200) {
                 var donnees = xhr.response;
@@ -218,11 +220,7 @@
 
         };
 
-        xhr.send();
-
-
-
-        
+        xhr.send();  
       }
 
     })(Drupal, jQuery, drupalSettings);
