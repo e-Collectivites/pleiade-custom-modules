@@ -30,7 +30,7 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['user_groups'] =  $groups;
   // Define spinner for our JS modules
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['spinner'] = 
-   ' <div class="d-flex justify-content-center"><div id="spinner-div-menu" class="spinner-border spinner-border-sm text-primary" role="status"></div></div>';
+   ' <div class="d-flex justify-content-center"><div id="spinner-div-menu" class="spinner-border text-primary" role="status"></div></div>';
 
 } 
 
