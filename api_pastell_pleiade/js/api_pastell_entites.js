@@ -11,8 +11,8 @@
                         // check si existe + si dans le Drupal tempstore stocké par le module Lemon Pléiade
                         var pastellLDAPGroup = drupalSettings.api_pastell_pleiade.field_pastell_ldap_group;
                         var userGroupsTempstore = drupalSettings.api_lemon_pleiade.user_groups;
-                        console.log('Pastell ldap group from Pastell Pléiade setting: ' + pastellLDAPGroup);
-                        console.log('Drupal tempstore groups from Lemon Pléiade module: ' + userGroupsTempstore);
+                        // console.log('Pastell ldap group from Pastell Pléiade setting: ' + pastellLDAPGroup);
+                        // console.log('Drupal tempstore groups from Lemon Pléiade module: ' + userGroupsTempstore);
 
                         // Call only if pastell group set and in private tempstore user_groups
                         if (pastellLDAPGroup && userGroupsTempstore.includes(pastellLDAPGroup)) {
@@ -22,7 +22,7 @@
                             var xhr = new XMLHttpRequest();
                             xhr.open("GET", Drupal.url("v1/api_pastell_pleiade/pastell_entities_query"));
                             // Pastell pas en UTF8 :/
-                            xhr.overrideMimeType('text/xml; charset=iso-8859-1');
+                            // xhr.overrideMimeType('text/xml; charset=iso-8859-1');
                             xhr.responseType = "json";
                             xhr.onload = function () {
                                 if (xhr.status === 200) {
@@ -43,7 +43,7 @@
                                                 if (value_child.entite_mere == value.id_e) {
                                                     var option_child = document.createElement("option");
                                                     option_child.id = "entitie_number_" + value_child.id_e;
-                                                    option_child.className = "dropdown-item text-uppercase";
+                                                    option_child.className = "dropdown-item ";
                                                     option_child.value = value_child.id_e;
                                                     option_child.text = "—" + unescape(value_child.denomination);
                                                     linkEntitie.appendChild(option_child);
@@ -67,16 +67,22 @@
                                     // Show menu
                                     document.getElementById('collectiviteChoice').style.display = 'block';
 
+                                    // Create an array to remove white space in choice at refresh with coll_id who is not an option
+                                    var array_value_select = [];
+                                    for (var i = 0; i < document.getElementById('collectiviteChoice').length; i++) {
+                                        array_value_select.push(document.getElementById('collectiviteChoice').options[i].value);
+                                    }
+                                    
                                     // Selected coll localStorage management
-                                    if (!localStorage.getItem('collectivite_id') || localStorage.getItem('collectivite_id') == null) {
+                                    if (!localStorage.getItem('collectivite_id') || localStorage.getItem('collectivite_id') == null || !array_value_select.includes(localStorage.getItem('collectivite_id'))) {
                                         var optionValue = document.getElementById('collectiviteChoice').value;
-                                        // In private nav or first login, can be empty, so fix it :
-                                        console.log('Optionvalue : ' + optionValue);
+                                        // console.log('Optionvalue : ' + document.getElementById('collectiviteChoice').value);
                                         localStorage.setItem('collectivite_id', optionValue);
                                         // Now call document JS module function to get documents with our entity id
                                         Drupal.behaviors.APIpastellDocumentsBehavior.get_documents(optionValue);
                                     }
-                                    else {
+                                    else 
+                                    {
                                         // on refresh, set the previous selected collectivite from localstorage
                                         document.getElementById('collectiviteChoice').value = localStorage.getItem('collectivite_id');
                                         // Now call document JS module function to get documents with our entity id
@@ -103,7 +109,7 @@
                                     // The selected value changed, update our localStore
                                     localStorage.setItem('collectivite_id', event.target.value);
                                     // debug
-                                    console.log('Collectivité select change : ' + event.target.value);
+                                     console.log('Collectivité select change : ' + event.target.value);
                                     // Now call again document JS module function to get documents
                                     Drupal.behaviors.APIpastellDocumentsBehavior.get_documents(event.target.value);
 

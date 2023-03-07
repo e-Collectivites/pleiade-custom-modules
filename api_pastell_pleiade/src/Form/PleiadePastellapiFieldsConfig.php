@@ -67,6 +67,20 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
 
       '#description' => $this->t('Name of the LDAP Pastell group, usually "pastell"'),
     ];
+
+    $form['field_pastell_auth_method'] = [
+      '#type' => 'select',
+      '#title' => t('Méthode d\'authentification.'),
+      '#options' => array(
+          'cas' => t('CAS'),
+          'oidc' => t('OpenID Connect'),
+          'saml' => t('SAML'),
+          'http' => t('Http Header'),
+      ),
+      '#default_value' => $config->get('field_pastell_auth_method'),
+      '#description' => $this->t('Authentification method for Pastell API'),
+      '#required' => TRUE,
+    ];  
     
     return parent::buildForm($form, $form_state);
   }
@@ -85,6 +99,7 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
     $config->set('field_pastell_entities_url', $form_state->getValue('field_pastell_entities_url'));
     $config->set('field_pastell_limit_documents', $form_state->getValue('field_pastell_limit_documents'));
     $config->set('field_pastell_ldap_group', $form_state->getValue('field_pastell_ldap_group'));
+    $config->set('field_pastell_auth_method', $form_state->getValue('field_pastell_auth_method'));
     $config->save();
     
     parent::submitForm($form, $form_state);

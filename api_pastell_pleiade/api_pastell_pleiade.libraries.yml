@@ -2,9 +2,11 @@ api_pastell_pleiade_js:
   version: 1.x
   js:
     js/api_pastell_entites.js: {}
+    js/libs/moment.js: {}  
     js/api_pastell_documents.js: {}
-    js/libs/jquery.dataTables.js: {}
+    js/libs/jquery.dataTables.min.js: {}
     js/libs/dataTables.bootstrap5.min.js: {}  
+    
   dependencies:
     - core/drupal
     - core/once
@@ -13,4 +15,3 @@ api_pastell_pleiade_css:
   css:
     theme:
       css/api_pastell_pleiade.css: {}
-      css/jquery.dataTables.min.css: {}
