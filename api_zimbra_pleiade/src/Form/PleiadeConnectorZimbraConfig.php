@@ -37,21 +37,21 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
         '#title' => $this->t('Zimbra url'),
         '#default_value' => $config->get('field_zimbra_url'),
         // '#value' => $config->get('field_zimbra_url'),
-        '#description' => $this->t('Enter the full Zimbra url, ex: https://zimbra.mydomain.com'),
+        '#description' => $this->t('Enter the full Zimbra url, ex: https://zimbra.mydomain.com, with a "/" at the end.'),
       ];
     $form['field_zimbra_mail'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Zimbra endpoint Mails'),
       '#default_value' => $config->get('field_zimbra_mail'),
       // '#value' => $config->get('field_zimbra_url'),
-      '#description' => $this->t('Enter the Zimbra url for mails'),
+      '#description' => $this->t('Enter the Zimbra endpoint for mails'),
     ];
     $form['field_zimbra_agenda'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Zimbra endpoint Agenda'),
       '#default_value' => $config->get('field_zimbra_agenda'),
       // '#value' => $config->get('field_zimbra_url'),
-      '#description' => $this->t('Enter the Zimbra url for agenda'),
+      '#description' => $this->t('Enter the Zimbra endpoint for agenda'),
     ];   
     $form['field_zimbra_auth_method'] = [
       '#type' => 'select',

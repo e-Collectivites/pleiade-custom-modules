@@ -334,16 +334,27 @@ class ApiPleiadeManager {
 
     //////////////////////////////////////////////////////////////
     //                                                          //
-    //              FONCTIONS POUR API ZIMBRA MAILS             //
+    //              FONCTIONS POUR API ZIMBRA MAILS / AGENDA    //
     //                                                          //
     //////////////////////////////////////////////////////////////
 
 
   public function searchMyMails() {
+    $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
+    $user = \Drupal::currentUser();
+    $email = $user->getEmail();
+    \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
+    return $this->curlGet($endpoints, [], $this->settings_zimbra->get('field_zimbra_url') .'home/'.$email.'/'. $this->settings_zimbra->get('field_zimbra_mail'), 'zimbra');
+  }
+
+  public function searchMyTasks() {
     $endpoints = $this->settings_zimbra->get('field_zimbra_url');  // Endpoint mail de Zimbra configuré dans l'admin du module
     \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_zimbra->get('field_zimbra_url'), 'zimbra');
+    return $this->curlGet($endpoints, [], $this->settings_zimbra->get('field_zimbra_url') . $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra');
   }
+
+
+
 
     //////////////////////////////////////////////////////////////
     //                                                          //
