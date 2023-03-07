@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @param $variables
+ */
+function api_zimbra_pleiade_preprocess_page(&$variables){
+
+
+  $config = \Drupal::config('api_zimbra_pleiade.settings');
+  
+  $field_zimbra_url = $config->get('field_zimbra_url');
+  $field_zimbra_auth_method = $config->get('field_zimbra_auth_method');
+ 
+
+  //Add the JS library
+  $variables['#attached']['library'][] = 'api_zimbra_pleiade/api_zimbra_pleiade_js';
+
+   //Add the CSS library
+  $variables['#attached']['library'][] = 'api_zimbra_pleiade/api_zimbra_pleiade_css';
+  
+  
+  //Pass variables to Drupal.Settings
+  $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_url'] = $field_zimbra_url;
+  $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_auth_method'] = $field_zimbra_auth_method;
+ 
+ 
+}

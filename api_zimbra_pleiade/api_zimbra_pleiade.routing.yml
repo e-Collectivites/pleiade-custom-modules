@@ -1,0 +1,16 @@
+api_zimbra_pleiade.settings:
+  path: '/admin/config/api_zimbra_pleiade/settings'
+  defaults:
+    _form: '\Drupal\api_zimbra_pleiade\Form\PleiadeConnectorZimbraConfig'
+    _title: 'API Pastell Pléiade Settings'
+  requirements:
+    _permission: 'administer site configuration'
+    
+api_zimbra_pleiade.zimbra_mail_query:
+  path: '/v1/api_zimbra_pleiade/zimbra_mail_query'
+  defaults:
+    _controller: '\Drupal\api_zimbra_pleiade\Controller\PleiadeAjaxZimbraController::zimbra_mail_query'
+    _title: 'Zimbra API Mails Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'
