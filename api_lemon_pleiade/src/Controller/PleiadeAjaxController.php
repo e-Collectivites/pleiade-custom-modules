@@ -8,7 +8,7 @@ use Drupal\Component\Serialization\JSON;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\api_lemon_pleiade\LemonDataApiManager;
+use Drupal\module_api_pleiade\ApiPleiadeManager;
 
 use Drupal\user\PrivateTempStoreFactory;
 
@@ -21,7 +21,7 @@ class PleiadeAjaxController extends ControllerBase {
     // Debug what's in request
     \Drupal::logger('lemon_myapps_query')->info('Request $request: @request', ['@request' => $request ]);
 
-    $lemondataApi = new LemonDataApiManager();
+    $lemondataApi = new ApiPleiadeManager();
     $return = $lemondataApi->searchMyApps(); 
     return new JsonResponse(json_encode($return), 200, [], true);
   }
@@ -32,7 +32,7 @@ class PleiadeAjaxController extends ControllerBase {
     // Debug what's in request
     \Drupal::logger('lemon_session_query')->info('Request $request: @request', ['@request' => $request ]);
 
-    $lemondataApi = new LemonDataApiManager();
+    $lemondataApi = new ApiPleiadeManager();
     $return = $lemondataApi->searchMySession(); 
 
     // Store groups in Drupal private tempstore to serve to other modules later

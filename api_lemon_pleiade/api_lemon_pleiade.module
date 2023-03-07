@@ -19,6 +19,9 @@ function api_lemon_pleiade_preprocess_page(&$variables){
    $store = $tempstore->get('api_lemon_pleiade');
    $groups = $store->get('groups');
   
+  // Add the CSS library
+  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_css';
+
   // Add the JS library
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
 
