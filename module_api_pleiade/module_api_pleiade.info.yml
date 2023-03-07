@@ -1,0 +1,19 @@
+name: 'Module API Pleiade'
+type: module
+description: 'Connecteur API pour Pléiade'
+package: Pleiade
+# version: 8.x +
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+dependencies:
+  - api_lemon_pleiade
+  - api_zimbra_pleiade
+  - api_user_pleiade
+  - api_parapheur_pleiade
+  - api_pastell_pleiade
+
+# Information 
+version: '1.0.x-dev'
+project: 'module_api_pleiade'
+datestamp: 1624364473
