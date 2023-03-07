@@ -39,6 +39,20 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
         // '#value' => $config->get('field_zimbra_url'),
         '#description' => $this->t('Enter the full Zimbra url, ex: https://zimbra.mydomain.com'),
       ];
+    $form['field_zimbra_mail'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Zimbra endpoint Mails'),
+      '#default_value' => $config->get('field_zimbra_mail'),
+      // '#value' => $config->get('field_zimbra_url'),
+      '#description' => $this->t('Enter the Zimbra url for mails'),
+    ];
+    $form['field_zimbra_agenda'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Zimbra endpoint Agenda'),
+      '#default_value' => $config->get('field_zimbra_agenda'),
+      // '#value' => $config->get('field_zimbra_url'),
+      '#description' => $this->t('Enter the Zimbra url for agenda'),
+    ];   
     $form['field_zimbra_auth_method'] = [
       '#type' => 'select',
       '#title' => t('Méthode d\'authentification.'),
@@ -65,6 +79,8 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
     $config = $this->config('api_zimbra_pleiade.settings');
     $config->set('field_zimbra_auth_method', $form_state->getValue('field_zimbra_auth_method'));
     $config->set('field_zimbra_url', $form_state->getValue('field_zimbra_url'));
+    $config->set('field_zimbra_mail', $form_state->getValue('field_zimbra_mail'));
+    $config->set('field_zimbra_agenda', $form_state->getValue('field_zimbra_agenda'));
     $config->save();
     
     parent::submitForm($form, $form_state);

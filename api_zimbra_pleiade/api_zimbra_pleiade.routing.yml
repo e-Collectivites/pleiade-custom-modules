@@ -6,11 +6,20 @@ api_zimbra_pleiade.settings:
   requirements:
     _permission: 'administer site configuration'
     
-api_zimbra_pleiade.zimbra_mail_query:
-  path: '/v1/api_zimbra_pleiade/zimbra_mail_query'
+api_zimbra_pleiade.zimbra_mails_query:
+  path: '/v1/api_zimbra_pleiade/zimbra_mails_query'
   defaults:
-    _controller: '\Drupal\api_zimbra_pleiade\Controller\PleiadeAjaxZimbraController::zimbra_mail_query'
+    _controller: '\Drupal\api_zimbra_pleiade\Controller\PleiadeAjaxZimbraController::zimbra_mails_query'
     _title: 'Zimbra API Mails Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+
+api_zimbra_pleiade.zimbra_tasks_query:
+  path: '/v1/api_zimbra_pleiade/zimbra_tasks_query'
+  defaults:
+    _controller: '\Drupal\api_zimbra_pleiade\Controller\PleiadeAjaxZimbraController::zimbra_tasks_query'
+    _title: 'Zimbra API Tasks Query'
     _format: json
   requirements:
     _access: 'TRUE'

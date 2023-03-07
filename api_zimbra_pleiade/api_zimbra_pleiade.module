@@ -10,8 +10,9 @@ function api_zimbra_pleiade_preprocess_page(&$variables){
   
   $field_zimbra_url = $config->get('field_zimbra_url');
   $field_zimbra_auth_method = $config->get('field_zimbra_auth_method');
- 
-
+  $field_zimbra_mail = $config->get('field_zimbra_mail');
+  $field_zimbra_agenda = $config->get('field_zimbra_agenda');
+  
   //Add the JS library
   $variables['#attached']['library'][] = 'api_zimbra_pleiade/api_zimbra_pleiade_js';
 
@@ -22,6 +23,8 @@ function api_zimbra_pleiade_preprocess_page(&$variables){
   //Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_url'] = $field_zimbra_url;
   $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_auth_method'] = $field_zimbra_auth_method;
+ $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_agenda'] = $field_zimbra_agenda;
+ $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_mail'] = $field_zimbra_mail;
  
  
 }
