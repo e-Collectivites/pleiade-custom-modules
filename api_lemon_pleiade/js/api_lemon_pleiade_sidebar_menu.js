@@ -3,7 +3,7 @@
     Drupal.behaviors.APIlemonMenuBehavior = {
       attach: function (context, settings) {
         // All normal pages but not admin pages
-        if (!drupalSettings.path.currentPath.includes("admin")) {
+        if (!drupalSettings.path.currentPath.includes("admin") && drupalSettings.api_lemon_pleiade.field_lemon_myapps_url && drupalSettings.api_lemon_pleiade.field_lemon_url ) {
           once("APIlemonMenuBehavior", "body", context).forEach(function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon-myapps-query"));
