@@ -1,14 +1,14 @@
 name: API Pléiade Users Infos
 type: module
 description: 'API For gets Users Infos for Pléiade'
-package: Pleiade User Infos
+# package: Pleiade User Infos
+package: Pleiade
 core: 8.x
 core_version_requirement: ^8 || ^9
 
 dependencies:
-  - api_lemon_pleiade
-  - api_pastell_pleiade
-  - api_zimbra_pleiade
+  - module_api_pleiade
+  
 # Information 
 version: '1.0.x-dev'
 project: 'api_user_pleiade'

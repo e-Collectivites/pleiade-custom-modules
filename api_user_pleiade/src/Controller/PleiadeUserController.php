@@ -64,10 +64,10 @@ class PleiadeUserController extends ControllerBase {
         }
     } 
     public function user_infos_query(Request $request){
-      $return = []; //our variable to fill with data returned by Pastell
+      
       $users_infos = [];
       $userdataApi = new ApiPleiadeManager();
-      $return = json_decode($userdataApi->searchIfUserHaveNewMail(), true);
+      $return = $_COOKIE['nbOfMails'];
       $return_tasks = json_decode($userdataApi->searchIfUserHaveSoonTasks(), true);
       $return_iparapheur = json_decode($userdataApi->searchIfUserHaveParapheurDocs(), true);
       // Load the user storage service.
@@ -90,7 +90,7 @@ class PleiadeUserController extends ControllerBase {
       if($return){
         $users_infos[] = array(
         "haveMail" => true,
-        "count_mail" => count($return['m']),
+        "count_mail" => $return,
         );
         
       }
