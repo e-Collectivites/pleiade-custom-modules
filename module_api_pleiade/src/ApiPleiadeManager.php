@@ -171,8 +171,9 @@ class ApiPleiadeManager {
 
       elseif($application == 'zimbra')
       {
+        
+          $ZIMBRA_API_URL = $api;
           
-          $ZIMBRA_API_URL = $endpoint;
           \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $ZIMBRA_API_URL ]);
         
           $options = [
@@ -182,20 +183,20 @@ class ApiPleiadeManager {
             ],
           ];
       
-          if (!empty($inputs)) {
+          // if (!empty($inputs)) {
       
-          //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
+          // //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
             
-            if($method == 'GET'){
-              $ZIMBRA_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
-              foreach($inputs as $param => $value){
-                  $ZIMBRA_API_URL.= '&' . $param . '=' . $value;
-              }
-            }else{
-              //POST request send data in array index form_params.
-              $options['body'] = $inputs;
-            }
-          }
+          //   if($method == 'GET'){
+          //     $ZIMBRA_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+          //     foreach($inputs as $param => $value){
+          //         $ZIMBRA_API_URL.= '&' . $param . '=' . $value;
+          //     }
+          //   }else{
+          //     //POST request send data in array index form_params.
+          //     $options['body'] = $inputs;
+          //   }
+          // }
       
           try {
             $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, $options);
@@ -256,21 +257,7 @@ class ApiPleiadeManager {
     //                                                    //
     ////////////////////////////////////////////////////////
 
-
-  public function searchIfUserHaveNewMail() {
-    $clientRequest = $this->client->request('GET', 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/zimbra_test.json');
-    // $clientRequest = $this->client->request('GET', '/v1/api_zimbra_pleiade/zimbra_mail_query');
-    $body = $clientRequest->getBody()->getContents();
     
-    $array = array();
-    
-    if ($body) {
-      return $body;
-    }
-    else{
-      return $array;
-    }
-  }
   public function searchIfUserHaveSoonTasks() {
     $clientRequest = $this->client->request('GET', 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json');
     // $clientRequest = $this->client->request('GET', 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json'); a configurer 
@@ -340,21 +327,32 @@ class ApiPleiadeManager {
 
 
   public function searchMyMails() {
-    $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
     $user = \Drupal::currentUser();
     $email = $user->getEmail();
     \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_zimbra->get('field_zimbra_url') .'home/'.$email.'/'. $this->settings_zimbra->get('field_zimbra_mail'), 'zimbra');
+    if(  $this->settings_zimbra->get('field_zimbra_for_demo')  )
+    {
+      return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/zimbra_test.json', 'zimbra');
+    }
+    else
+    {
+      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') .'home/'.$email.'/'. $this->settings_zimbra->get('field_zimbra_mail'), 'zimbra');
+    }
   }
 
   public function searchMyTasks() {
-    $endpoints = $this->settings_zimbra->get('field_zimbra_url');  // Endpoint mail de Zimbra configuré dans l'admin du module
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url');  // Endpoint mail de Zimbra configuré dans l'admin du module
     \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_zimbra->get('field_zimbra_url') . $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra');
+    if(  $this->settings_zimbra->get('field_zimbra_for_demo')  )
+    {
+      return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json', 'zimbra');
+    }
+    else
+    {
+      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') .'home/'.$email.'/'. $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra');
+    }
   }
-
-
-
 
     //////////////////////////////////////////////////////////////
     //                                                          //
