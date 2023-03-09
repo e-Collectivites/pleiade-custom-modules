@@ -64,8 +64,14 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
       ),
       '#default_value' => $config->get('field_zimbra_auth_method'),
       '#description' => $this->t('Authentification method for ZIMBRA API')
+    ];
+    $form['field_zimbra_for_demo'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Zimbra demo mode'),
+      '#default_value' => $config->get('field_zimbra_for_demo'),
+      // '#value' => $config->get('field_zimbra_url'),
+      '#description' => $this->t('Checkbox to enable demo mode'),
     ];   
-    
     return parent::buildForm($form, $form_state);
   }
   
@@ -81,6 +87,7 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
     $config->set('field_zimbra_url', $form_state->getValue('field_zimbra_url'));
     $config->set('field_zimbra_mail', $form_state->getValue('field_zimbra_mail'));
     $config->set('field_zimbra_agenda', $form_state->getValue('field_zimbra_agenda'));
+    $config->set('field_zimbra_for_demo', $form_state->getValue('field_zimbra_for_demo'));
     $config->save();
     
     parent::submitForm($form, $form_state);

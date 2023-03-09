@@ -3,7 +3,7 @@
     Drupal.behaviors.APIzimbraDataHistoryBehavior = {
       attach: function (context, settings) {
         // Load on front page only,
-        if (drupalSettings.path.isFront) {
+        if (drupalSettings.path.isFront && drupalSettings.api_zimbra_pleiade.field_zimbra_mail) {
           once("APIzimbraDataHistoryBehavior", "#zimbra_block_mail_id", context).forEach(
             function () {
                 // show spinner while ajax is loading
@@ -11,7 +11,7 @@
                 var xhr = new XMLHttpRequest();
                 // URL DE TEST POUR LE MOMENT COONF DANS l'ADMIN DU MODULE : sites/default/files/datasets/js/zimbra_test.json
                 // xhr.open("GET", Drupal.url("v1/api_zimbra_pleiade/zimbra_mail_query"));
-                xhr.open("GET", Drupal.url("sites/default/files/datasets/js/zimbra_test.json"));
+                xhr.open("GET", Drupal.url("v1/api_zimbra_pleiade/zimbra_mails_query"));
                 xhr.responseType = "json";
 
                 xhr.onload = function () {
@@ -20,7 +20,9 @@
                       // console.log(donnees);
 
                       if(donnees){
-                        var linkEntitie = '<div id="zimbra_mail" class="col-lg-12 shadow-lg">\
+                        
+                        document.cookie = "nbOfMails=" + donnees.m.length;
+                        var linkEntitie = '<div id="zimbra_mail" class="col-lg-12 shadow-lg  mb-2">\
                                             <div class="card">\
                                               <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                                 <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
@@ -42,8 +44,7 @@
                             );
                             
                             linkEntitie +=  '<tr class="d-flex mail_content" mail-expe="'+  donnees.m[i].e[1].a +'">\
-                                                <th class="col d-flex align-items-center profile-picture">\
-                                                </th>\
+                                                <th class="col d-flex align-items-center profile-picture"></th>\
                                                 <th class="d-flex align-items-center w-25">'+ donnees.m[i].e[1].p +'</th>\
                                                 <th scope="col">\
                                                     <span class="d-block fw-bold">'+ donnees.m[i].su +'</span>\
@@ -54,7 +55,7 @@
                                                     String(objectDate.getMinutes()).padStart(2, "0") +
                                                 '</th>\
                                                 <th class="col d-flex align-items-center">\
-                                                    <a class="hover-zoom" alt="constulter le mail" target="_blank" href="https://courriel.sitiv.fr/modern/email/Inbox/conversation/-'+ id_expediteur +'"><i data-feather="mail" class="feather-icon"></i></a>\
+                                                    <a class="hover-zoom" alt="constulter le mail" target="_blank" href="'+ drupalSettings.api_zimbra_pleiade.field_zimbra_url +'modern/email/Inbox/conversation/-'+ id_expediteur +'"><i data-feather="mail" class="feather-icon"></i></a>\
                                                 </th>\
                                             </tr>\
                                             ';
@@ -69,16 +70,16 @@
                       }
                       else
                       {
-                        var linkEntitie = '<div id="zimbra_mail " class="col-lg-12 shadow-lg">\
+                        var linkEntitie = '<div id="zimbra_mail " class="col-lg-12 shadow-lg  mb-2">\
                                             <div class="card">\
                                               <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                                 <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
                                               </div>\
-                                                        <div class="d-flex justify-content-center">\
-                                                            <h3 class="my-5">Aucun nouveau mail</h3>\
-                                                        </div>\
-                                                    </div>\
-                                                </div>\
+                                              <div class="d-flex justify-content-center">\
+                                                  <h3 class="my-5">Aucun nouveau mail</h3>\
+                                              </div>\
+                                            </div>\
+                                          </div>\
                                             ';
                     } 
                     document.getElementById("zimbra_block_mail_id").innerHTML = linkEntitie;
