@@ -4,7 +4,7 @@
         attach: function (context, settings) {
 
             // only on frontpage
-            if (drupalSettings.path.isFront) {
+            if (drupalSettings.path.isFront && drupalSettings.api_pastell_pleiade.field_pastell_entities_url) {
                 once("APIpastellEntitesBehavior", "#collectiviteChoice", context).forEach(
                     function () {
                         // le nom du groupe LDAP pour pastell doit etre renseigné dans l'admin
@@ -30,27 +30,30 @@
                                     // debug
                                     // console.log(donnees);
                                     // construct menu
-                                    donnees.forEach(function (value) {
-                                        if (value.entite_mere == 0) {
-                                            var option = document.createElement("option");
-                                            option.id = "entitie_number_" + value.id_e;
-                                            option.className = "dropdown-item text-uppercase";
-                                            option.value = value.id_e;
-                                            option.text = unescape(value.denomination);
-                                            linkEntitie.appendChild(option);
-
-                                            donnees.forEach(function (value_child) {
-                                                if (value_child.entite_mere == value.id_e) {
-                                                    var option_child = document.createElement("option");
-                                                    option_child.id = "entitie_number_" + value_child.id_e;
-                                                    option_child.className = "dropdown-item ";
-                                                    option_child.value = value_child.id_e;
-                                                    option_child.text = "—" + unescape(value_child.denomination);
-                                                    linkEntitie.appendChild(option_child);
-                                                }
-                                            });
-                                        }
-                                    });
+                                    if(donnees){
+                                        donnees.forEach(function (value) {
+                                            if (value.entite_mere == 0) {
+                                                var option = document.createElement("option");
+                                                option.id = "entitie_number_" + value.id_e;
+                                                option.className = "dropdown-item text-uppercase";
+                                                option.value = value.id_e;
+                                                option.text = unescape(value.denomination);
+                                                linkEntitie.appendChild(option);
+    
+                                                donnees.forEach(function (value_child) {
+                                                    if (value_child.entite_mere == value.id_e) {
+                                                        var option_child = document.createElement("option");
+                                                        option_child.id = "entitie_number_" + value_child.id_e;
+                                                        option_child.className = "dropdown-item ";
+                                                        option_child.value = value_child.id_e;
+                                                        option_child.text = "—" + unescape(value_child.denomination);
+                                                        linkEntitie.appendChild(option_child);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                    
 
                                 };
                                 xhr.onerror = function () {

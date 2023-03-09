@@ -20,9 +20,10 @@
                 var donnees = xhr.response;
                 // debug
                 //console.log(donnees); 
-                var document_coll =
+                if(donnees){
+                  var document_coll =
                   '\
-                  <div class="col-lg-12 mt-2" id="pastell_block"> \
+                  <div class="col-lg-12" id="pastell_block"> \
                   <div class="mb-2 shadow-lg">\
                     <div class="card mb-2">\
                       <div class="card-header rounded-top bg-white border-bottom rounded-top">\
@@ -191,6 +192,8 @@
                 </div>\
                 "
                 document.getElementById("pastell_block_id").innerHTML = document_coll;
+                }
+                
             }
         };
         xhr.onerror = function () {
@@ -226,11 +229,9 @@
                     { "width": "18%", "targets": 2 },
                     { "width": "25%", "targets": 1 },
                     { "width": "30%", "targets": 0 },
-                    // { "width": "2%", "targets": 4 },
-                    // { "width": "2%", "targets": 5 },
-                    // { "width": "2%", "targets": 6 },
+                    
                   ],
-                  "order": [[2, 'asc']],  
+                  "order": [[2, 'desc']],  
                   "paging": true,
                   "language": {
                     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
