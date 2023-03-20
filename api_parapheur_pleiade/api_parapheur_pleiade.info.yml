@@ -1,0 +1,12 @@
+name: API Pléiade IParapheur
+type: module
+description: 'API connector IParapheur for Pléiade dashboard'
+# package: Pleiade IParapheur
+package: Pleiade
+# version: 8.x +
+core: 8.x
+core_version_requirement: ^8 || ^9
+# Information 
+version: '1.0.x-dev'
+project: 'api_parapheur_pleiade'
+datestamp: 1624364473

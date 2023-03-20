@@ -1,0 +1,26 @@
+<?php
+
+
+/**
+ * @param $variables
+ */
+function api_parapheur_pleiade_preprocess_page(&$variables){
+
+
+  $config = \Drupal::config('api_parapheur_pleiade.settings');
+  
+  $field_parapheur_url = $config->get('field_parapheur_url');
+  $field_parapheur_bureaux_url = $config->get('field_parapheur_bureaux_url');
+  $field_parapheur_auth_method = $config->get('field_parapheur_auth_method');
+
+  //Add the JS library
+  $variables['#attached']['library'][] = 'api_parapheur_pleiade/api_parapheur_pleiade_js';
+
+  //Add the CSS library
+  $variables['#attached']['library'][] = 'api_parapheur_pleiade/api_parapheur_pleiade_css';
+  
+  //Pass variables to Drupal.Settings
+  $variables['#attached']['drupalSettings']['api_parapheur_pleiade']['field_parapheur_url'] = $field_parapheur_url;
+  $variables['#attached']['drupalSettings']['api_parapheur_pleiade']['field_parapheur_bureaux_url'] = $field_parapheur_bureaux_url;
+  $variables['#attached']['drupalSettings']['api_parapheur_pleiade']['field_parapheur_auth_method'] =  $field_parapheur_auth_method;
+}

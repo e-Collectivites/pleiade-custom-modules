@@ -32,10 +32,10 @@ class PleiadeUserFieldsConfig extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('api_user_pleiade.settings');
     
-    $form['field_user'] = [
-        '#type' => 'textfield',
-        '#title' => $this->t('Titre'),
-        '#default_value' => $config->get('field_user'),
+    $form['have_chatbot'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Assistant Virtuel ?'),
+        '#default_value' => $config->get('have_chatbot'),
         
       ]; 
 
@@ -48,7 +48,7 @@ class PleiadeUserFieldsConfig extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Retrieve the configuration.
     $config = $this->config('api_user_pleiade.settings');  
-    $config->set('field_user', $form_state->getValue('field_user'));
+    $config->set('have_chatbot', $form_state->getValue('have_chatbot'));
     $config->save();
     
     parent::submitForm($form, $form_state);

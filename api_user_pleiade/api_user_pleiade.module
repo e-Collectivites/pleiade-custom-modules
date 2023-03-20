@@ -14,13 +14,13 @@
 function api_user_pleiade_preprocess_page(&$variables){
 
   $config = \Drupal::config('api_user_pleiade.settings');
-  $field_user = $config->get('field_user');
+  $have_chatbot = $config->get('have_chatbot');
 
   //Add the JS library
   $variables['#attached']['library'][] = 'api_user_pleiade/api_user_pleiade_js';
   //Add the CSS library
   $variables['#attached']['library'][] = 'api_user_pleiade/api_user_pleiade_css';
 
-  $variables['#attached']['drupalSettings']['api_user_pleiade']['field_user'] = $field_user;
+  $variables['#attached']['drupalSettings']['api_user_pleiade']['have_chatbot'] = $have_chatbot;
 
 }

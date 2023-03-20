@@ -14,8 +14,18 @@ use Drupal\module_api_pleiade\ApiPleiadeManager;
 
 class PleiadeUserController extends ControllerBase {
 
+    public function __construct() {
+      $moduleHandler = \Drupal::service('module_handler');
+      if ($moduleHandler->moduleExists('api_user_pleiade')) {
+        $this->settings_user = \Drupal::config('api_user_pleiade.settings');    
+      }
+    }
+
+
     public function user_list_query(Request $request){
         
+      
+
       // Load the user storage service.
         $query = \Drupal::entityQuery('user');
         $uids = $query->execute();
@@ -65,13 +75,22 @@ class PleiadeUserController extends ControllerBase {
     } 
     public function user_infos_query(Request $request){
       
+      
+
       $users_infos = [];
       $userdataApi = new ApiPleiadeManager();
       $return = $_COOKIE['nbOfMails'];
       $return_tasks = json_decode($userdataApi->searchIfUserHaveSoonTasks(), true);
       $return_iparapheur = json_decode($userdataApi->searchIfUserHaveParapheurDocs(), true);
-      // Load the user storage service.
+      $want_Chatbot = $this->settings_user->get('have_chatbot');
       
+      // Load the user storage service.
+      if($want_Chatbot){
+        $users_infos[] = array(
+          "want_chatbot" => true
+          );
+      }
+
       if($return_tasks){
         foreach($return_tasks['appt'] as $tasks){
           $name_task = $tasks['inv'][0]['comp'][0]['name'];

@@ -80,6 +80,11 @@
                     </div>\
                     <div class="dropdown-divider"></a>';
                   }
+                  else if( donnees[i].hasOwnProperty("want_chatbot") ) { // if notification is iparapheur 
+                    
+                    document.body.innerHTML += '<script src="https://account.snatchbot.me/script.js"></script><script>window.sntchChat.Init(321742)</script>';
+                  
+                  }
                 }
               }
               else // if no notification
@@ -106,7 +111,56 @@
 
           xhr.send();
         }); // fin once function
-        
+        //ajout guide interactif
+
+        document.getElementById("interactive_guid").addEventListener("click", function(){ 
+          introJs().setOptions({
+            showProgress: true,
+            showBullets: false,
+            steps: [{
+              intro: "Bienvenue sur le guide interactif"
+            }, {
+              element: document.querySelector('#menuTestLemon2'),
+              intro: "En cliquant sur les menus, vous pouvez ici accéder à vos différents applicatifs."
+            }, {
+              element: document.querySelector('#lemon_block_id'),
+              intro: "Vous pouvez également accéder aux applicatifs en cliquand sur les différents blocs.",
+              position: 'right'
+            }, {
+              element: document.querySelector('#collectiviteChoice'),
+              intro: "Si vous appartenez à plusieurs entitées, vous pouvez choisir celle que vous souhaitez ici. "
+            }, {
+              element: document.querySelector('.alert_popup'),
+              intro: "Si vous avez des notifications, elles apparaîtront ici. "
+            }, {
+              element: document.querySelector('.user_card'),
+              intro: "Si vous avez besoin d'accéder à votre profil, voir votre historique de connexion, ou simplement vous déconnecter, cliquez ici."
+            }, {
+              element: document.querySelector('.service-panel-toggle'),
+              intro: "Si vous voulez personnaliser votre bureau, cliquez ici.",
+              position: 'left'
+            }, {
+              element: document.querySelector('#zimbra_block_agenda_id'),
+              intro: "Si vous avez des tâches prévu aujourd'hui, elles apparaîtront ici.",
+              position: 'right'
+            }, {
+              element: document.querySelector('#iparapheur_block_id'),
+              intro: "Si vous avez des documents à signer, ils apparaîtront ici.",
+              position: 'left'
+            }, {
+              element: document.querySelector('#pastell_block_id'),
+              intro: "Pour voir les derniers documents de l'entité choisi, c'est ici.",
+              position: 'left'
+            }, {
+              element: document.querySelector('#zimbra_block_mail_id'),
+              intro: "Pour voir vos derniers mails, c'est là.",
+              position: 'left'
+            }, {
+              element: document.querySelector('#sntch_button'),
+              intro: "Une interrogation ? Notre assistant virtuel est à votre service."
+            }]
+          }).start();
+        });
       }
     },
   };
