@@ -3,6 +3,7 @@ api_user_pleiade_js:
   js:
     js/api_user_pleiade.js: {}
     js/lib/steptip.js: {}
+    js/lib/slick.js: {}
   dependencies:
     - core/drupal
     - core/once
@@ -11,3 +12,4 @@ api_user_pleiade_css:
   css:
     theme:
       css/api_user_pleiade.css: {}
+      css/lib/slick.css: {}

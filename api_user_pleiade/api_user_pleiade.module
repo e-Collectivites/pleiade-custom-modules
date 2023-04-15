@@ -15,6 +15,9 @@ function api_user_pleiade_preprocess_page(&$variables){
 
   $config = \Drupal::config('api_user_pleiade.settings');
   $have_chatbot = $config->get('have_chatbot');
+  $apiKey = $config->get('apiKey');
+  $bot_id = $config->get('bot_id');
+  
 
   //Add the JS library
   $variables['#attached']['library'][] = 'api_user_pleiade/api_user_pleiade_js';
@@ -22,5 +25,8 @@ function api_user_pleiade_preprocess_page(&$variables){
   $variables['#attached']['library'][] = 'api_user_pleiade/api_user_pleiade_css';
 
   $variables['#attached']['drupalSettings']['api_user_pleiade']['have_chatbot'] = $have_chatbot;
-
+  $variables['#attached']['drupalSettings']['api_user_pleiade']['apiKey'] = $apiKey;
+  $variables['#attached']['drupalSettings']['api_user_pleiade']['bot_id'] = $bot_id;
+  
+   
 }

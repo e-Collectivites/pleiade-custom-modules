@@ -65,7 +65,7 @@ class ApiPleiadeManager {
     //  REQUETE SI API LEMONLDAP RECUPERATION APPLIS ETC  //
     //                                                    //
     ////////////////////////////////////////////////////////
-
+    
     if ($application == 'lemon')
       {
 
@@ -215,10 +215,63 @@ class ApiPleiadeManager {
     //                                                    //
     ////////////////////////////////////////////////////////
 
-
-      elseif($application =='parapheur')
+      
+      elseif($application == 'parapheur')
       {
-
+        
+        if( $this->settings_parapheur->get('field_parapheur_auth_method') == 'cas' || $this->settings_parapheur->get('field_parapheur_auth_method') == 'oidc'){
+          $PARAPHEUR_AP_URL = $api . '?auth=cas';
+          }
+          else
+          {
+            $PARAPHEUR_AP_URL = $api;
+          }
+          
+          
+      //     // ProxyTicket
+      
+      // TEST
+          $PT_request_url = 'https://iparapheurdev.ecollectivites.fr/iparapheur/proxy/alfresco/parapheur/bureaux?auth=cas';
+      
+          // On utilise le service du module CAS Drupal\cas\Service\CasProxyHelper;
+           $proxy_ticket = \Drupal::service('cas.proxy_helper')->getProxyTicket($PT_request_url);
+         //  $PARAPHEUR_AP_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
+         
+           $PARAPHEUR_AP_URL = 'https://iparapheurdev.ecollectivites.fr/iparapheur/proxy/alfresco/parapheur/bureaux?auth=cas&ticket='.$proxy_ticket;
+          //  $PARAPHEUR_AP_URL = '	https://iparapheurdev.ecollectivites.fr/';
+ 
+          $options = [
+            'headers' => [
+              'Content-Type' => 'application/json',
+              'Cookie'=> 'llnglanguage=fr; lemonldap=' . $_COOKIE['lemonldap']
+            ],
+          ];
+          
+         
+          if (!empty($inputs)) {
+      
+            if($method == 'GET'){
+              $PARAPHEUR_AP_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+              foreach($inputs as $param => $value){
+                  $PARAPHEUR_AP_URL.= '&' . $param . '=' . $value;
+              }
+            }else{
+              //POST request send data in array index form_params.
+              $options['body'] = $inputs;
+            }
+          }
+          
+          try {
+            $clientRequest = $this->client->request($method,  $PARAPHEUR_AP_URL , $options); 
+            $body = $clientRequest->getBody()->getContents();
+            
+          } catch (RequestException $e) {
+            \Drupal::logger('api_parapheur_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+          }
+      
+          return Json::encode('A configurer');
+          //  return Json::decode($body);
+      //   }
       }
   }
   /**
@@ -362,9 +415,9 @@ class ApiPleiadeManager {
 
     
   public function searchMyDesktop() {
+    
     $endpoints = $this->settings_parapheur->get('field_parapheur_bureaux_url');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-  //  \Drupal::logger('api_parapheur_documents')->info('function searchMyApps triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
+    return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
   }
 
   /**

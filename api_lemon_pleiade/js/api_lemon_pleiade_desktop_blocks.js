@@ -46,6 +46,7 @@
                 }
                 // ajout du html dans la div du bloc lemon du thème au lieu du spinner
                 document.getElementById("lemon_block_id").innerHTML = blocLemon;
+                
               }
             };
             xhr.onerror = function () {
@@ -126,7 +127,7 @@
               //     },
               //   });
                 var recupBlocForDragAndDrop = document.getElementById("zimbra_block_id");
-
+                
                 new Sortable.create(recupBlocForDragAndDrop, {
                   animation: 150,
                   store: {

@@ -1,5 +1,5 @@
-#menuTestLemon2 .sidebar-link {
-    padding: 2px 0 0 8px;
+#menuTestLemon2 .sidebar-link, #menuPastell .sidebar-link {
+    padding: 2px 0 0 14px!important;
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -22,4 +22,7 @@
     display: flex;
     align-items: center;
     white-space: nowrap;
+}
+.accordion-body {
+    padding: 0rem 0rem 0rem 0!important;
 }
