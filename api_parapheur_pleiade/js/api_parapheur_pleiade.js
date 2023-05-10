@@ -29,46 +29,65 @@
                                     // debug
                                     // console.log(donnees);
                                     if(donnees){
-                                        var linkEntitie = '<div class="col-lg-12 shadow-lg bg-white">\
+                                        var linkEntitie = '<div class="col-lg-12 shadow-sm bg-white">\
                                                             <div class="card mb-0">\
                                                               <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                                                 <h4 class="card-title text-dark py-2">Liste des tâches</h4>\
                                                               </div>\
                                                                     <div class="card-body">\
                                                                         <table class="table mb-0">\
-                                                                        <tbody>';// début table tâches 
+                                                                        <tbody>\
+                                                                        <tr class="d-flex">\
+                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;10&nbsp;</b> documents à signer.</th>\
+                                                                            <th class="d-flex align-items-center w-25">I-Parapheur</th>\
+                                                                        </tr>\
+                                                                        <tr class="d-flex">\
+                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;4&nbsp;</b> bons de commandes à valider.</th>\
+                                                                            <th class="d-flex align-items-center w-25">Comptabilité</th>\
+                                                                        </tr>\
+                                                                        <tr class="d-flex">\
+                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;4&nbsp;</b> Factures à valider.</th>\
+                                                                            <th class="d-flex align-items-center w-25">Comptabilité</th>\
+                                                                        </tr>\
+                                                                        <tr class="d-flex">\
+                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;10&nbsp;</b> convocations à accuser récéption.</th>\
+                                                                            <th class="d-flex align-items-center w-25">Pastell</th>\
+                                                                        </tr>\
+                                                                        ';
+                                                // début table tâches 
                         
-                                        for (var i = 0; i < donnees.bureaux.length; i++) {
+                                        // for (var i = 0; i < donnees.bureaux.length; i++) {
                                            
-                                            var a_traiter = donnees.bureaux[i].a_traiter
-                                            var en_retard = donnees.bureaux[i].en_retard
-                                            var Shortname = donnees.bureaux[i].name
-                                            var dossiers_delegues = donnees.bureaux[i].dossiers_delegues
+                                        //     var a_traiter = donnees.bureaux[i].a_traiter
+                                        //     var en_retard = donnees.bureaux[i].en_retard
+                                        //     var Shortname = donnees.bureaux[i].name
+                                        //     var dossiers_delegues = donnees.bureaux[i].dossiers_delegues
                                             
-                                            if(a_traiter){
-                                                linkEntitie +=  '<tr class="d-flex">\
-                                                <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ a_traiter +'&nbsp;</b> documents à signer.</th>\
-                                                <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                            </tr>\
-                                            ';
-                                            }
-                                            if(en_retard){
-                                                linkEntitie +=  '<tr class="d-flex">\
-                                                <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ en_retard +'&nbsp; </b> documents en retard de signature.</th>\
-                                                <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                            </tr>\
-                                            '; 
-                                            }
-                                            if(dossiers_delegues){
-                                                linkEntitie +=  '<tr class="d-flex">\
-                                                                <th class="d-flex align-items-center w-75"><b>&nbsp;'+ dossiers_delegues +'&nbsp;</b> documents vous ont été délégués.</th>\
-                                                                <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                                            </tr>\
-                                                            ';
-                                            }
+                                        //     if(a_traiter){
+                                        //         linkEntitie +=  '<tr class="d-flex">\
+                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ a_traiter +'&nbsp;</b> documents à signer.</th>\
+                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ a_traiter +'&nbsp;</b> documents à signer.</th>\
+                                        //         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
+                                        //     </tr>\
+                                        //     ';
+                                        //     }
+                                        //     if(en_retard){
+                                        //         linkEntitie +=  '<tr class="d-flex">\
+                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ en_retard +'&nbsp; </b> documents en retard de signature.</th>\
+                                        //         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
+                                        //     </tr>\
+                                        //     '; 
+                                        //     }
+                                        //     if(dossiers_delegues){
+                                        //         linkEntitie +=  '<tr class="d-flex">\
+                                        //                         <th class="d-flex align-items-center w-75"><b>&nbsp;'+ dossiers_delegues +'&nbsp;</b> documents vous ont été délégués.</th>\
+                                        //                         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
+                                        //                     </tr>\
+                                        //                     ';
+                                        //     }
                                             
                                                         
-                                        }// Fin table tâches 
+                                        // }// Fin table tâches 
                                         linkEntitie += '</tbody></table>\
                                                         </div>\
                                                         </div>\

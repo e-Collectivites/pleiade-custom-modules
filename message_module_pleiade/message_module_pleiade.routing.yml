@@ -1,0 +1,15 @@
+message_module_pleiade.settings:
+  path: '/admin/config/message_module_pleiade/settings'
+  defaults:
+    _form: '\Drupal\message_module_pleiade\Form\MessageModuleFields'
+    _title: 'Message Module Pléiade Settings'
+  requirements:
+    _permission: 'administer site configuration'
+message_module_pleiade.lemon_myapps_query:
+  path: '/v1/message_module_pleiade/message_fields'
+  defaults:
+    _controller: '\Drupal\message_module_pleiade\Controller\MessageModuleController::message_fields'
+    _title: 'Message à afficher'
+    _format: json
+  requirements:
+    _access: 'TRUE'

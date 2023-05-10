@@ -1,4 +1,4 @@
-#menuTestLemon2 .sidebar-link, #menuPastell .sidebar-link {
+#menuTestLemon2 .sidebar-link, #menuPastell .sidebar-link, #menuLogMetiers .sidebar-link {
     padding: 2px 0 0 14px!important;
     display: flex;
     white-space: nowrap;
@@ -25,4 +25,8 @@
 }
 .accordion-body {
     padding: 0rem 0rem 0rem 0!important;
+}
+.feather{
+    margin: 0 2px 0 5px!important;
+
 }

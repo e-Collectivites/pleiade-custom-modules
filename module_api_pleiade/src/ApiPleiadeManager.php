@@ -41,6 +41,9 @@ class ApiPleiadeManager {
     if ($moduleHandler->moduleExists('api_parapheur_pleiade')) {
       $this->settings_parapheur = \Drupal::config('api_parapheur_pleiade.settings');
     }
+    if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
+      $this->settings_nextcloud = \Drupal::config('api_nextcloud_pleiade.settings');
+    }
 
     
   }
@@ -124,6 +127,7 @@ class ApiPleiadeManager {
           else
           {
             $PT_request_url = $api;
+            
           }
           // ProxyTicket
           // On utilise le sergvice du module CAS Drupal\cas\Service\CasProxyHelper;
@@ -273,6 +277,51 @@ class ApiPleiadeManager {
           //  return Json::decode($body);
       //   }
       }
+    ////////////////////////////////////////////////////////
+    //                                                    //
+    //     REQUETE SI API NEXTCLOUD --- NOTIFICATIONS     //
+    //                                                    //
+    ////////////////////////////////////////////////////////
+
+    elseif($application =='nextcloud')
+    {
+
+        $NC_API_URL = $api;
+        var_dump($NC_API_URL);
+        
+      
+        $options = [
+          'headers' => [
+            'Content-Type' => 'application/json',
+            'Cookie'=> 'lemonldap=' . $_COOKIE['lemonldap'],
+            'OCS-APIRequest' => 'true'
+          ],
+        ];
+      
+        if (!empty($inputs)) {
+    
+          
+          if($method == 'GET'){
+            $NC_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+            foreach($inputs as $param => $value){
+                $NC_API_URL.= '&' . $param . '=' . $value;
+            }
+          }else{
+            //POST request send data in array index form_params.
+            $options['body'] = $inputs;
+          }
+        }
+    
+        try {
+          $clientRequest = $this->client->request($method, $NC_API_URL, $options);
+         
+          $body = $clientRequest->getBody()->getContents();
+          var_dump($body);
+        } catch (RequestException $e) {
+          \Drupal::logger('api_nextcloud_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        }
+        return Json::decode($body);
+    }
   }
   /**
    * Get Request of API.
@@ -419,6 +468,19 @@ class ApiPleiadeManager {
     $endpoints = $this->settings_parapheur->get('field_parapheur_bureaux_url');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
     return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
   }
+
+   //////////////////////////////////////////////////////////////
+    //                                                          //
+    //              FONCTIONS POUR API NEXTCLOUD               //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
+    
+    public function getNextcloudNotifs() {
+    
+      $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+      return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints .'?format=json' , 'nextcloud');
+    }
 
   /**
    * Function to return first element of the array, compatability with PHP 5, note that array_key_first is only available for PHP > 7.3.

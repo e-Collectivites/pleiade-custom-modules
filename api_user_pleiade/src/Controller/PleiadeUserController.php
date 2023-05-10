@@ -71,6 +71,32 @@ class PleiadeUserController extends ControllerBase {
           echo 'erreur lors de la récupération des users'  ;
         }
     } 
+    public function notification_query(Request $request){
+        $query = \Drupal::entityQuery('node')->condition('type', 'alerte_notification');
+        $nids = $query->execute();
+        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+        
+        $response = array();
+        foreach ($nodes as $node) {
+          $body = $node->body->value;
+          $created_date = $node->created->value;
+          $field_nom_de_l_applicatif = $node->field_nom_de_l_applicatif->value;
+          // do something with the body text here
+          $response[] = array(
+            'body' => $body,
+            'created_date' => $created_date,
+            'nom_de_l_applicatif' => $field_nom_de_l_applicatif
+          ); // append the body text and the created date to the $response array as a new array
+        }
+        if ($response){
+          
+          return new JsonResponse(json_encode($response), 200, [], true);
+        }
+        else
+        {
+          return new JsonResponse(json_encode([]), 200, [], true);
+        }
+    } 
     public function user_infos_query(Request $request){
       
 

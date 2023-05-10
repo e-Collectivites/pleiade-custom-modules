@@ -46,9 +46,9 @@
                                   
                                   var numberOfMlSeconds = currentDateObj.getTime();
                                  
-                                  var addMlSeconds = 60 * 60 * 1000;
+                                  var addMlSeconds = 60 * 60 * 1000 *2;
                                   var newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
-                                  
+                                  console.log(newDateObj)
                                   var calendar = new FullCalendar.Calendar(calendarEl, {
                                       timeZone: "UTC",
                                       locale: "fr",
@@ -58,7 +58,7 @@
                                         end: false,
                                       },
                                       nowIndicator: true,
-                                      
+                                      now: newDateObj,
                                      
                                       initialView: "timeGridDay",
                                       slotMinTime: "07:00:00",

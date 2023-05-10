@@ -22,7 +22,7 @@
                       if(donnees){
                         
                         document.cookie = "nbOfMails=" + donnees.m.length;
-                        var linkEntitie = '<div id="zimbra_mail" class="col-lg-12 shadow-lg  mb-2">\
+                        var linkEntitie = '<div id="zimbra_mail" class="col-lg-12 mb-2">\
                                             <div class="card">\
                                               <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                                 <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
@@ -70,7 +70,7 @@
                       }
                       else
                       {
-                        var linkEntitie = '<div id="zimbra_mail " class="col-lg-12 shadow-lg  mb-2">\
+                        var linkEntitie = '<div id="zimbra_mail " class="col-lg-12 mb-2">\
                                             <div class="card">\
                                               <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                                 <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\

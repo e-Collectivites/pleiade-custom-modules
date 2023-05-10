@@ -40,7 +40,7 @@
                       temp[0].AppDesc +
                       '" href="' +
                       temp[0].AppUri +
-                      '" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">' +
+                      '" aria-expanded="false"><i data-feather="arrow-right" class="feather-icon"></i><span class="hide-menu">' +
                       Object.keys(donnees.myapplications[i].Applications[f]) +
                       " </span></a>";
                   }

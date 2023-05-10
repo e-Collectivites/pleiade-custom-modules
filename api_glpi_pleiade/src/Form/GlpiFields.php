@@ -34,7 +34,7 @@ class GlpiFields extends ConfigFormBase {
     
     $form['glpi_url'] = [
         '#type' => 'textfield',
-        '#title' => $this->t('Url de l\'instance GLPI'),
+        '#title' => $this->t('Url de l\'instance GLPI + /apirest.php'),
         '#default_value' => $config->get('glpi_url'),
         
     ];

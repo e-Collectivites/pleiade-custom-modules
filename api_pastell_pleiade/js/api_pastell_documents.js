@@ -6,6 +6,7 @@
         // do we have id_e ?
         // console.log('id_e call : ' + id_e);
         // show spinner while ajax is loading
+        var userGroupsTempstore = drupalSettings.api_lemon_pleiade.user_groups;
         document.getElementById("pastell_block_id").innerHTML = drupalSettings.api_lemon_pleiade.spinner;
         // console.log('Pastell Documents target function called...');
         // console.log('Retrieve localStorage collectivite id : '+localStorage.getItem('collectivite_id'));
@@ -20,15 +21,15 @@
                 var donnees = xhr.response;
                 // debug
                 //console.log(donnees); 
-                if(donnees){
+                if(donnees && userGroupsTempstore.includes('pastell')){
                   var document_coll =
                   '\
                   <div class="col-lg-12" id="pastell_block"> \
-                  <div class="mb-2 shadow-lg">\
+                  <div class="mb-2 shadow-sm">\
                     <div class="card mb-2">\
                       <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                         <h4 class="card-title text-dark py-2">\
-                          Télétransmission : Derniers documents <span></span>\
+                          Documents à traiter <span></span>\
                         </h4>\
                       </div>\
                       <div class="card-body">\

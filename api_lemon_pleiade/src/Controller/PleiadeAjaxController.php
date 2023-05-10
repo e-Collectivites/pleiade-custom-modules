@@ -34,7 +34,7 @@ class PleiadeAjaxController extends ControllerBase {
 
     $lemondataApi = new ApiPleiadeManager();
     $return = $lemondataApi->searchMySession(); 
-
+    
     // Store groups in Drupal private tempstore to serve to other modules later
     $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
     $tempstore->set('groups', $return["groups"]);

@@ -1,0 +1,7 @@
+message_module_pleiade.admin:
+  title: 'API Pléiade - Message Module Pléiade'
+  description: 'Page de configuration du module Message Pléiade'
+  parent: pleiade.group.admin
+  route_name: message_module_pleiade.settings
+  weight: 999
+

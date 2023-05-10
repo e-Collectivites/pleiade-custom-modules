@@ -542,7 +542,14 @@ body[data-theme=dark] .btn-accessibility{
   background: none!important;
   color: #1f3889!important;
   border: none!important;
-  padding: 0!important;
-  
+  padding: 0!important; 
 }
+#notifications_alert p {
+  margin: 0.7em 0!important;
+}
+
+div#notifications_alert{
+  padding: 0.1em 1em!important;
+}
+
 

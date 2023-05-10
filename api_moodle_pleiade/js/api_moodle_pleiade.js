@@ -19,7 +19,7 @@
               {  
                 
                 blocMoodle += '<div class="col-lg-12">\
-                                <div class="shadow-lg">\
+                                <div>\
                                   <div class="card mb-2">\
                                     <div class="card-header rounded-top bg-white border-bottom rounded-top">\
                                       <h4 class="card-title text-dark py-2">Cours E-Learning d\'E-collectivités</h4></div>\
@@ -60,7 +60,7 @@
                      
                       if(number !== 0){
                       blocMoodle += 
-                      '<a href="https://preprod.ecollectivites.fr/moodle/course/view.php?id='+ donnees[number].id +'">\
+                      '<a href="https://preprod.ecollectivites.fr/moodle/course/view.php?id='+ donnees[number].id +'?authCAS=CAS">\
                         <div class="mt-3 d-flex justify-content-center">\
                           <div class="card">\
                             <img src="'+ imageurl +'" class="card-img-top" alt="Course Image">\
