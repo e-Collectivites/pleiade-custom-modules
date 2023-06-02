@@ -3,6 +3,7 @@
 namespace Drupal\module_api_pleiade;
 
 use Drupal\Component\Serialization\Json;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\cas\Service\CasProxyHelper;
 
@@ -187,20 +188,20 @@ class ApiPleiadeManager {
             ],
           ];
       
-          // if (!empty($inputs)) {
+          if (!empty($inputs)) {
       
-          // //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
+          //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
             
-          //   if($method == 'GET'){
-          //     $ZIMBRA_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
-          //     foreach($inputs as $param => $value){
-          //         $ZIMBRA_API_URL.= '&' . $param . '=' . $value;
-          //     }
-          //   }else{
-          //     //POST request send data in array index form_params.
-          //     $options['body'] = $inputs;
-          //   }
-          // }
+            if($method == 'GET'){
+              $ZIMBRA_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+              foreach($inputs as $param => $value){
+                  $ZIMBRA_API_URL.= '&' . $param . '=' . $value;
+              }
+            }else{
+              //POST request send data in array index form_params.
+              $options['body'] = $inputs;
+            }
+          }
       
           try {
             $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, $options);
@@ -210,6 +211,60 @@ class ApiPleiadeManager {
           }
           
           return Json::decode($body);
+
+        //   try {
+        //     // Zimbra API endpoint
+        //     $zimbraApiUrl = 'https://courriel.sitiv.fr/service/preauth';
+            
+        //     // LemonLDAP::NG SSO session cookie name
+        //     $sessionCookieName = 'lemonldap';
+        
+        //     // Get the LemonLDAP::NG session cookie value
+        //     $sessionCookieValue = $_COOKIE[$sessionCookieName];
+        //     $value1 = 'ecollectivites@sitiv.fr';
+        //     $value2 = 'name';
+        //     $value3 = '0';
+        //     $value4 = 1135280708088;
+
+        //     $key = 'your_secret_key'; // Replace with your secret key
+
+        //     $data = $value1 . $value2 . $value3 . $value4;
+
+        //     $hmac = hash_hmac('sha256', $data, $key);
+        //     echo $hmac;
+        //     $client = new Client();
+        //     $options = [
+        //         'headers' => [
+        //             'Cookie' => $sessionCookieName . '=' . $sessionCookieValue,
+        //             'Content-Type' => 'application/json',
+        //         ],
+        //         'query' => [
+        //           'preauth' => $hmac, // Include the preauth parameter
+        //           'account' => $value1,
+        //           'timestamp' => $value4,
+        //           'expire' => '0'
+        //         ],
+        //         'verify' => false, // Adjust this option based on your SSL/TLS configuration
+        //     ];
+            
+            
+            
+        //     // Send request to Zimbra API
+        //     $response = $client->request('GET', $zimbraApiUrl, $options);
+        //     $body = $response->getBody()->getContents();
+        //     var_dump($client->request('POST', $zimbraApiUrl, $options));
+        //     // Process Zimbra API response
+        //     $responseData = Json::decode($body);
+            
+        //     // Extract the preauth token from the response
+        //     $preauthToken = (string)$responseData['soap:Envelope']['soap:Body']['AuthResponse']['authToken'];
+        
+        //     // Use the preauth token for subsequent API requests
+        //     return $preauthToken;
+        // } catch (RequestException $e) {
+        //     \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        //     // Handle the error as needed
+        // }
       }
 
 
@@ -286,41 +341,36 @@ class ApiPleiadeManager {
     elseif($application =='nextcloud')
     {
 
-        $NC_API_URL = $api;
-        var_dump($NC_API_URL);
-        
+      // Nextcloud API URL
+      $apiUrl = 'https://idtest.ecollectivites.fr/remote.php/dav/files/admin/folder'; // Replace with your Nextcloud API URL
       
-        $options = [
-          'headers' => [
-            'Content-Type' => 'application/json',
-            'Cookie'=> 'lemonldap=' . $_COOKIE['lemonldap'],
-            'OCS-APIRequest' => 'true'
-          ],
-        ];
-      
-        if (!empty($inputs)) {
-    
-          
-          if($method == 'GET'){
-            $NC_API_URL.= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
-            foreach($inputs as $param => $value){
-                $NC_API_URL.= '&' . $param . '=' . $value;
-            }
-          }else{
-            //POST request send data in array index form_params.
-            $options['body'] = $inputs;
-          }
-        }
-    
-        try {
-          $clientRequest = $this->client->request($method, $NC_API_URL, $options);
-         
-          $body = $clientRequest->getBody()->getContents();
-          var_dump($body);
-        } catch (RequestException $e) {
-          \Drupal::logger('api_nextcloud_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-        }
-        return Json::decode($body);
+      // Create a new cURL resource
+$ch = curl_init();
+
+// Set the cURL options
+$url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
+
+// Set the URL to send the request to
+curl_setopt($ch, CURLOPT_URL, $url);
+
+// Set the HTTP method to GET
+curl_setopt($ch, CURLOPT_HTTPGET, true);
+
+// Return the response as a string instead of outputting it directly
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Execute the cURL request
+$response = curl_exec($ch);
+var_dump($response);
+// Check for any errors
+if (curl_errno($ch)) {
+    echo 'Error: ' . curl_error($ch);
+}
+
+// Close the cURL resource
+curl_close($ch);
+
+return Json::decode($response);
     }
   }
   /**

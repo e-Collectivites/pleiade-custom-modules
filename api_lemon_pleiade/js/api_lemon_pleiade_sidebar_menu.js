@@ -13,6 +13,13 @@
                 var donnees = JSON.parse(xhr.responseText);
                 var menuHtml = '<div class="accordion" id="accordionExample">';
   
+                if(drupalSettings.module_general_pleiade.color_theme){
+                  var color_theme = drupalSettings.module_general_pleiade.color_theme
+                }
+                else{
+                  var color_theme = '#1f3889'
+                } 
+
                 for (var i = 0; i < donnees.myapplications.length; i++) {
                   // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
                   menuHtml +=
@@ -22,7 +29,9 @@
                     i +
                     '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
                     donnees.myapplications[i].Category + // on récupère toute les catégories du json qu'on stocke dans une liste
-                    '</span></div><ul><div id="collapse' +
+                    '</span></div><ul style="background-color:'+ 
+                    color_theme 
+                    +'"><div id="collapse' +
                     i +
                     '" class="accordion-collapse collapse" aria-labelledby="headingOne" ><div class="accordion-body">';
                   for (

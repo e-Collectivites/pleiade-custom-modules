@@ -1,0 +1,6 @@
+module_general_pleiade_js:
+  version: 1.x
+  js:
+    js/module_general_pleiade.js: {}
+  dependencies:
+    - core/jquery

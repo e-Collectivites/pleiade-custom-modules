@@ -2,9 +2,7 @@ api_user_pleiade_js:
   version: 1.x
   js:
     js/api_user_pleiade.js: {}
-    js/post_it_table.js: {}
     js/lib/steptip.js: {}
-    # js/lib/slick.js: {}
     
   dependencies:
     - core/drupal
@@ -14,5 +12,3 @@ api_user_pleiade_css:
   css:
     theme:
       css/api_user_pleiade.css: {}
-      # css/lib/slick.css: {}
-     
