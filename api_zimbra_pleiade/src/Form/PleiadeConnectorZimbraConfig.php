@@ -52,6 +52,12 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
       '#default_value' => $config->get('field_zimbra_agenda'),
       // '#value' => $config->get('field_zimbra_url'),
       '#description' => $this->t('Enter the Zimbra endpoint for agenda'),
+    ];
+    $form['zm_auth_token'] = [
+      '#type' => 'textfield',
+      '#title' => t('Token Authenticator Zimbra.'),
+      '#default_value' => $config->get('zm_auth_token'),
+      '#description' => $this->t('Authentification Token for ZIMBRA API')
     ];   
     $form['field_zimbra_auth_method'] = [
       '#type' => 'select',
@@ -88,6 +94,7 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
     $config->set('field_zimbra_mail', $form_state->getValue('field_zimbra_mail'));
     $config->set('field_zimbra_agenda', $form_state->getValue('field_zimbra_agenda'));
     $config->set('field_zimbra_for_demo', $form_state->getValue('field_zimbra_for_demo'));
+    $config->set('zm_auth_token', $form_state->getValue('zm_auth_token'));
     $config->save();
     
     parent::submitForm($form, $form_state);

@@ -1,5 +1,5 @@
 #menuTestLemon2 .sidebar-link, #menuPastell .sidebar-link, #menuLogMetiers .sidebar-link {
-    padding: 2px 0 0 14px!important;
+    padding: 2px 0 0 5px!important;
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -21,12 +21,16 @@
     padding: 0px 14px 0px 15px;
     display: flex;
     align-items: center;
-    white-space: nowrap;
+    /* white-space: nowrap; */
+    cursor: pointer;
 }
 .accordion-body {
     padding: 0rem 0rem 0rem 0!important;
 }
 .feather{
     margin: 0 2px 0 5px!important;
+}
 
+div.long-category span.hide-menu{
+    line-height: 20px;
 }

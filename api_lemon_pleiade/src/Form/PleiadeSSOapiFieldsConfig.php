@@ -60,6 +60,12 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
         '#default_value' => $config->get('field_lemon_totp_url'),
         '#description' => $this->t('Enter the TOTP info LemonLDAP endpoint url, ex: totp'),
     ];
+    $form['field_lemon_block_id'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Afficher le bloc Lemon avec les applications sur le bureau'),
+      '#default_value' => $config->get('field_lemon_block_id'),
+      '#description' => $this->t('Check this box to display lemon_block_id.'),
+    ];
 
 
     return parent::buildForm($form, $form_state);
@@ -74,6 +80,7 @@ class PleiadeSSOapiFieldsConfig extends ConfigFormBase {
 
       // Set the submitted configuration setting.
       ->set('field_lemon_url', $form_state->getValue('field_lemon_url'))
+      ->set('field_lemon_block_id', $form_state->getValue('field_lemon_block_id'))
       ->set('field_lemon_myapps_url', $form_state->getValue('field_lemon_myapps_url'))
       ->set('field_lemon_sessioninfo_url', $form_state->getValue('field_lemon_sessioninfo_url'))
       ->set('field_lemon_totp_url', $form_state->getValue('field_lemon_totp_url'))

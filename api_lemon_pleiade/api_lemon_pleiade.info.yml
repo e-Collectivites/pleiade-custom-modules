@@ -7,14 +7,8 @@ package: Pleiade
 core: 8.x
 core_version_requirement: ^8 || ^9
 
-# Dependecies for SSO, required or not ?
-#dependencies:
-#  - cas
-#  - cas_attributes
-#  - oidc
-#  - samlauth
-
 # Information 
 version: '1.0.x-dev'
 project: 'api_lemon_pleiade'
 datestamp: 1624364473
+weight: -10

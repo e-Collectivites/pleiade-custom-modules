@@ -5,6 +5,8 @@
       "use strict";
 
       once("postitBehavior", "body", context).forEach(() => {
+
+        document.getElementById("delete-button").addEventListener("click", deleteAllItems);
         window.addEventListener("beforeunload", saveItems);
 
         // Retrieve saved items on page load
@@ -17,8 +19,7 @@
 
           // Set the background color of the item to the color parameter and add a box shadow
           item.style.background = `${color}`;
-          // item.style.boxShadow = "15px 36px 80px rgba(0, 0, 0, 0.24) ";
-
+          
           // Create a new <div> element with the "tape" class and append it to the item
           var scotch = document.createElement("div");
           scotch.classList.add("tape");
@@ -35,7 +36,15 @@
           } else {
             p.style.color = "#FFFFFF";
           }
+         // Add CSS properties for width and height
+            p.style.width = "180px";
+            p.style.height = "150px";
 
+            // Add CSS properties for overflow
+            p.style.overflow = "hidden";
+            p.style.overflowY = "scroll";
+            p.style.cursor = "default";
+            p.style.fontSize = "12px";
           item.appendChild(p);
 
           // Create a new <span> element with the "remove-btn" class and set its text content to "X", then append it to the item
@@ -65,7 +74,17 @@
           }
           return false;
         }
-
+        function deleteAllItems() {
+          var result = confirm("Etes-vous sur de vouloir supprimer tous les post-its ?");
+          if (result) {
+          var postItDashboard = document.getElementById("post_it_dashboard");
+          while (postItDashboard.firstChild) {
+            postItDashboard.removeChild(postItDashboard.firstChild);
+          }
+        
+          localStorage.removeItem("post_it_items");
+        }
+        }
         // Function to convert a hexadecimal color code to RGB values
         function hexToRgb(hex) {
           var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -134,7 +153,9 @@
                 15,
                 itemObject.color
               );
+              console.log(itemObject.transform)
               item.style.transform = itemObject.transform;
+              
               item.getElementsByTagName("p")[0].style.color =
                 itemObject.text_color;
               item.getElementsByTagName("span")[0].style.color =
@@ -246,7 +267,7 @@
             var color = document.getElementById("color").value;
 
             // Set the initial position of the item
-            var top = 225; // Set to desired top position
+            var top = 185; // Set to desired top position
             var left = 15; // Set to desired left position
 
             // Create item and add to container
@@ -262,6 +283,9 @@
         document
           .getElementById("post_it_dashboard")
           .addEventListener("click", removeItem);
+
+
+        
       }); // end once foreach
     },
   };

@@ -1,0 +1,6 @@
+datatable_pleiade_js:
+  version: 1.x
+  js:
+    js/datatable_pleiade.js: {}
+  dependencies:
+    - core/jquery

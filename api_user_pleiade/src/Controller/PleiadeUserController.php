@@ -4,13 +4,9 @@ namespace Drupal\api_user_pleiade\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 
-use Drupal\Component\Serialization\JSON;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\user\Entity\UserInterface;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\module_api_pleiade\ApiPleiadeManager;
+
 
 class PleiadeUserController extends ControllerBase {
 
@@ -21,9 +17,7 @@ class PleiadeUserController extends ControllerBase {
       }
     }
     public function user_list_query(Request $request){
-        
       
-
       // Load the user storage service.
         $query = \Drupal::entityQuery('user');
         $uids = $query->execute();
@@ -71,92 +65,30 @@ class PleiadeUserController extends ControllerBase {
           echo 'erreur lors de la récupération des users'  ;
         }
     } 
-    public function notification_query(Request $request){
-        $query = \Drupal::entityQuery('node')->condition('type', 'alerte_notification');
-        $nids = $query->execute();
-        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    // public function notification_query(Request $request){
+    //     $query = \Drupal::entityQuery('node')->condition('type', 'alerte_notification');
+    //     $nids = $query->execute();
+    //     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
         
-        $response = array();
-        foreach ($nodes as $node) {
-          $body = $node->body->value;
-          $created_date = $node->created->value;
-          $field_nom_de_l_applicatif = $node->field_nom_de_l_applicatif->value;
-          // do something with the body text here
-          $response[] = array(
-            'body' => $body,
-            'created_date' => $created_date,
-            'nom_de_l_applicatif' => $field_nom_de_l_applicatif
-          ); // append the body text and the created date to the $response array as a new array
-        }
-        if ($response){
+    //     $response = array();
+    //     foreach ($nodes as $node) {
+    //       $body = $node->body->value;
+    //       $created_date = $node->created->value;
+    //       $field_nom_de_l_applicatif = $node->field_nom_de_l_applicatif->value;
+    //       // do something with the body text here
+    //       $response[] = array(
+    //         'body' => $body,
+    //         'created_date' => $created_date,
+    //         'nom_de_l_applicatif' => $field_nom_de_l_applicatif
+    //       ); // append the body text and the created date to the $response array as a new array
+    //     }
+    //     if ($response){
           
-          return new JsonResponse(json_encode($response), 200, [], true);
-        }
-        else
-        {
-          return new JsonResponse(json_encode([]), 200, [], true);
-        }
-    } 
-    public function user_infos_query(Request $request){
-      
-
-      $users_infos = [];
-      $userdataApi = new ApiPleiadeManager();
-      $return = $_COOKIE['nbOfMails'];
-      $return_tasks = json_decode($userdataApi->searchIfUserHaveSoonTasks(), true);
-      $return_iparapheur = json_decode($userdataApi->searchIfUserHaveParapheurDocs(), true);
-      
-      $have_chatbot = $this->settings_user->get('have_chatbot');
-      
-      if($have_chatbot){
-        $users_infos[] = array(
-          "have_chatbot" => true 
-          );
-      }
-      
-      if($return_tasks){
-        foreach($return_tasks['appt'] as $tasks){
-          $name_task = $tasks['inv'][0]['comp'][0]['name'];
-          $location_task = $tasks['inv'][0]['comp'][0]['loc'];
-          $timestamp_task = ($tasks['inv'][0]['comp'][0]['s'][0]['u'] / 1000);
-          $users_infos[] = array(
-            "start_task" => $timestamp_task,
-            "name_task" => $name_task .'<br>'. $location_task
-            );
-        }
-      }
-      else
-      {
-        $users_infos = [];
-      }
-      if($return){
-        $users_infos[] = array(
-        "haveMail" => true,
-        "count_mail" => $return,
-        );
-        
-      }
-      else
-      {
-        $users_infos = [];
-      }
-      if($return_iparapheur){
-        $nb_doc = 0;
-        // Count nb docs a signer 
-        foreach($return_iparapheur['bureaux'] as $a_signer){
-          $nb_doc += $a_signer['a_traiter'] + $a_signer['en_retard'] + $a_signer['dossiers_delegues'];
-        }
-        
-        $users_infos[] = array(
-        "haveDocs" => true,
-        "count_bureaux" => $nb_doc,
-        );
-        
-      }
-      else
-      {
-        $users_infos = [];
-      }
-      return new JsonResponse(json_encode($users_infos), 200, [], true);
-  }   
+    //       return new JsonResponse(json_encode($response), 200, [], true);
+    //     }
+    //     else
+    //     {
+    //       return new JsonResponse(json_encode([]), 200, [], true);
+    //     }
+    // } 
 }

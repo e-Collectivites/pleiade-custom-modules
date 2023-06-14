@@ -5,9 +5,6 @@ namespace Drupal\api_user_pleiade\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-/**
- * Configure API Pléiade Pastell fields settings.
- */
 class PleiadeUserFieldsConfig extends ConfigFormBase {
 
   /** 
@@ -57,8 +54,7 @@ class PleiadeUserFieldsConfig extends ConfigFormBase {
       'visible' => [
         ':input[name="have_chatbot"]' => ['checked' => TRUE],
       ],
-    ];
-    
+    ];  
 
     return parent::buildForm($form, $form_state);
   }

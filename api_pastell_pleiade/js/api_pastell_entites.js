@@ -89,14 +89,14 @@
                                         // console.log('Optionvalue : ' + document.getElementById('collectiviteChoice').value);
                                         localStorage.setItem('collectivite_id', optionValue);
                                         // Now call document JS module function to get documents with our entity id
-                                        Drupal.behaviors.APIpastellDocumentsBehavior.get_documents(optionValue);
+                                        Drupal.behaviors.DatatableBehavior.get_documents(optionValue);
                                     }
                                     else 
                                     {
                                         // on refresh, set the previous selected collectivite from localstorage
                                         document.getElementById('collectiviteChoice').value = localStorage.getItem('collectivite_id');
                                         // Now call document JS module function to get documents with our entity id
-                                        Drupal.behaviors.APIpastellDocumentsBehavior.get_documents(document.getElementById('collectiviteChoice').value);
+                                        Drupal.behaviors.DatatableBehavior.get_documents(document.getElementById('collectiviteChoice').value);
                                     }
                                     // debug
                                     // console.log('Selected coll from Entites JS module = '+ document.getElementById('collectiviteChoice').value);
@@ -121,7 +121,7 @@
                                     // debug
                                      console.log('Collectivité select change : ' + event.target.value);
                                     // Now call again document JS module function to get documents
-                                    Drupal.behaviors.APIpastellDocumentsBehavior.get_documents(event.target.value);
+                                    Drupal.behaviors.DatatableBehavior.get_documents(event.target.value);
 
 
                                 }, false);

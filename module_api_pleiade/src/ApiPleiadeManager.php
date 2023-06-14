@@ -46,6 +46,7 @@ class ApiPleiadeManager {
       $this->settings_nextcloud = \Drupal::config('api_nextcloud_pleiade.settings');
     }
 
+
     
   }
 
@@ -156,7 +157,7 @@ class ApiPleiadeManager {
               $options['body'] = $inputs;
             }
           }
-      
+          
           try {
             $clientRequest = $this->client->request($method, $PASTELL_API_URL, $options);
             $body = $clientRequest->getBody()->getContents();
@@ -180,7 +181,7 @@ class ApiPleiadeManager {
           $ZIMBRA_API_URL = $api;
           
           \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $ZIMBRA_API_URL ]);
-        
+
           $options = [
             'headers' => [
               'Content-Type' => 'application/json',
@@ -212,6 +213,8 @@ class ApiPleiadeManager {
           
           return Json::decode($body);
 
+          //////////////////// ---------------> CODE POUR ROMAIN TEST API ZIMBRA  <-----------/////////////////
+
         //   try {
         //     // Zimbra API endpoint
         //     $zimbraApiUrl = 'https://courriel.sitiv.fr/service/preauth';
@@ -226,7 +229,7 @@ class ApiPleiadeManager {
         //     $value3 = '0';
         //     $value4 = 1135280708088;
 
-        //     $key = 'your_secret_key'; // Replace with your secret key
+        //     $key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key
 
         //     $data = $value1 . $value2 . $value3 . $value4;
 
@@ -339,78 +342,96 @@ class ApiPleiadeManager {
     ////////////////////////////////////////////////////////
 
     elseif($application =='nextcloud')
-    {
+      {
+        // Nextcloud API URL
+        $apiUrl = $api; // Replace with your Nextcloud API URL
+        
+        // Create a new cURL resource
+        
+        $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+        if($user->get('field_nextcloud_api_key')->value){
+          $nc_key = ($user->get('field_nextcloud_api_key')->value);
+          // var_dump($nc_key);
+        }
+        if($user->getDisplayName()){
+          $displayName = $user->getDisplayName();
+          // var_dump($displayName);
+        }
+        
+        $token_authent = base64_encode($displayName.':'.$nc_key);
+        // var_dump($token_authent);
+        
+        $headers = array(
+          'OCS-APIRequest: true',
+          'Authorization: Basic '.$token_authent
+        );
 
-      // Nextcloud API URL
-      $apiUrl = 'https://idtest.ecollectivites.fr/remote.php/dav/files/admin/folder'; // Replace with your Nextcloud API URL
-      
-      // Create a new cURL resource
-$ch = curl_init();
+        // Set the cURL options
+        // $url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
+        $ch = curl_init();
+        // Set the URL to send the request to
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
 
-// Set the cURL options
-$url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
 
-// Set the URL to send the request to
-curl_setopt($ch, CURLOPT_URL, $url);
 
-// Set the HTTP method to GET
-curl_setopt($ch, CURLOPT_HTTPGET, true);
+        // Set the HTTP method to GET
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
 
-// Return the response as a string instead of outputting it directly
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // Return the response as a string instead of outputting it directly
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        // Execute the cURL request
+        $response = curl_exec($ch);
+        $response = json_decode($response);
+        // Check for any errors
+        if (curl_errno($ch)) {
+            echo 'Error: ' . curl_error($ch);
+        }
 
-// Execute the cURL request
-$response = curl_exec($ch);
-var_dump($response);
-// Check for any errors
-if (curl_errno($ch)) {
-    echo 'Error: ' . curl_error($ch);
-}
+        // Close the cURL resource
+        curl_close($ch);
 
-// Close the cURL resource
-curl_close($ch);
-
-return Json::decode($response);
+        return ($response);
+      }
     }
-  }
-  /**
-   * Get Request of API.
-   *
-   * @param string $endpoint
-   *   A request action.
-   * @param string $input
-   *   A data of curl request.
-   *
-   * @return array
-   *   A respond data.
-   */
-  public function curlGet($endpoint, $inputs, $api, $application) {
-    return $this->executeCurl($endpoint, "GET", $inputs, $api, $application);
-  }
+    /**
+     * Get Request of API.
+     *
+     * @param string $endpoint
+     *   A request action.
+     * @param string $input
+     *   A data of curl request.
+     *
+     * @return array
+     *   A respond data.
+     */
+    public function curlGet($endpoint, $inputs, $api, $application) {
+      return $this->executeCurl($endpoint, "GET", $inputs, $api, $application);
+    }
 
-  /**
-   * Post Request of API.
-   *
-   * @param string $endpoint
-   *   A request action.
-   * @param string $inputs
-   *   A data of curl request.
-   *
-   * @return array
-   *   A respond data.
-   */
-  public function curlPost($endpoint, $inputs, $api, $application) {
-    return $this->executeCurl($endpoint, "POST", $inputs, $api, $application);
-  }
+    /**
+     * Post Request of API.
+     *
+     * @param string $endpoint
+     *   A request action.
+     * @param string $inputs
+     *   A data of curl request.
+     *
+     * @return array
+     *   A respond data.
+     */
+    public function curlPost($endpoint, $inputs, $api, $application) {
+      return $this->executeCurl($endpoint, "POST", $inputs, $api, $application);
+    }
 
-    ////////////////////////////////////////////////////////
-    //                                                    //
-    //   FONCTIONS POUR LES NOTIFICATIONS D'UTILISATEUR   //
-    //                                                    //
-    ////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////
+      //                                                    //
+      //   FONCTIONS POUR LES NOTIFICATIONS D'UTILISATEUR   //
+      //                                                    //
+      ////////////////////////////////////////////////////////
 
-    
-  public function searchIfUserHaveSoonTasks() {
+      
+    public function searchIfUserHaveSoonTasks() {
     $clientRequest = $this->client->request('GET', 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json');
     // $clientRequest = $this->client->request('GET', 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json'); a configurer 
     

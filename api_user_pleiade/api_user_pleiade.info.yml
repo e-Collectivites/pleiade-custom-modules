@@ -10,3 +10,4 @@ core_version_requirement: ^8 || ^9
 version: '1.0.x-dev'
 project: 'api_user_pleiade'
 datestamp: 1624364473
+weight: 20

@@ -64,6 +64,11 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('image_left_sidebar_reduced'),
       '#upload_location' => 'public://module_general_pleiade/images',
     ];
+    $form['url_lien_documentation'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Lien de l\'onglet "Documentation" du menu de gauche'),
+      '#default_value' => $config->get('url_lien_documentation'),
+    ];
   
     return parent::buildForm($form, $form_state);
   }
@@ -85,6 +90,7 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
   } else {
     // Save the submitted values to the configuration.
     $config->set('color_theme', $form_state->getValue('color_theme'));
+    $config->set('url_lien_documentation', $form_state->getValue('url_lien_documentation'));
     $config->set('image_footer', $form_state->getValue('image_footer'));
     $config->set('image_left_sidebar', $form_state->getValue('image_left_sidebar'));
     $config->set('image_left_sidebar_reduced', $form_state->getValue('image_left_sidebar_reduced'));
