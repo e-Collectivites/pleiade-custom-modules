@@ -145,7 +145,7 @@
                 // Écouteur d'événement pour charger l'état de l'accordéon au chargement de la page
                 // window.addEventListener('load', toggleAccordion);
               }
-              document.getElementById('spinner-div-sidebar').style.display = 'none';
+             // document.getElementById('spinner-div-sidebar').style.display = 'none';
             };
             xhr.send(JSON.stringify({}));
 

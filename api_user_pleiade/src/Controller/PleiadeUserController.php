@@ -34,6 +34,10 @@ class PleiadeUserController extends ControllerBase {
             if (!empty($picture_fid)) {
               $picture_url = file_create_url(\Drupal\file\Entity\File::load($picture_fid)->getFileUri());
             }
+            else
+            {
+              $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
+            }
           }
       
           // Get user's last login timestamp.

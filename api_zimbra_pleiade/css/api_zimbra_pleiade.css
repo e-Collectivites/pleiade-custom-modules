@@ -1,3 +1,7 @@
+:root {
+    --global-color: #1f3889;
+  }
+
 .fc-scrollgrid-sync-table, .fc-scrollgrid-section-header {
     display: none;
 }
@@ -74,7 +78,7 @@ tbody .fc-scrollgrid-section:first-child {
     border: inherit !important;
     border-left: 3px solid var(--fc-event-bg-color);
     opacity: 0.88;
-    background-color: #1f3889 !important;
+    background-color: var(--global-color) !important;
 }
 
 .fc-timegrid-event, .fc-timegrid-more-link {

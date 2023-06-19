@@ -1,12 +1,7 @@
 
-
-/* .alert_popup svg:hover {
-  transform: scale(1.3);
-  
-} */
-/* .alert_popup svg {
-  transition: transform .2s;
-} */
+:root {
+  --global-color: #1f3889;
+}
 .notification_scale{
   animation: pulse 1s infinite ease-in-out alternate;
 }
@@ -540,7 +535,7 @@ body[data-theme=dark] .btn-accessibility{
 }
 .btn-accessibility {
   background: none!important;
-  color: #1f3889!important;
+  color: var(--global-color)!important;
   border: none!important;
   padding: 0!important; 
 }

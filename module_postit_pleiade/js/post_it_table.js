@@ -43,7 +43,7 @@
             // Add CSS properties for overflow
             p.style.overflow = "hidden";
             p.style.overflowY = "scroll";
-            p.style.cursor = "default";
+            p.style.cursor = "grab";
             p.style.fontSize = "12px";
           item.appendChild(p);
 

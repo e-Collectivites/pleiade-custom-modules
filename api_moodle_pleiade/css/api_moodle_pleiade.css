@@ -1,5 +1,11 @@
+
+:root {
+    --global-color: #1f3889;
+  }
+
+
 .btn-e-coll{
-    background-color: #1f3889!important;
+    background-color: var(--global-color)!important;
     
 }
 .card-img-top {

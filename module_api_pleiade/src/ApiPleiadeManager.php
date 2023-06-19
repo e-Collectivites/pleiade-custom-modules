@@ -489,6 +489,7 @@ class ApiPleiadeManager {
     $endpoints =  $this->settings_pastell->get('field_pastell_entities_url');
    // \Drupal::logger('api_pastell_entites')->info('function searchMyentities triggered !');
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
+       // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
 
 
@@ -548,9 +549,11 @@ class ApiPleiadeManager {
 
     
     public function getNextcloudNotifs() {
-    
-      $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-      return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints .'?format=json' , 'nextcloud');
+      $moduleHandler = \Drupal::service('module_handler');
+      if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
+        $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs');  // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+        return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints .'?format=json' , 'nextcloud');
+      }
     }
 
   /**
