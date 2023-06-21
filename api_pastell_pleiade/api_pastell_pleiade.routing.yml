@@ -15,11 +15,11 @@ api_pastell_pleiade.pastell_entities_query:
   requirements:
     _access: 'TRUE'
 
-api_pastell_pleiade.pastell_documents_query:
-  path: '/v1/api_pastell_pleiade/pastell_documents_query'
+api_pastell_pleiade.pastell_flux_query:
+  path: '/v1/api_pastell_pleiade/pastell_flux_query'
   defaults:
-    _controller: '\Drupal\api_pastell_pleiade\Controller\PleiadeAjaxPastellController::pastell_documents_query'
-    _title: 'Pastell API Documents Query'
+    _controller: '\Drupal\api_pastell_pleiade\Controller\PleiadeAjaxPastellController::pastell_flux_query'
+    _title: 'Pastell API Flux Query'
     _format: json
   requirements:
     _access: 'TRUE'

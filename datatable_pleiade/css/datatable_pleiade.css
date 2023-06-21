@@ -1,0 +1,12 @@
+.dropend .dropdown-menu.show {
+    min-width: 5em!important;
+    width: 9em!important;
+    display: flex;
+    align-items: center;
+    transition: all .5s ease;
+    justify-content: space-around;
+    background: transparent!important;
+}
+div.dropend button{
+    background: inherit!important;
+}

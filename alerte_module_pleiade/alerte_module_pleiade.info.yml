@@ -1,0 +1,12 @@
+name: 'Module Alerte Pleiade'
+type: module
+description: 'Message entête pour Pléiade'
+package: Pleiade
+# version: 8.x +
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+# Information 
+version: '1.0.x-dev'
+project: 'alerte_module_pleiade'
+datestamp: 1624364473

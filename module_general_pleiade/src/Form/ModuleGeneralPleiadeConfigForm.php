@@ -36,38 +36,14 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#type' => 'color',
       '#title' => $this->t('Couleur du thème'),
       '#default_value' => $config->get('color_theme'),
+      '#description' => $this->t('Sur Firefox, pour passer du code HEXA au code RGB, cliquez sur <a href="https://www.rgbtohex.net/hex-to-rgb/" target="_blank">ce lien.</a>')
     ];
-    // Add a reset button
-    $form['reset_color'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Restaurer la couleur par défaut'),
-      '#submit' => ['::resetColor'],
-      '#limit_validation_errors' => [],
-    ];
-    $form['image_footer'] = [
-      '#type' => 'managed_file',
-      '#title' => $this->t('Image du footer'),
-      '#default_value' => $config->get('image_footer'),
-      '#upload_location' => 'public://module_general_pleiade/images',
-    ];
-
-    $form['image_left_sidebar'] = [
-        '#type' => 'managed_file',
-        '#title' => $this->t('Image de la barre de Gauche ( Menu étendu )'),
-        '#default_value' => $config->get('image_left_sidebar'),
-        '#upload_location' => 'public://module_general_pleiade/images',
-      ];
-
-    $form['image_left_sidebar_reduced'] = [
-      '#type' => 'managed_file',
-      '#title' => $this->t('Image de la barre de Gauche ( Menu réduit )'),
-      '#default_value' => $config->get('image_left_sidebar_reduced'),
-      '#upload_location' => 'public://module_general_pleiade/images',
-    ];
+    
     $form['url_lien_documentation'] = [
       '#type' => 'url',
       '#title' => $this->t('Lien de l\'onglet "Documentation" du menu de gauche'),
       '#default_value' => $config->get('url_lien_documentation'),
+      '#description' => $this->t('<span style="display: flex; align-items: center">Url correspondant à ce lien du menu : &nbsp;&nbsp;<img src="/themes/custom/pleiadebv/assets/images/url_documentation.png"></span>')
     ];
   
     return parent::buildForm($form, $form_state);
@@ -91,9 +67,6 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
     // Save the submitted values to the configuration.
     $config->set('color_theme', $form_state->getValue('color_theme'));
     $config->set('url_lien_documentation', $form_state->getValue('url_lien_documentation'));
-    $config->set('image_footer', $form_state->getValue('image_footer'));
-    $config->set('image_left_sidebar', $form_state->getValue('image_left_sidebar'));
-    $config->set('image_left_sidebar_reduced', $form_state->getValue('image_left_sidebar_reduced'));
     $config->save();
   }
 

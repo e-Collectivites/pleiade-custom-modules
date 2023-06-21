@@ -14,9 +14,9 @@
 function module_general_pleiade_preprocess_page(&$variables) {
   $config = \Drupal::config('module_general_pleiade.settings');
   $colorTheme = $config->get('color_theme');
-  $imageFooter = $config->get('image_footer');
-  $imageLeftSidebar = $config->get('image_left_sidebar');
-  $imageLeftSidebarReduced = $config->get('image_left_sidebar_reduced');
+  //$imageFooter = $config->get('image_footer');
+  //$imageLeftSidebar = $config->get('image_left_sidebar');
+  //$imageLeftSidebarReduced = $config->get('image_left_sidebar_reduced');
   if (!empty($imageFooter)) {
     $file = \Drupal\file\Entity\File::load($imageFooter[0]);
     if ($file) {
@@ -45,7 +45,7 @@ function module_general_pleiade_preprocess_page(&$variables) {
   // $variables['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_css';
 
   $variables['#attached']['drupalSettings']['module_general_pleiade']['color_theme'] = $colorTheme;
-  $variables['#attached']['drupalSettings']['module_general_pleiade']['image_footer'] = $imageFooterUrl;
-  $variables['#attached']['drupalSettings']['module_general_pleiade']['image_left_sidebar'] = $imageLeftSidebarUrl;
-  $variables['#attached']['drupalSettings']['module_general_pleiade']['image_left_sidebar_reduced'] = $imageLeftSidebarReducedUrl;
+  //$variables['#attached']['drupalSettings']['module_general_pleiade']['image_footer'] = $imageFooterUrl;
+  //$variables['#attached']['drupalSettings']['module_general_pleiade']['image_left_sidebar'] = $imageLeftSidebarUrl;
+  //$variables['#attached']['drupalSettings']['module_general_pleiade']['image_left_sidebar_reduced'] = $imageLeftSidebarReducedUrl;
 }

@@ -491,6 +491,12 @@ class ApiPleiadeManager {
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
        // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
+  public function searchMyFlux() {
+    $endpoints =  $this->settings_pastell->get('field_pastell_flux_url');
+   // \Drupal::logger('api_pastell_entites')->info('function searchMyentities triggered !');
+    return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell' );
+       // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
+  }
 
 
     //////////////////////////////////////////////////////////////

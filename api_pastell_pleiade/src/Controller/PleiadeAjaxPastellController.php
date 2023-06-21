@@ -20,22 +20,13 @@ class PleiadeAjaxPastellController extends ControllerBase {
         $return = $pastelldataApi->searchMyEntities();
         return new JsonResponse(json_encode($return), 200, [], true);
     }
-    public function pastell_documents_query(Request $request){
-        
-        $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-        $tempstore->delete('documents_pastell');
-        $return = []; //our variable to fill with data returned by Pastell
-        // Our collectivite ID for Pastell id_e is sent as param by our js module
-        $id_e = $request->query->get('id_e');
-        // check value exists and is numleric
-        if (null !== $id_e && is_numeric($id_e)) {
-            \Drupal::logger('api_pastell_documents')->info('function search Pastell Docs with id_e : ' . $id_e);
-            $pastelldataApi = new ApiPleiadeManager();
-            $return = $pastelldataApi->searchMyDocs($id_e);  
-            $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-            $tempstore->set('documents_pastell', $return);
-        }
 
+    public function pastell_flux_query(Request $request){
+        $return = []; //our variable to fill with data returned by Pastell
+        $pastelldataApi = new ApiPleiadeManager();
+        $return = $pastelldataApi->searchMyFlux();
+        $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
+        $tempstore->set('flux', $return);
         return new JsonResponse(json_encode($return), 200, [], true);
     }
 

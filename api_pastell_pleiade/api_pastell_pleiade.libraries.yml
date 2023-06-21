@@ -3,7 +3,6 @@ api_pastell_pleiade_js:
   js:
     js/api_pastell_entites.js: {}
     js/libs/moment.js: {}  
-    js/api_pastell_documents.js: {}
     js/api_pastell_menu.js: {}
     js/libs/jquery.dataTables.min.js: {}
     js/libs/dataTables.bootstrap5.min.js: {}  

@@ -1,0 +1,16 @@
+.application {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
+  .body {
+    font-size: 1.2em; /* Adjust the font size as needed */
+  }
+  
+  .date_creation {
+    font-style: italic;
+  }
+
+#notifications_alert {
+    line-height: 1; /* Adjust the line-height value as needed */
+  }

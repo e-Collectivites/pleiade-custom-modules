@@ -33,7 +33,7 @@
                                         }   
                                     }
                                     if( divs[i].querySelector(".profile-picture").innerHTML === ""){
-                                        divs[i].querySelector(".profile-picture").insertAdjacentHTML("afterbegin", '<img src="sites/default/files/default_images/img_user.png" alt="user" width="30" height="30" class="profile-pic rounded-circle" />')
+                                        divs[i].querySelector(".profile-picture").insertAdjacentHTML("afterbegin", '<img src="/themes/custom/pleiadebv/assets/images/users/img_user.png" alt="user" width="30" height="30" class="profile-pic rounded-circle" />')
                                     }
                                 }
                             }

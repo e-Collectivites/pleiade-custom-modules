@@ -17,17 +17,13 @@
  */
 function api_pastell_pleiade_preprocess_page(&$variables){
 
-
   $config = \Drupal::config('api_pastell_pleiade.settings');
   
   $field_pastell_url = $config->get('field_pastell_url');
   $field_pastell_documents_url = $config->get('field_pastell_documents_url');
   $field_pastell_entitites_url = $config->get('field_pastell_entities_url');
   $limit_documents = $config->get('field_pastell_limit_documents');
-  $convocation_type_name = $config->get('convocation_type_name');
-  $helios_type_name = $config->get('helios_type_name');
-  $acte_type_name = $config->get('acte_type_name');
-  $doc_a_signer_type_name = $config->get('doc_a_signer_type_name');
+  $field_pastell_flux_url = $config->get('field_pastell_flux_url');
   $pastell_group = $config->get('field_pastell_ldap_group');
   $field_pastell_auth_method = $config->get('field_pastell_auth_method');
 
@@ -46,10 +42,7 @@ function api_pastell_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_url'] = $field_pastell_url;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_documents_url'] = $field_pastell_documents_url;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_entities_url'] = $field_pastell_entitites_url;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['convocation_type_name'] = $convocation_type_name;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['helios_type_name'] = $helios_type_name;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['acte_type_name'] = $acte_type_name;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['doc_a_signer_type_name'] = $doc_a_signer_type_name;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_flux_url'] = $field_pastell_flux_url;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_ldap_group'] =  $pastell_group;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_auth_method'] =  $field_pastell_auth_method;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['documents_pastell'] =  $documents_pastell;

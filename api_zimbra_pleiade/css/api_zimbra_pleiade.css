@@ -7,7 +7,6 @@
 }
 
 .fc .fc-toolbar.fc-header-toolbar {
-    /* margin: inherit !important; */
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
     border-radius: calc(0.25rem - 0px) calc(0.25rem - 0px) 0 0;
@@ -17,7 +16,6 @@
     margin-bottom: 0!important;
     border-bottom: 1px solid #e9ecef !important;
     display: flex;
-
 }
 
 .fc .fc-toolbar-title {
@@ -133,14 +131,13 @@ body[data-theme=dark] .fc td.fc-timegrid-slot {
 /* Track */
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 1px grey;
-    border-radius: 10px;
+    
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: grey;
-    border-radius: 10px;
-
+   
 }
 
 /* Handle on hover */
@@ -153,3 +150,4 @@ body[data-theme=dark] .fc td.fc-timegrid-slot {
 body[data-theme=dark] #zimbra_block_mail_id {
     background-color: #272b34 !important;
 }
+

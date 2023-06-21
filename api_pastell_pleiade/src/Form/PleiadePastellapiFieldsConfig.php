@@ -60,29 +60,11 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
       '#description' => $this->t('Number of max docs retrieved during Pastell API request'),
     ];
 
-    $form['convocation_type_name'] = [
+    $form['field_pastell_flux_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Nom du type pour les convocations'),
-      '#default_value' => $config->get('convocation_type_name'),
-      '#description' => $this->t('type name for convocation'),
-    ];
-    $form['acte_type_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Nom du type pour les actes'),
-      '#default_value' => $config->get('acte_type_name'),
-      '#description' => $this->t('type name for acte'),
-    ];
-    $form['helios_type_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Nom du type pour les helioss'),
-      '#default_value' => $config->get('helios_type_name'),
-      '#description' => $this->t('type name for helios'),
-    ];
-    $form['doc_a_signer_type_name'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Nom du type pour les doc_a_signers'),
-      '#default_value' => $config->get('doc_a_signer_type_name'),
-      '#description' => $this->t('type name for doc_a_signer'),
+      '#title' => $this->t('Endpoint pour la liste des flux'),
+      '#default_value' => $config->get('field_pastell_flux_url'),
+      '#description' => $this->t('Endpoint pour la liste des flux'),
     ];
 
     $form['field_pastell_ldap_group'] = [
@@ -123,10 +105,7 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
     $config->set('field_pastell_documents_url', $form_state->getValue('field_pastell_documents_url'));
     $config->set('field_pastell_entities_url', $form_state->getValue('field_pastell_entities_url'));
     $config->set('field_pastell_limit_documents', $form_state->getValue('field_pastell_limit_documents'));
-    $config->set('convocation_type_name', $form_state->getValue('convocation_type_name'));
-    $config->set('helios_type_name', $form_state->getValue('helios_type_name'));
-    $config->set('acte_type_name', $form_state->getValue('acte_type_name'));
-    $config->set('doc_a_signer_type_name', $form_state->getValue('doc_a_signer_type_name'));
+    $config->set('field_pastell_flux_url', $form_state->getValue('field_pastell_flux_url'));
     $config->set('field_pastell_ldap_group', $form_state->getValue('field_pastell_ldap_group'));
     $config->set('field_pastell_auth_method', $form_state->getValue('field_pastell_auth_method'));
     $config->save();

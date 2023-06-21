@@ -41,9 +41,7 @@
                             <th scope="col">Dernière modification</th>\
                             <th scope="col">Statut</th>\
                             <th></th>\
-                            <th></th>\
-                            <th></th>\
-                          </tr>\
+                            </tr>\
                         </thead>\
                         <tbody>';
                         for (var i = 0; i < donnees.length; i++) {
@@ -62,10 +60,17 @@
                                 <td>" + type + "</td>\
                                 <td>" + objectDate + "</td>\
                                 <td>" + etat + "</td>\
-                                <td>" + lien_pastell_detail + "</td>\
-                                <td></td>\
-                                <td></td>\
-                              </tr>\
+                                <td><div class='btn-group dropend'>\
+                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
+                                  <i data-feather='more-horizontal' class='feather-icon' id='dropdown-icon'></i>\
+                                  </button>\
+                                  <ul class='dropdown-menu'>\
+                                  " + lien_pastell_detail + "\
+                                  " + lien_pastell_edition + "\
+                                  " + lien_pastell_supp + "\
+                                  </ul>\
+                                </div></td>\
+                                </tr>\
                               ";
 
                               document_coll += document_row;
@@ -202,13 +207,20 @@
                           <tr>\
                             <td>" + titre +"</td>\
                             <td>" + type +"</td>\
-                            <td>" + objectDate + '</td>\
-                            <td>'+ etat +'</td>\
-                            <td>' + lien_pastell_detail +'</td>\
-                            <td>' + lien_pastell_edition +'</td>\
-                            <td>' + lien_pastell_supp +'</td>\
-                          </tr>\
-                          ';
+                            <td>" + objectDate + "</td>\
+                            <td>"+ etat +"</td>\
+                            <td><div class='btn-group dropend'>\
+                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
+                                  <i data-feather='more-horizontal' class='feather-icon' id='dropdown-icon'></i>\
+                                  </button>\
+                                  <ul class='dropdown-menu'>\
+                                  " + lien_pastell_detail + "\
+                                  " + lien_pastell_edition + "\
+                                  " + lien_pastell_supp + "\
+                                  </ul>\
+                                </div></td>\
+                                </tr>\
+                          ";
                         }
                       }
                         document_coll += "\
@@ -252,11 +264,11 @@
                 ],
 
                 "aoColumnDefs": [
-                  { "bSortable": false, "aTargets": [ 4, 5, 6 ] }, 
-                  { "width": "25%", "targets": 3 },
-                  { "width": "18%", "targets": 2 },
+                  { "bSortable": false, "aTargets": [ 4 ] }, 
+                  { "width": "20%", "targets": 3 },
+                  { "width": "22%", "targets": 2 },
                   { "width": "25%", "targets": 1 },
-                  { "width": "30%", "targets": 0 },
+                  { "width": "25%", "targets": 0 },
                   
                 ],
                 "order": [[2, 'desc']],  

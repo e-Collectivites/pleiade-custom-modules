@@ -2,5 +2,11 @@ datatable_pleiade_js:
   version: 1.x
   js:
     js/datatable_pleiade.js: {}
+datatable_pleiade_css:
+  version: 1.x
+  css:
+    theme:
+      css/datatable_pleiade.css: {}
+    
   dependencies:
     - core/jquery

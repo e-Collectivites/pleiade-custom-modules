@@ -90,6 +90,8 @@
                                         localStorage.setItem('collectivite_id', optionValue);
                                         // Now call document JS module function to get documents with our entity id
                                         Drupal.behaviors.DatatableBehavior.get_documents(optionValue);
+                                        Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(optionValue);
+                                       
                                     }
                                     else 
                                     {
@@ -97,6 +99,7 @@
                                         document.getElementById('collectiviteChoice').value = localStorage.getItem('collectivite_id');
                                         // Now call document JS module function to get documents with our entity id
                                         Drupal.behaviors.DatatableBehavior.get_documents(document.getElementById('collectiviteChoice').value);
+                                        Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(document.getElementById('collectiviteChoice').value);
                                     }
                                     // debug
                                     // console.log('Selected coll from Entites JS module = '+ document.getElementById('collectiviteChoice').value);
@@ -122,7 +125,7 @@
                                      console.log('Collectivité select change : ' + event.target.value);
                                     // Now call again document JS module function to get documents
                                     Drupal.behaviors.DatatableBehavior.get_documents(event.target.value);
-
+                                    Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(event.target.value);
 
                                 }, false);
 
