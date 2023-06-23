@@ -71,7 +71,6 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Nom du groupe Pastell dans LDAP'),
       '#default_value' => $config->get('field_pastell_ldap_group'),
-
       '#description' => $this->t('Name of the LDAP Pastell group, usually "pastell"'),
     ];
 

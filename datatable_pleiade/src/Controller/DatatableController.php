@@ -13,22 +13,27 @@ use Drupal\module_api_pleiade\ApiPleiadeManager;
 class DatatableController extends ControllerBase {
 
     public function documents_recents(Request $request) {
-        $formattedData = [];
+        $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+        $storedGroups = $tempstoreGroup->get('groups');
+        if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
         
-        $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-        $tempstore->delete('documents_pastell');
-        $return1 = []; //our variable to fill with data returned by Pastell
-        // Our collectivite ID for Pastell id_e is sent as param by our js module
-        $id_e = $request->query->get('id_e');
-        // check value exists and is numleric
-        if (null !== $id_e && is_numeric($id_e)) {
-            \Drupal::logger('api_pastell_documents')->info('function search Pastell Docs with id_e : ' . $id_e);
-            $pastelldataApi = new ApiPleiadeManager();
-            $return1 = $pastelldataApi->searchMyDocs($id_e);  
+            $formattedData = [];
+            
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-            $tempstore->set('documents_pastell', $return1);
+            $tempstore->delete('documents_pastell');
+            $return1 = []; //our variable to fill with data returned by Pastell
+            // Our collectivite ID for Pastell id_e is sent as param by our js module
+            $id_e = $request->query->get('id_e');
+            // check value exists and is numleric
+            if (null !== $id_e && is_numeric($id_e)) {
+                \Drupal::logger('api_pastell_documents')->info('function search Pastell Docs with id_e : ' . $id_e);
+                $pastelldataApi = new ApiPleiadeManager();
+                $return1 = $pastelldataApi->searchMyDocs($id_e);  
+                $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
+                $tempstore->set('documents_pastell', $return1);
+            }
+            $formattedData = array_merge($formattedData, $return1);
         }
-        $formattedData = array_merge($formattedData, $return1);
         
         $return = []; // our variable to fill with data returned by Pastell
         $nextcloudataApi = new ApiPleiadeManager();

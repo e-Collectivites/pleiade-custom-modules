@@ -16,18 +16,42 @@ class PleiadeAjaxPastellController extends ControllerBase {
 
     public function pastell_entities_query(Request $request){
         $return = []; //our variable to fill with data returned by Pastell
-        $pastelldataApi = new ApiPleiadeManager();
-        $return = $pastelldataApi->searchMyEntities();
-        return new JsonResponse(json_encode($return), 200, [], true);
+        $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+        $storedGroups = $tempstoreGroup->get('groups');
+        if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
+            $pastelldataApi = new ApiPleiadeManager();
+            $return = $pastelldataApi->searchMyEntities();
+            $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
+            $tempstore->set('entites', $return);
+            $arrayAsString = print_r($return, true);
+            \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des entités :'. $arrayAsString);
+                
+            return new JsonResponse(json_encode($return), 200, [], true);
+        }
+        else {
+            \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
+            return new JsonResponse(json_encode([]), 200, [], true);
+        }
     }
 
     public function pastell_flux_query(Request $request){
         $return = []; //our variable to fill with data returned by Pastell
-        $pastelldataApi = new ApiPleiadeManager();
-        $return = $pastelldataApi->searchMyFlux();
-        $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-        $tempstore->set('flux', $return);
-        return new JsonResponse(json_encode($return), 200, [], true);
+        $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+        $storedGroups = $tempstoreGroup->get('groups');
+        if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
+            $pastelldataApi = new ApiPleiadeManager();
+            $return = $pastelldataApi->searchMyFlux();
+            $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
+            $tempstore->set('flux', $return);
+            $arrayAsString = print_r($return, true);
+            \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des flux :'. $arrayAsString);
+            
+            return new JsonResponse(json_encode($return), 200, [], true);
+        }
+        else {
+            \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
+            return new JsonResponse(json_encode([]), 200, [], true);
+        }
     }
 
 }

@@ -157,7 +157,7 @@ class ApiPleiadeManager {
               $options['body'] = $inputs;
             }
           }
-          
+          \Drupal::logger('api_pastell_pleiade')->debug('requête incoming: '.$PASTELL_API_URL);
           try {
             $clientRequest = $this->client->request($method, $PASTELL_API_URL, $options);
             $body = $clientRequest->getBody()->getContents();
@@ -488,18 +488,18 @@ class ApiPleiadeManager {
 
   public function searchMyDocs($id_e) {
     $endpoints = $this->settings_pastell->get('field_pastell_documents_url');  // Endpoint field_pastell_documents_url de Pastell qui renvoi la liste des documents Pastell
-    //\Drupal::logger('api_pastell_documents')->info('function searchMyApps triggered !');
+    \Drupal::logger('api_pastell_pleiade')->alert('function searchMyApps triggered !');
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings_pastell->get('field_pastell_limit_documents'), 'pastell' );
   }
   public function searchMyEntities() {
     $endpoints =  $this->settings_pastell->get('field_pastell_entities_url');
-   // \Drupal::logger('api_pastell_entites')->info('function searchMyentities triggered !');
+    \Drupal::logger('api_pastell_pleiade')->alert('function searchMyentities triggered !');
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
        // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function searchMyFlux() {
     $endpoints =  $this->settings_pastell->get('field_pastell_flux_url');
-   // \Drupal::logger('api_pastell_entites')->info('function searchMyentities triggered !');
+    \Drupal::logger('api_pastell_pleiade')->alert('function searchMyFlux triggered !');
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell' );
        // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
