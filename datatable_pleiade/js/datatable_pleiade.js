@@ -51,24 +51,43 @@
                               var titre = donnees[i].titre;
                               var type = 'Nextcloud'; // Assuming 'Nextcloud' is the type for this item
                               var objectDate = donnees[i].creation;
+
+                              // Split the input string into date and time parts
+                              const [datePart, timePart] = objectDate.split(" ");
+
+                              // Split the date part into day, month, and year
+                              const [day, month, year] = datePart.split("/");
+
+                              // Split the time part into hours and minutes
+                              const [hours, minutes] = timePart.split(":");
+
+                              // Create a new Date object using the extracted values
+                              const dateObj = new Date(year, month - 1, day, hours, minutes);
+
+                              // Format the date object to the desired format: "YYYY-MM-DD HH:mm:ss"
+                              const formattedDate = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, "0")}-${dateObj
+                                .getDate()
+                                .toString()
+                                .padStart(2, "0")} ${dateObj.getHours().toString().padStart(2, "0")}:${dateObj.getMinutes().toString().padStart(2, "0")}:${dateObj.getSeconds().toString().padStart(2, "0")}`;
+
+
+
+
+
                               var etat = '<span class="badge py-2 px-4 bg-primary">' + donnees[i].status + '</span>';
                               var lien_pastell_detail = '<a target="_blank" href="' + donnees[i].fileUrl + '"><i data-feather="search" class="feather-icon"></i></a>';
-
                               var document_row = "\
                               <tr>\
                                 <td>" + titre + "</td>\
                                 <td>" + type + "</td>\
-                                <td>" + objectDate + "</td>\
+                                <td>" + formattedDate + "</td>\
                                 <td>" + etat + "</td>\
                                 <td><div class='btn-group dropend'>\
                                   <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
                                   <i data-feather='more-horizontal' class='feather-icon' id='dropdown-icon'></i>\
                                   </button>\
                                   <ul class='dropdown-menu'>\
-                                  " + lien_pastell_detail + "\
-                                  " + lien_pastell_edition + "\
-                                  " + lien_pastell_supp + "\
-                                  </ul>\
+                                  " + lien_pastell_detail + "\</ul>\
                                 </div></td>\
                                 </tr>\
                               ";
@@ -257,6 +276,7 @@
                   { "data": "type" },
                   {
                     "data": "objectDate", "render": function (data, type) {
+                      
                       return type === 'sort' ? data : moment(data).format('DD/MM/YYYY HH:mm');
                     }
                   },

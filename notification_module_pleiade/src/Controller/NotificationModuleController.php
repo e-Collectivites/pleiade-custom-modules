@@ -33,7 +33,7 @@ class NotificationModuleController extends ControllerBase {
         foreach ($notifications as $notification) {
           $title = $notification->get('field_nom_de_l_applicatif')->value;
           $body = $notification->get('body')->value;
-          $creationDate = $notification->getCreatedTime();
+          $creationDate = $notification->getChangedTime();
       
           $notificationAAfficher[] = [
             'application' => $title,

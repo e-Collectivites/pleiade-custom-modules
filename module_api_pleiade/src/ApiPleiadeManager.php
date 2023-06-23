@@ -350,14 +350,20 @@ class ApiPleiadeManager {
         
         $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
         if($user->get('field_nextcloud_api_key')->value){
-          $nc_key = ($user->get('field_nextcloud_api_key')->value);
+          $nc_key = $user->get('field_nextcloud_api_key')->value;
           // var_dump($nc_key);
         }
-        if($user->getDisplayName()){
-          $displayName = $user->getDisplayName();
-          // var_dump($displayName);
+        if($user->get('field_nextcloud_api_user')->value){
+          $displayName = $user->get('field_nextcloud_api_user')->value;
         }
-        
+        else {
+          if($user->getDisplayName()){
+            $displayName = $user->getDisplayName();
+            // var_dump($displayName);
+          }
+          
+        }
+        // echo $displayName;
         $token_authent = base64_encode($displayName.':'.$nc_key);
         // var_dump($token_authent);
         

@@ -166,74 +166,68 @@
         }
 
         // Make item draggable
-        function makeDraggable(item, dragZone) {
-          var isDragging = false;
-          var currentX;
-          var currentY;
-          var initialX;
-          var initialY;
-          var xOffset = 0;
-          var yOffset = 0;
+        // Make item draggable
+function makeDraggable(item) {
+  var isDragging = false;
+  var currentX;
+  var currentY;
+  var initialX;
+  var initialY;
+  var xOffset = 0;
+  var yOffset = 0;
 
-          if (!dragZone) {
-            dragZone = document.getElementById("post_it_dashboard");
-          }
+  item.addEventListener("mousedown", dragStart);
+  item.addEventListener("mouseup", dragEnd);
+  item.addEventListener("mousemove", drag);
 
-          dragZone.addEventListener("mousedown", dragStart);
-          dragZone.addEventListener("mouseup", dragEnd);
-          dragZone.addEventListener("mousemove", drag);
+  function dragStart(e) {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
 
-          function dragStart(e) {
-            if (e.target === item) {
-              initialX = e.clientX - xOffset;
-              initialY = e.clientY - yOffset;
+    isDragging = true;
 
-              if (e.target === item) {
-                isDragging = true;
-              }
+    item.style.cursor = "grabbing";
+  }
 
-              item.style.cursor = "grabbing";
-            }
-          }
+  function dragEnd(e) {
+    initialX = currentX - xOffset;
+    initialY = currentY - yOffset;
 
-          function dragEnd(e) {
-            initialX = currentX - xOffset;
-            initialY = currentY - yOffset;
+    isDragging = false;
 
-            isDragging = false;
+    item.style.cursor = "grab";
+  }
 
-            item.style.cursor = "grab";
-          }
+  function drag(e) {
+    if (isDragging) {
+      e.preventDefault();
 
-          function drag(e) {
-            if (isDragging) {
-              e.preventDefault();
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
 
-              currentX = e.clientX - initialX;
-              currentY = e.clientY - initialY;
+      var maxX = 990;
+      var maxY = 400;
+      currentX = Math.min(Math.max(currentX, 0), maxX);
+      currentY = Math.min(Math.max(currentY, 0), maxY);
 
-              var maxX = 990;
-              var maxY = 400;
-              currentX = Math.min(Math.max(currentX, 0), maxX);
-              currentY = Math.min(Math.max(currentY, 0), maxY);
+      xOffset = currentX;
+      yOffset = currentY;
 
-              xOffset = currentX;
-              yOffset = currentY;
+      setTranslate(currentX, currentY, item);
+    }
+  }
 
-              setTranslate(currentX, currentY, item);
-            }
-          }
-          function setTranslate(xPos, yPos, el) {
-            var maxX = 990; // Maximum x-coordinate limit
-            var maxY = 400; // Maximum y-coordinate limit
+  function setTranslate(xPos, yPos, el) {
+    var maxX = 990; // Maximum x-coordinate limit
+    var maxY = 400; // Maximum y-coordinate limit
 
-            // Limit xPos and yPos within the maximum bounds
-            xPos = Math.min(Math.max(xPos, 0), maxX);
-            yPos = Math.min(Math.max(yPos, 0), maxY);
+    // Limit xPos and yPos within the maximum bounds
+    xPos = Math.min(Math.max(xPos, 0), maxX);
+    yPos = Math.min(Math.max(yPos, 0), maxY);
 
-            el.style.transform = "translate(" + xPos + "px, " + yPos + "px)";
-          }
-        }
+    el.style.transform = "translate(" + xPos + "px, " + yPos + "px)";
+  }
+}
 
         // Remove item from container
         function removeItem(e) {

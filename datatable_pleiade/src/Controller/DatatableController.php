@@ -32,12 +32,14 @@ class DatatableController extends ControllerBase {
         
         $return = []; // our variable to fill with data returned by Pastell
         $nextcloudataApi = new ApiPleiadeManager();
-        $return = $nextcloudataApi->getNextcloudNotifs();
+        $return_nc = $nextcloudataApi->getNextcloudNotifs();
+        $tempstore = \Drupal::service('tempstore.private')->get('api_nextcloud_pleiade');
+        $tempstore->set('documents_nextcloud', $return_nc);
     
 
-        if($return){
+        if($return_nc){
 
-            $data = $return->ocs->data; // Access the 'data' property of the object
+            $data = $return_nc->ocs->data; // Access the 'data' property of the object
             
             foreach ($data as $item) {
                 if (!isset($item->subjectRichParameters->file)) {
