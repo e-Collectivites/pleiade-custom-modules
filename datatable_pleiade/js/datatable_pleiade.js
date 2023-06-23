@@ -70,10 +70,6 @@
                                 .toString()
                                 .padStart(2, "0")} ${dateObj.getHours().toString().padStart(2, "0")}:${dateObj.getMinutes().toString().padStart(2, "0")}:${dateObj.getSeconds().toString().padStart(2, "0")}`;
 
-
-
-
-
                               var etat = '<span class="badge py-2 px-4 bg-primary">' + donnees[i].status + '</span>';
                               var lien_pastell_detail = '<a target="_blank" href="' + donnees[i].fileUrl + '"><i data-feather="search" class="feather-icon"></i></a>';
                               var document_row = "\

@@ -3,7 +3,7 @@
   Drupal.behaviors.APInotificationBlocksBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
-      
+      if (drupalSettings.path.isFront) {
         once(
           "APInotificationBlocksBehavior",
           "body",
@@ -76,7 +76,7 @@
           };
           xhr.send();
         }); // end once
-      
+      }
     },
   };
 })(Drupal, drupalSettings, once);

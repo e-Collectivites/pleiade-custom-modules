@@ -3,7 +3,7 @@
   Drupal.behaviors.postitBehavior = {
     attach: function (context, settings) {
       "use strict";
-
+      if (drupalSettings.path.isFront) {
       once("postitBehavior", "body", context).forEach(() => {
 
         document.getElementById("delete-button").addEventListener("click", deleteAllItems);
@@ -281,6 +281,7 @@ function makeDraggable(item) {
 
         
       }); // end once foreach
+    }
     },
   };
 })(jQuery, once, Drupal);
