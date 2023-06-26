@@ -177,7 +177,7 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'zimbra') {
 
-       $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
+      $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
 
       \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
 
@@ -202,18 +202,24 @@ class ApiPleiadeManager
       //     $options['body'] = $inputs;
       //   }
       // }
+      if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
+        $ZIMBRA_API_URL = $api;
+      try {
+        $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
+        $body = $clientRequest->getBody()->getContents();
+      } catch (RequestException $e) {
+        \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      }
 
-      // try {
-      //   $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, $options);
-      //   $body = $clientRequest->getBody()->getContents();
-      // } catch (RequestException $e) {
-      //   \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      // }
-
-      // return Json::decode($body);
+      return Json::decode($body);
 
       ////////////////// ---------------> CODE POUR ROMAIN TEST API ZIMBRA  <-----------/////////////////
 
+        
+          // Zimbra API endpoint
+      } 
+      else
+      { 
           
           $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
           // Get the LemonLDAP::NG session cookie value
@@ -255,7 +261,7 @@ class ApiPleiadeManager
           // Process Zimbra API response
           return Json::decode($body);
           //$responseData = Json::decode($body);
-
+        }
       //     // Extract the preauth token from the response
       //     $preauthToken = (string)$responseData['soap:Envelope']['soap:Body']['AuthResponse']['authToken'];
 
@@ -477,8 +483,6 @@ class ApiPleiadeManager
   public function searchMyMails()
   {
     // $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
-    $user = \Drupal::currentUser();
-    $email = $user->getEmail();
     \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
     if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
       return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/zimbra_test.json', 'zimbra');

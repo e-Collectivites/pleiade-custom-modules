@@ -27,7 +27,7 @@ class PleiadeAjaxPastellController extends ControllerBase
             $tempstore->set('entites', $return);
             $arrayAsString = print_r($return, true);
             \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des entités :' . $arrayAsString);
-
+            
             return new JsonResponse(json_encode($return), 200, [], true);
         } else {
             \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');

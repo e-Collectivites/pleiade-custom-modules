@@ -57,7 +57,7 @@
                                     {
                                         var select_choice = document.getElementById('collectiviteChoice');
                                         if(select_choice){
-                                            select_choice.css("display", "none")
+                                            select_choice.style.display = "none";
                                         }
                                     }
                                     
@@ -75,7 +75,7 @@
                                 xhr.onloadend = function () {
 
                                     // Show menu
-                                    document.getElementById('collectiviteChoice').style.display = 'block';
+                                    // document.getElementById('collectiviteChoice').style.display = 'block';
 
                                     // Create an array to remove white space in choice at refresh with coll_id who is not an option
                                     var array_value_select = [];
@@ -103,12 +103,6 @@
                                     }
                                     // debug
                                     // console.log('Selected coll from Entites JS module = '+ document.getElementById('collectiviteChoice').value);
-
-                                    // Sortable area : we'll see later to include all the blocks (zimbra, etc...)
-                                    // new Sortable(areaSortable, {
-                                    //     animation: 150,
-                                    //     ghostClass: 'sortable-ghost'
-                                    //   });
 
                                 }
 
