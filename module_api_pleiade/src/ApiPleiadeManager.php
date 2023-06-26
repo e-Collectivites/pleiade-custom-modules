@@ -181,43 +181,43 @@ class ApiPleiadeManager
 
       \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $ZIMBRA_API_URL]);
 
-      $options = [
-        'headers' => [
-          'Content-Type' => 'application/json',
-          'Cookie' => 'llnglanguage=fr; lemonldap=' . $_COOKIE['lemonldap']
-        ],
-      ];
+      // $options = [
+      //   'headers' => [
+      //     'Content-Type' => 'application/json',
+      //     'Cookie' => 'llnglanguage=fr; lemonldap=' . $_COOKIE['lemonldap']
+      //   ],
+      // ];
 
-      if (!empty($inputs)) {
+      // if (!empty($inputs)) {
 
-        //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
+      //   //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
 
-        if ($method == 'GET') {
-          $ZIMBRA_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
-          foreach ($inputs as $param => $value) {
-            $ZIMBRA_API_URL .= '&' . $param . '=' . $value;
-          }
-        } else {
-          //POST request send data in array index form_params.
-          $options['body'] = $inputs;
-        }
-      }
+      //   if ($method == 'GET') {
+      //     $ZIMBRA_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+      //     foreach ($inputs as $param => $value) {
+      //       $ZIMBRA_API_URL .= '&' . $param . '=' . $value;
+      //     }
+      //   } else {
+      //     //POST request send data in array index form_params.
+      //     $options['body'] = $inputs;
+      //   }
+      // }
 
-      try {
-        $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, $options);
-        $body = $clientRequest->getBody()->getContents();
-      } catch (RequestException $e) {
-        \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      }
+      // try {
+      //   $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, $options);
+      //   $body = $clientRequest->getBody()->getContents();
+      // } catch (RequestException $e) {
+      //   \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      // }
 
-      return Json::decode($body);
+      // return Json::decode($body);
 
       ////////////////// ---------------> CODE POUR ROMAIN TEST API ZIMBRA  <-----------/////////////////
 
-        try {
+        
           // Zimbra API endpoint
-          $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url');
-
+          $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
+          
           $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
           // Get the LemonLDAP::NG session cookie value
           $sessionCookieValue = $_COOKIE['lemonldap'];
@@ -231,7 +231,7 @@ class ApiPleiadeManager
           $data = $value1 . $value2 . $value3 . $value4;
 
           $hmac = hash_hmac('sha256', $data, $key);
-          echo $hmac;
+          
           $client = new Client();
           $options = [
               'headers' => [
@@ -248,23 +248,26 @@ class ApiPleiadeManager
           ];
 
 
-
+        try {
           // Send request to Zimbra API
           $response = $client->request('GET', $zimbraApiUrl, $options);
           $body = $response->getBody()->getContents();
-          var_dump($client->request('POST', $zimbraApiUrl, $options));
+        } catch (RequestException $e) {
+            \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+          }
           // Process Zimbra API response
-          $responseData = Json::decode($body);
+          return Json::decode($body);
+          //$responseData = Json::decode($body);
 
-          // Extract the preauth token from the response
-          $preauthToken = (string)$responseData['soap:Envelope']['soap:Body']['AuthResponse']['authToken'];
+      //     // Extract the preauth token from the response
+      //     $preauthToken = (string)$responseData['soap:Envelope']['soap:Body']['AuthResponse']['authToken'];
 
-          // Use the preauth token for subsequent API requests
-          return $preauthToken;
-      } catch (RequestException $e) {
-          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-          // Handle the error as needed
-      }
+      //     // Use the preauth token for subsequent API requests
+      //     return $preauthToken;
+      // } catch (RequestException $e) {
+      //     \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      //     // Handle the error as needed
+      // }
     }
 
 
@@ -483,7 +486,7 @@ class ApiPleiadeManager
     if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
       return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/zimbra_test.json', 'zimbra');
     } else {
-      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') . 'home/' . $email . '/' . $this->settings_zimbra->get('field_zimbra_mail'), 'zimbra');
+      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') .  $this->settings_zimbra->get('field_zimbra_mail'), 'zimbra');
     }
   }
 
@@ -494,7 +497,7 @@ class ApiPleiadeManager
     if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
       return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json', 'zimbra');
     } else {
-      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') . 'home/' . $email . '/' . $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra');
+      return $this->curlGet([], [], $this->settings_zimbra->get('field_zimbra_url') . $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra');
     }
   }
 
