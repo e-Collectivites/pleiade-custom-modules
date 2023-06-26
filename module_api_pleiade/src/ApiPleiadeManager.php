@@ -216,7 +216,7 @@ class ApiPleiadeManager
 
         try {
           // Zimbra API endpoint
-          $zimbraApiUrl = 'https://courriel.sitiv.fr/service/preauth';
+          $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url');
 
           $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
           // Get the LemonLDAP::NG session cookie value
