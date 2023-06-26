@@ -3,13 +3,9 @@
 namespace Drupal\notification_module_pleiade\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-
-use Drupal\Component\Serialization\JSON;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\user\PrivateTempStoreFactory;
+
 
 
 class NotificationModuleController extends ControllerBase {
@@ -41,7 +37,7 @@ class NotificationModuleController extends ControllerBase {
             'creation_date' => $creationDate,
           ];
         }
-      
+
         return new JsonResponse($notificationAAfficher);
       }
 

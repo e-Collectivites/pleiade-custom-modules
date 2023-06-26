@@ -4,8 +4,6 @@ namespace Drupal\api_nextcloud_pleiade\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 
-use Drupal\Component\Serialization\JSON;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\module_api_pleiade\ApiPleiadeManager;
