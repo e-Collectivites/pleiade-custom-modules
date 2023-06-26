@@ -177,9 +177,9 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'zimbra') {
 
-      $ZIMBRA_API_URL = $api;
+       $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
 
-      \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $ZIMBRA_API_URL]);
+      \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
 
       // $options = [
       //   'headers' => [
@@ -214,9 +214,6 @@ class ApiPleiadeManager
 
       ////////////////// ---------------> CODE POUR ROMAIN TEST API ZIMBRA  <-----------/////////////////
 
-        
-          // Zimbra API endpoint
-          $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
           
           $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
           // Get the LemonLDAP::NG session cookie value
