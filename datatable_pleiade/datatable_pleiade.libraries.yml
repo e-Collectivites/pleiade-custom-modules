@@ -3,6 +3,8 @@ datatable_pleiade_js:
   js:
     js/datatable_pleiade.js: {}
     js/libs/moment.js: {}
+    js/libs/jquery.dataTables.min.js: {}
+    js/libs/dataTables.bootstrap5.min.js: {}  
 datatable_pleiade_css:
   version: 1.x
   css:

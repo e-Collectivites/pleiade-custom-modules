@@ -10,3 +10,76 @@
 div.dropend button{
     background: inherit!important;
 }
+
+
+#tablealldocs_wrapper .form-select {
+    margin: 0px 15px; 
+    width: 40%;  
+}
+#tablealldocs_wrapper .form-control {
+    margin-left: 15px;
+}
+
+#tablealldocs_wrapper label {  
+    display: flex;
+    align-items: center;
+}
+.dataTables_wrapper .col-md-6:first-child {
+    display: flex;
+    align-items: center;
+}
+#tablealldocs_wrapper .dataTables_filter {  
+    display: flex;
+    justify-content: flex-end;
+}
+.dataTables_wrapper>.row:first-child {
+    margin-bottom: 10px;
+}
+#tablealldocs_paginate .pagination{
+    justify-content: flex-end;
+}
+table.dataTable thead th,
+table.dataTable tfoot th {
+  font-weight: bold; }
+table.dataTable thead th,
+table.dataTable thead td {
+  padding: 10px 18px;
+  border-bottom: 1px solid #111111; }
+  table.dataTable thead th:active,
+  table.dataTable thead td:active {
+    outline: none; }
+table.dataTable tfoot th,
+table.dataTable tfoot td {
+  padding: 10px 18px 6px 18px;
+  border-top: 1px solid #111111; }
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+  cursor: pointer;
+  
+  background-repeat: no-repeat;
+  background-position: center right; }
+table.dataTable thead .sorting {
+  background-image: url("./images/sort_both.png"); }
+table.dataTable thead .sorting_asc {
+  background-image: url("./images/sort_asc.png"); }
+table.dataTable thead .sorting_desc {
+  background-image: url("./images/sort_desc.png"); }
+table.dataTable thead .sorting_asc_disabled {
+  background-image: url("./images/sort_asc_disabled.png"); }
+table.dataTable thead .sorting_desc_disabled {
+  background-image: url("./images/sort_desc_disabled.png"); }
+table.dataTable tbody tr {
+  background-color: white; }
+table.dataTable tbody tr.selected {
+  background-color: #b0bed9; }
+.page-item.active .page-link{
+  z-index: 0!important;
+}
+.table#tablealldocs{
+  width: 100%!important;
+}
+
+    

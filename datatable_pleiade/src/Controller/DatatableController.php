@@ -32,6 +32,9 @@ class DatatableController extends ControllerBase {
                 $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
                 $tempstore->set('documents_pastell', $return1);
             }
+            else{
+                $return1 = [];
+            }
             $formattedData = array_merge($formattedData, $return1);
         }
         
