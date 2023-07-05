@@ -13,4 +13,6 @@
  */
 function module_postit_pleiade_preprocess_page(&$variables){
 $variables['#attached']['library'][] = 'module_postit_pleiade/module_postit_pleiade_js';
+$variables['#attached']['library'][] = 'module_postit_pleiade/module_postit_pleiade_css';
+
 }

@@ -149,7 +149,7 @@
               var itemObject = items[i];
               var item = createItem(
                 itemObject.message,
-                180,
+                170,
                 15,
                 itemObject.color
               );
@@ -206,7 +206,7 @@ function makeDraggable(item) {
       currentY = e.clientY - initialY;
 
       var maxX = 990;
-      var maxY = 400;
+      var maxY = 10;
       currentX = Math.min(Math.max(currentX, 0), maxX);
       currentY = Math.min(Math.max(currentY, 0), maxY);
 

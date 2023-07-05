@@ -26,7 +26,7 @@ class MoodleController extends ControllerBase {
     $services_moodle = $this->settings_moodle->get('services_moodle');
 
     $moodleUrl = $moodle_url.'/login/token.php?username='.$username_moodle.'&password='.$password_moodle.'&service='.$services_moodle;
-    
+    // var_dump($moodleUrl);
     // Set parameters for retrieving all courses
     $requestParams = [
         'headers' => [],
@@ -64,8 +64,9 @@ class MoodleController extends ControllerBase {
                 "Content-Type" => "image/jpeg"
               ],
             ];
-            $clientRequest4 = $this->client->request('GET', $fileurl.'?token=146b998e4049174242a38f4b9a71b271', $requestParams4);
+            $clientRequest4 = $this->client->request('GET', $fileurl.'?token='.$token , $requestParams4);
             $base = $clientRequest4->getBody()->getContents();
+            
             $base64 = base64_encode($base);
             $mime = "image/jpeg";
             $img = ('data:' . $mime . ';base64,' . $base64);
@@ -73,14 +74,6 @@ class MoodleController extends ControllerBase {
             $courses->overviewfiles[0]->fileurl = $img;
         }
       }
-      
-      // $moodleUrl4 =  'https://preprod.ecollectivites.fr/moodle/webservice/pluginfile.php/26/course/overviewfiles/zimbra-logo-611x378.jpg?token=146b998e4049174242a38f4b9a71b271';
-      // // Make the request
-      // $clientRequest4 = $this->client->request('GET', $moodleUrl4, $requestParams4);
-      // $base = $clientRequest4->getBody()->getContents();
-      // $base64 = base64_encode($base);
-      // $mime = "image/jpeg";
-      // $img = ('data:' . $mime . ';base64,' . $base64);
       
       if ($response !== null) 
       {

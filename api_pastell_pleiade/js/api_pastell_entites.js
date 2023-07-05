@@ -98,7 +98,7 @@
                                         // on refresh, set the previous selected collectivite from localstorage
                                         document.getElementById('collectiviteChoice').value = localStorage.getItem('collectivite_id');
                                         // Now call document JS module function to get documents with our entity id
-                                        D
+                                        
                                         Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(document.getElementById('collectiviteChoice').value);
                                     }
                                     // debug

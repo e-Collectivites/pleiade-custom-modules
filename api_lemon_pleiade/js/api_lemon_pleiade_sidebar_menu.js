@@ -11,6 +11,12 @@
             xhr.onload = function () {
               if (xhr.status === 200) {
                 var donnees = JSON.parse(xhr.responseText);
+                // Check if xhr response is not null
+                  if (!donnees || donnees === null) {
+                    // Redirect to /user/logout URL
+                    window.location.href = "/user/logout";
+                    return;
+                  }
                 var menuHtml = '<div class="accordion" id="accordionExample">';
   
                 if(drupalSettings.module_general_pleiade.color_theme){

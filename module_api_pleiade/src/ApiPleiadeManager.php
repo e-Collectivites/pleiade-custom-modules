@@ -27,7 +27,7 @@ class ApiPleiadeManager
     if (!isset($_COOKIE['lemonldap'])) {
       $msg = 'Pas authentifié dans le SSO Lemon';
       \Drupal::logger('module_api_pleiade')->error($msg);
-      return;
+      // return;
     }
     $this->client = \Drupal::httpClient();
     // get our custom module settings

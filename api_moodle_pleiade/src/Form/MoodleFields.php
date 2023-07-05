@@ -60,6 +60,13 @@ class MoodleFields extends ConfigFormBase {
       '#title' => $this->t('Moodle Services'),
       '#default_value' => $config->get('services_moodle'),
     ];
+    
+    $form['field_moodle_block_id'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Afficher le bloc moodle le bureau'),
+      '#default_value' => $config->get('field_moodle_block_id'),
+      '#description' => $this->t('Check this box to display moodle_block.'),
+    ];
     return parent::buildForm($form, $form_state);
   }
   
@@ -74,7 +81,8 @@ class MoodleFields extends ConfigFormBase {
     $config->set('password_moodle', $form_state->getValue('password_moodle'));
     $config->set('function_moodle', $form_state->getValue('function_moodle'));
     $config->set('services_moodle', $form_state->getValue('services_moodle'));
-    
+    $config->set('field_moodle_block_id', $form_state->getValue('field_moodle_block_id'));
+
     
     $config->save();
     

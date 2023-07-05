@@ -43,7 +43,7 @@
               if (xhr.status === 200) {
                 var donnees = xhr.response;
                 // debug
-                console.log(donnees);
+                
                 if (donnees) {
                   var document_coll =
                     '\
@@ -406,6 +406,7 @@
                 </div>\
               </div>\
               ";
+              
                   document.getElementById("document_recent_id").innerHTML =
                     document_coll;
                 }
@@ -467,8 +468,9 @@
             // Reload datatable with the previous value
             reloadDataTable(previousValue);
           
-          // Listen for changes on the select form
-          document.addEventListener("input", function (event) {
+            // Listen for changes on the select form
+            document.addEventListener("input", function (event) {
+              if (event.target.id !== 'collectiviteChoice') return;
             // console.log('Optionvalue : ' + document.getElementById('collectiviteChoice').value);
             localStorage.setItem("collectivite_id", event.target.value);
             // Reload datatable with the new value
