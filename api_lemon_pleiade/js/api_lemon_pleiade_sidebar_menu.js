@@ -29,43 +29,50 @@
                 for (var i = 0; i < donnees.myapplications.length; i++) {
                   // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
                   menuHtml +=
-                  '<div style="max-width: 240px;"><div class="nav-small-cap has-arrow' +
-                  (localStorage.getItem("extended_menu") === "1" ? '' : ' collapsed') +
-                  (donnees.myapplications[i].Category.length > 25 ? ' long-category' : '') +
-                  '" data-bs-toggle="collapse" data-bs-target="#collapse' +
-                  i +
-                  '" aria-expanded="' +
-                  (localStorage.getItem("extended_menu") === "1" ? 'true' : 'false') +
-                  '" aria-controls="collapse' +
-                  i +
-                  '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
-                  donnees.myapplications[i].Category +
-                  '</span></div><ul style="background-color:' +
-                  color_theme +
-                  '"><div id="collapse' +
-                  i +
-                  '" class="accordion-collapse collapse' +
-                  (localStorage.getItem("extended_menu") === "1" ? ' show' : '') +
-                  '" aria-labelledby="headingOne"><div class="accordion-body">';
-                  for (
-                    var f = 0;
-                    f < donnees.myapplications[i].Applications.length;
-                    f++
-                  ) {
+                    '<div style="max-width: 240px;"><div class="nav-small-cap has-arrow' +
+                    (localStorage.getItem("extended_menu") === "1" ? "" : " collapsed") +
+                    (donnees.myapplications[i].Category.length > 25 ? " long-category" : "") +
+                    '" data-bs-toggle="collapse" data-bs-target="#collapse' +
+                    i +
+                    '" aria-expanded="' +
+                    (localStorage.getItem("extended_menu") === "1" ? "true" : "false") +
+                    '" aria-controls="collapse' +
+                    i +
+                    '"><i class="mdi mdi-dots-horizontal"></i><span class="hide-menu">' +
+                    donnees.myapplications[i].Category +
+                    "</span></div><ul style=\"background-color:" +
+                    color_theme +
+                    '"><div id="collapse' +
+                    i +
+                    '" class="accordion-collapse collapse' +
+                    (localStorage.getItem("extended_menu") === "1" ? " show" : "") +
+                    '" aria-labelledby="headingOne"><div class="accordion-body">';
+                  
+                  for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
                     // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
-                    const temp = Object.values(
-                      donnees.myapplications[i].Applications[f]
-                    );
-  
+                    const temp = Object.values(donnees.myapplications[i].Applications[f]);
+                    const appLogo = temp[0].AppLogo;
+                    const hasImageExtension = appLogo && (appLogo.endsWith(".png") || appLogo.endsWith(".jpg") || appLogo.endsWith(".jpeg") || appLogo.endsWith(".gif"));
+                    let Icon;
+
+                    if (appLogo && !hasImageExtension) {
+                      Icon = '<i class="feather fa-solid fa-' + appLogo + '"></i>';
+                    } else {
+                      Icon = '<i data-feather="arrow-right" class="feather-icon"></i>';
+                    }
+                    
                     menuHtml += // on créé ensuite le lien avec le title du lien et le la description, pour créer le bloc
                       '<a class="sidebar-link waves-effect waves-dark" title="' +
                       temp[0].AppDesc +
                       '" href="' +
                       temp[0].AppUri +
-                      '" aria-expanded="false" target="_blank" ><i data-feather="arrow-right" class="feather-icon"></i><span class="hide-menu">' +
+                      '" aria-expanded="false" target="_blank">' +
+                      Icon +
+                      '<span class="hide-menu px-2">' +
                       Object.keys(donnees.myapplications[i].Applications[f]) +
                       " </span></a>";
                   }
+                  
                   menuHtml += "</div></div></div>";
                 }
                

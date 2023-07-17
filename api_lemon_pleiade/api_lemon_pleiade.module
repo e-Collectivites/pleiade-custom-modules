@@ -40,12 +40,12 @@ function api_lemon_pleiade_preprocess_page(&$variables){
 } 
 
 
-function api_lemon_pleiade_page_attachments(array &$page) {
+// function api_lemon_pleiade_page_attachments(array &$page) {
 
-  if (\Drupal::service('path.matcher')->isFrontPage()) {
-  $page['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
-  }
-}
+//   if (\Drupal::service('path.matcher')->isFrontPage()) {
+//   $page['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
+//   }
+// }
 
 
 

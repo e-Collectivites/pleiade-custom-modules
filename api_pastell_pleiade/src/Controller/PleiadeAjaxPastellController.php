@@ -25,8 +25,8 @@ class PleiadeAjaxPastellController extends ControllerBase
             $return = $pastelldataApi->searchMyEntities();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('entites', $return);
-            $arrayAsString = print_r($return, true);
-            \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des entités :' . $arrayAsString);
+            // $arrayAsString = print_r($return, true);
+            // \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des entités :' . $arrayAsString);
             
             return new JsonResponse(json_encode($return), 200, [], true);
         } else {
@@ -45,8 +45,8 @@ class PleiadeAjaxPastellController extends ControllerBase
             $return = $pastelldataApi->searchMyFlux();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('flux', $return);
-            $arrayAsString = print_r($return, true);
-            \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des flux :' . $arrayAsString);
+            // $arrayAsString = print_r($return, true);
+            // \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des flux :' . $arrayAsString);
 
             return new JsonResponse(json_encode($return), 200, [], true);
         } else {

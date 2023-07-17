@@ -6,9 +6,5 @@
     display:inline-block;
     margin: 0 0 20px 0;
     width: 100%; 
-    position: fixed;
     z-index: 9;
   }  
-.message_avertissement div{
-    margin-left: -240px; 
-}

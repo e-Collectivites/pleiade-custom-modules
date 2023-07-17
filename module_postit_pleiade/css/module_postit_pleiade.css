@@ -9,6 +9,7 @@ div#post_it_dashboard {
 
 #delete-button {
     width: 10% !important;
+   
 }
 
 .no-resize {
@@ -18,3 +19,12 @@ div#post_it_dashboard {
   #postit_block_id{
     margin-bottom: 0.5rem !important;
   }
+  
+#post_it_dashboard .item{
+  border-radius:0 0 0 30px/45px;
+  
+  border-radius: 0;
+}
+.remove-btn{
+  font-family: 'Permanent Marker', cursive;
+}

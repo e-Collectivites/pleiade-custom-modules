@@ -10,7 +10,4 @@ api_lemon_pleiade_css:
   version: 1.x
   css:
     theme:
-      css/api_lemon_pleiade.css: {}
-sortable_pleiade_js:
- js:
-   js/libs/sortable.min.js: { preprocess: false }
+      css/api_lemon_pleiade.css: {}  

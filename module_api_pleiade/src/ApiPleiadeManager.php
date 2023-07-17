@@ -124,17 +124,18 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'pastell') {
 
+      
       if ($this->settings_pastell->get('field_pastell_auth_method') == 'cas' || $this->settings_pastell->get('field_pastell_auth_method') == 'oidc') {
         $PT_request_url = $api . '?auth=cas';
       } else {
         $PT_request_url = $api;
-
       }
+      
       // ProxyTicket
       // On utilise le sergvice du module CAS Drupal\cas\Service\CasProxyHelper;
       $proxy_ticket = \Drupal::service('cas.proxy_helper')->getProxyTicket($PT_request_url);
       
-      \Drupal::logger('api_pastell_pleiade')->debug('PT: ' . $proxy_ticket);
+      \Drupal::logger('api_pastell_pleiade')->alert('PT: ' . $proxy_ticket);
 
       $PASTELL_API_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
 
@@ -461,14 +462,14 @@ class ApiPleiadeManager
   {
     $endpoints = $this->settings_pastell->get('field_pastell_entities_url');
     \Drupal::logger('api_pastell_pleiade')->alert('function searchMyentities triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function searchMyFlux()
   {
     $endpoints = $this->settings_pastell->get('field_pastell_flux_url');
     \Drupal::logger('api_pastell_pleiade')->alert('function searchMyFlux triggered !');
-    return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
 
