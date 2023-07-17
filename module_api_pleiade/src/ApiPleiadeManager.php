@@ -182,41 +182,16 @@ class ApiPleiadeManager
 
       \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
 
-      // $options = [
-      //   'headers' => [
-      //     'Content-Type' => 'application/json',
-      //     'Cookie' => 'llnglanguage=fr; lemonldap=' . $_COOKIE['lemonldap']
-      //   ],
-      // ];
-
-      // if (!empty($inputs)) {
-
-      //   //  \Drupal::logger('api_zimbra_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs ]);
-
-      //   if ($method == 'GET') {
-      //     $ZIMBRA_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
-      //     foreach ($inputs as $param => $value) {
-      //       $ZIMBRA_API_URL .= '&' . $param . '=' . $value;
-      //     }
-      //   } else {
-      //     //POST request send data in array index form_params.
-      //     $options['body'] = $inputs;
-      //   }
-      // }
       if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
         $ZIMBRA_API_URL = $api;
-      try {
-        $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
-        $body = $clientRequest->getBody()->getContents();
-      } catch (RequestException $e) {
-        \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      }
-
-      return Json::decode($body);
-
-      ////////////////// ---------------> CODE POUR ROMAIN TEST API ZIMBRA  <-----------/////////////////
-
-        
+        try {
+          $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
+          $body = $clientRequest->getBody()->getContents();
+        } catch (RequestException $e) {
+          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        }
+  
+        return Json::decode($body);
           // Zimbra API endpoint
       } 
       else
