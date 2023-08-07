@@ -188,7 +188,7 @@ class ApiPleiadeManager
           $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
           $body = $clientRequest->getBody()->getContents();
         } catch (RequestException $e) {
-          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessag>
         }
   
         return Json::decode($body);
@@ -196,58 +196,108 @@ class ApiPleiadeManager
       } 
       else
       { 
-          
-          $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-          // Get the LemonLDAP::NG session cookie value
-          $sessionCookieValue = $_COOKIE['lemonldap'];
-          $value1 = $user->getEmail();
-          $value2 = 'name';
-          $value3 = '0';
-          $value4 = time();
+       $sessionCookieValue = $_COOKIE['lemonldap'];
 
-          $key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key
-
-          $data = $value1 . $value2 . $value3 . $value4;
-
-          $hmac = hash_hmac('sha256', $data, $key);
-          
-          $client = new Client();
-          $options = [
-              'headers' => [
-                  'Cookie' => 'lemonldap=' . $sessionCookieValue,
-                  'Content-Type' => 'application/json',
-              ],
-              'query' => [
-                'preauth' => $hmac, // Include the preauth parameter
-                'account' => $value1,
-                'timestamp' => $value4,
-                'expire' => '0'
-              ],
-              'verify' => false, // Adjust this option based on your SSL/TLS configuration
-          ];
-
-
-        try {
-          // Send request to Zimbra API
-          $response = $client->request('GET', $zimbraApiUrl, $options);
-          $body = $response->getBody()->getContents();
-        } catch (RequestException $e) {
-            \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-          }
-          // Process Zimbra API response
-          return Json::decode($body);
-          //$responseData = Json::decode($body);
+        // Get the user's email and other required data
+        $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+        $value1 = $user->getEmail();
+        $value2 = 'name';
+        $value3 = '0';
+        $value4 = time() * 1000; // Convert to milliseconds as the original code did
+        
+        $key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key   
+        
+                  $data = $value1 ."|". $value2 ."|". $value3 ."|". $value4;
+        //              echo $data;
+        $hmac = hash_hmac('sha1', $data, $key);
+        
+        // Construct the preauth URL
+        $WEB_MAIL_PREAUTH_URL = "https://courriel.sitiv.fr/service/preauth"; // Replace with your preauth URL
+        $preauthURL = $zimbraApiUrl . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" .>
+        
+        
+        // Set up the headers and data as needed for your request.
+        $headers = [
+          'Content-Type: application/json',
+          'Cookie: lemonldap=' . $sessionCookieValue, // Replace with your cookie value
+        ];
+        
+        // Initialize cURL session
+        $ch = curl_init();
+        
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_URL, $preauthURL); // Set the URL
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the transfer as a string instead of outputtin>
+        curl_setopt($ch, CURLOPT_HEADER, true); // Include the response headers in the output
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configurat>
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the custom headers
+        
+        // Execute the cURL request
+        $response = curl_exec($ch);
+        $pattern = '/ZM_AUTH_TOKEN=([^;]+)/';
+        
+                // Check for cURL errors
+        if (curl_errno($ch)) {
+            echo 'cURL error: ' . curl_error($ch);
         }
-      //     // Extract the preauth token from the response
-      //     $preauthToken = (string)$responseData['soap:Envelope']['soap:Body']['AuthResponse']['authToken'];
-
-      //     // Use the preauth token for subsequent API requests
-      //     return $preauthToken;
-      // } catch (RequestException $e) {
-      //     \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      //     // Handle the error as needed
-      // }
-    }
+        
+        // Get the HTTP response code
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        // Close cURL session
+        curl_close($ch);
+        
+        if (preg_match($pattern, $response, $matches)) {
+            // Extract the token value from the first capturing group ($matches[1])
+            $zmAuthToken = $matches[1];
+        
+        // Get the Zimbra SOAP API endpoint URL from the settings (replace 'field_zimbra_url' with the actual f>
+        $apiEndpoint = $this->settings_zimbra->get('field_zimbra_url') .'service/soap';
+        
+        // Get the Zimbra SearchRequest value from the settings (replace 'field_zimbra_agenda' with the actual >
+        $searchRequest = $endpoint;
+        //$searchRequest = htmlspecialchars($searchRequest);
+        // The SOAP request XML
+        $requestXml = 
+        '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+            <soap:Header>
+                <context xmlns="urn:zimbra">
+                    <format type="js"/>
+                    <authToken>' . $zmAuthToken . '</authToken>
+                </context>
+            </soap:Header>
+            <soap:Body>' . $searchRequest . '</soap:Body>
+        </soap:Envelope>';
+        
+        //echo $requestXml;
+        
+        // Create cURL resource
+        $curl = curl_init();
+        
+        // Set cURL options
+        curl_setopt($curl, CURLOPT_URL, $apiEndpoint);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $requestXml);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/soap+xml'));
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification (use with caution)
+        
+        // Execute the cURL request
+        $responseXml = curl_exec($curl);
+        
+        // Check for cURL errors
+        if (curl_errno($curl)) {
+            echo "cURL Error: " . curl_error($curl);
+        }
+        
+        // Close cURL resource
+        curl_close($curl);
+        }
+        //var_dump($responseXml);
+        // Return the JSON response
+        
+        
+        return Json::decode($responseXml); 
 
 
     ////////////////////////////////////////////////////////
