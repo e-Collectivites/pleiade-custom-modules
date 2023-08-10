@@ -178,6 +178,7 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'zimbra') {
 
+      $zimbraApiUrl = $this->settings_zimbra->get('field_zimbra_url') .'service/preauth';
 
       \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
 
@@ -195,57 +196,24 @@ class ApiPleiadeManager
       } 
       else
       { 
-$domainPlusTokenValue = $this->settings_zimbra->get('token_plus_domain');
+       $sessionCookieValue = $_COOKIE['lemonldap'];
 
-        // Initialiser un tableau pour stocker les objets.
-        $domainTokenArray = [];
+// Get the user's email and other required data
+$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+$value1 = $user->getEmail();
+$value2 = 'name';
+$value3 = '0';
+$value4 = time() * 1000; // Convert to milliseconds as the original code did
 
-        // Diviser la valeur en lignes (séparées par "\n").
-        $lines = explode("\n", $domainPlusTokenValue);
+$key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key   
 
-        // Parcourir chaque ligne.
-        foreach ($lines as $line) {
-            // Diviser la ligne en domaine et token (séparés par "| |").
-            $parts = explode("| |", $line);
-            
-            // Vérifier s'il y a deux parties (domaine et token).
-            if (count($parts) === 2) {
-                $domain = trim($parts[0]);
- 		$token = trim($parts[1]);               
-                // Créer un objet avec les propriétés domaine et token.
-                $domainToken = (object) [
-                    'domain' => $domain,
-                    'token' => $token,
-                ];
-                
-                // Ajouter l'objet au tableau.
-                $domainTokenArray[] = $domainToken;
-            }
-        }
-
-        $responseJson = array();
-        foreach ($domainTokenArray as $domainToken) {      
-		 $sessionCookieValue = $_COOKIE['lemonldap'];
-
-		// Get the user's email and other required data
-		$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-		$value1 = $user->getEmail();
-		$value2 = 'name';
-		$value3 = '0';
-		$value4 = time() * 1000; // Convert to milliseconds as the original code did	
-
-        	$key = $domainToken->token; // Replace with your secret key   
-
-		//$key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key   
-	
-   	        $data = $value1 ."|". $value2 ."|". $value3 ."|". $value4;
+          $data = $value1 ."|". $value2 ."|". $value3 ."|". $value4;
 //		echo $data;
-		$hmac = hash_hmac('sha1', $data, $key);
+$hmac = hash_hmac('sha1', $data, $key);
 
 // Construct the preauth URL
-          	$WEB_MAIL_PREAUTH_URL = $domainToken->domain."service/preauth"; // Replace with your preauth URL
-
-		$preauthURL = $WEB_MAIL_PREAUTH_URL . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
+$WEB_MAIL_PREAUTH_URL = "https://courriel.sitiv.fr/service/preauth"; // Replace with your preauth URL
+$preauthURL = $zimbraApiUrl . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
 
 
 // Set up the headers and data as needed for your request.
@@ -267,6 +235,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the custom headers
 // Execute the cURL request
 $response = curl_exec($ch);
 $pattern = '/ZM_AUTH_TOKEN=([^;]+)/';
+
 // Check for cURL errors
 if (curl_errno($ch)) {
     echo 'cURL error: ' . curl_error($ch);
@@ -281,7 +250,10 @@ curl_close($ch);
 if (preg_match($pattern, $response, $matches)) {
     // Extract the token value from the first capturing group ($matches[1])
     $zmAuthToken = $matches[1];
-$apiEndpoint = $domainToken->domain .'service/soap';
+
+// Get the Zimbra SOAP API endpoint URL from the settings (replace 'field_zimbra_url' with the actual field name)
+$apiEndpoint = $this->settings_zimbra->get('field_zimbra_url') .'service/soap';
+
 // Get the Zimbra SearchRequest value from the settings (replace 'field_zimbra_agenda' with the actual field name)
 $searchRequest = $endpoint;
 //$searchRequest = htmlspecialchars($searchRequest);
@@ -312,7 +284,7 @@ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification (
 
 // Execute the cURL request
 $responseXml = curl_exec($curl);
-//var_dump($responseXml);
+
 // Check for cURL errors
 if (curl_errno($curl)) {
     echo "cURL Error: " . curl_error($curl);
@@ -320,14 +292,14 @@ if (curl_errno($curl)) {
 
 // Close cURL resource
 curl_close($curl);
-$responseJson[] = Json::decode($responseXml);
-//var_dump(($responseJson));
+//$responseArray = simplexml_load_string($responseXml);
+//$responseJson = json_encode($responseArray, JSON_PRETTY_PRINT);
 }
-          //$responseJson[] = $responseXml;
-          //var_dump(gettype($responseXml));
+//var_dump($responseXml);
 // Return the JSON response
-        }
-        return ($responseJson);}
+
+return Json::decode($bodyJson);    
+}
 }
     ////////////////////////////////////////////////////////
     //                                                    //

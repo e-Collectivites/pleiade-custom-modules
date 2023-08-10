@@ -5,7 +5,12 @@
 .fc-scrollgrid-sync-table, .fc-scrollgrid-section-header {
     display: none;
 }
-
+th.d-flex.expediteur {
+    width: 20%;
+}
+.content-mail{
+width: 480px;
+}
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;

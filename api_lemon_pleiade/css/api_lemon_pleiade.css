@@ -37,6 +37,7 @@
 
 div.long-category span.hide-menu{
     line-height: 20px;
+	padding: 0px 12px 0 0px;
 }
 
 #block_appli_lemon div:first-child i , #block_appli_lemon div:first-child img{

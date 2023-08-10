@@ -32,33 +32,26 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('api_zimbra_pleiade.settings');
     
-    $form['field_zimbra_url'] = [
-        '#type' => 'textfield',
-        '#title' => $this->t('Zimbra url'),
-        '#default_value' => $config->get('field_zimbra_url'),
-        // '#value' => $config->get('field_zimbra_url'),
-        '#description' => $this->t('Enter the full Zimbra url, ex: https://zimbra.mydomain.com, with a "/" at the end.'),
-      ];
     $form['field_zimbra_mail'] = [
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => $this->t('Zimbra endpoint Mails'),
       '#default_value' => $config->get('field_zimbra_mail'),
       // '#value' => $config->get('field_zimbra_url'),
-      '#description' => $this->t('Enter the Zimbra endpoint for mails'),
+      '#description' => $this->t('Enter the Zimbra SOAP request for mails, start with "SearchRequest and end with /SearchRequest"')
     ];
     $form['field_zimbra_agenda'] = [
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => $this->t('Zimbra endpoint Agenda'),
       '#default_value' => $config->get('field_zimbra_agenda'),
       // '#value' => $config->get('field_zimbra_url'),
-      '#description' => $this->t('Enter the Zimbra endpoint for agenda'),
+      '#description' => $this->t('Enter the Zimbra SOAP request for agenda, start with "SearchRequest and end with /SearchRequest"'),
     ];
-    $form['zm_auth_token'] = [
-      '#type' => 'textfield',
-      '#title' => t('Token Authenticator Zimbra.'),
-      '#default_value' => $config->get('zm_auth_token'),
-      '#description' => $this->t('Authentification Token for ZIMBRA API')
-    ];   
+$form['token_plus_domain'] = [
+      '#type' => 'textarea',
+      '#title' => t('Domain + Token Authenticator Zimbra .'),
+      '#default_value' => $config->get('token_plus_domain'),
+      '#description' => $this->t('Separate domain and token with "| |". ex : domain.fr| |vrbhuoizfbguisbvgds')
+    ];    
     $form['field_zimbra_auth_method'] = [
       '#type' => 'select',
       '#title' => t('Méthode d\'authentification.'),
@@ -89,12 +82,11 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Retrieve the configuration.
     $config = $this->config('api_zimbra_pleiade.settings');
+ $config->set('token_plus_domain', $form_state->getValue('token_plus_domain'));
     $config->set('field_zimbra_auth_method', $form_state->getValue('field_zimbra_auth_method'));
-    $config->set('field_zimbra_url', $form_state->getValue('field_zimbra_url'));
     $config->set('field_zimbra_mail', $form_state->getValue('field_zimbra_mail'));
     $config->set('field_zimbra_agenda', $form_state->getValue('field_zimbra_agenda'));
     $config->set('field_zimbra_for_demo', $form_state->getValue('field_zimbra_for_demo'));
-    $config->set('zm_auth_token', $form_state->getValue('zm_auth_token'));
     $config->save();
     
     parent::submitForm($form, $form_state);

@@ -17,7 +17,7 @@
           xhr.onload = function () {
             if (xhr.status === 200) {
               var donnees = xhr.response;
-              console.log(donnees)
+//              console.log(donnees)
               const div = document.querySelector("#notification_alert");
               if (donnees.length > 0 && div) {
                 window.onload = function () {
