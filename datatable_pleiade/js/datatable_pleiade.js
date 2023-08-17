@@ -123,7 +123,7 @@
                       var lien_nc_detail =
                         '<a target="_blank" href="' +
                         donnees[i].fileUrl +
-                        '"><i data-feather="search" class="feather-icon"></i></a>';
+                        '"><i class="fa fa-2x fa-eye" aria-hidden="true"></i></a>';
                       var document_row =
                         "\
                               <tr>\
@@ -141,7 +141,7 @@
                         "</td>\
                                 <td><div class='btn-group dropend'>\
                                   <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
-                                  <i data-feather='more-horizontal' class='feather-icon' id='dropdown-icon'></i>\
+                                  <i class='fa fa-lg fa-ellipsis-h d-flex align-items-center justify-content-center' id='dropdown-icon'></i>\
                                   </button>\
                                   <ul class='dropdown-menu'>\
                                   " +
@@ -340,19 +340,19 @@
                         donnees[i].id_d +
                         "&id_e=" +
                         donnees[i].id_e +
-                        '"><i data-feather="search" class="feather-icon"></i></a>';
+                        '"><i class="fa fa-2x fa-eye" aria-hidden="true"></i></a>';
                       if (
                         last_etat == "creation" ||
                         last_etat == "modification"
                       ) {
                         var lien_pastell_edition =
-                          '<a  target="_blank" href="' +
+                          '<a class="d-flex" target="_blank" href="' +
                           pastell_url +
                           "Document/edition?id_d=" +
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '"><i data-feather="edit" class="feather-icon"></i></a>';
+                          '"><i class="fa fa-2x fa-pencil-square-o" aria-hidden="true"></i></a>';
                         var lien_pastell_supp =
                           '<a target="_blank" href="' +
                           pastell_url +
@@ -360,7 +360,7 @@
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '&action=supression"><i data-feather="trash-2" class="feather-icon"></i></a>';
+                          '&action=supression"><i class="fa fa-2x fa-trash-o" aria-hidden="true"></i></a>';
                       }
                       document_coll +=
                         "\
@@ -379,7 +379,7 @@
                         "</td>\
                             <td><div class='btn-group dropend'>\
                                   <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
-                                  <i data-feather='more-horizontal' class='feather-icon' id='dropdown-icon'></i>\
+                                  <i class='fa fa-lg fa-ellipsis-h' id='dropdown-icon'></i>\
                                   </button>\
                                   <ul class='dropdown-menu'>\
                                   " +
@@ -422,8 +422,7 @@
               console.log("AJAX call timed out");
             };
             xhr.onloadend = function () {
-              // feather icon for doc links
-              feather.replace();
+              
               // Datatables effect on doc list
               $("#tablealldocs").DataTable({
                 columns: [

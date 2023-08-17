@@ -93,10 +93,6 @@ for (var k = 0; k < donneesArray.length; k++) {
                     };
                     xhr.onloadend = function () {
 
-                    
-                      
-                    // feather icons
-                    feather.replace();
                     };
 
                     xhr.send();

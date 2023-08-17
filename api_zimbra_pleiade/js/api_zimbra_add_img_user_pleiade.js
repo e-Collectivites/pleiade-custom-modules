@@ -51,10 +51,6 @@
                     };
                     xhr.onloadend = function () {
 
-                    
-                      
-                    // feather icons
-                    feather.replace();
                     };
 
                     xhr.send();

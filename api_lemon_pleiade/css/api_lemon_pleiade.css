@@ -1,9 +1,9 @@
-
 :root {
     --global-color: #1f3889;
-  }
-  #menuTestLemon2 .sidebar-link, #menuPastell .sidebar-link, #menuLogMetiers .sidebar-link {
-    padding: 2px 0 0 5px!important;
+}
+
+#menuLemon .sidebar-link, #menuPastell .sidebar-link, #menuLogMetiers .sidebar-link {
+    padding: 2px 0 0 5px !important;
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -28,24 +28,51 @@
     /* white-space: nowrap; */
     cursor: pointer;
 }
+
 .accordion-body {
-    padding: 0rem 0rem 0rem 0!important;
-}
-.feather{
-    margin: 0 2px 0 5px!important;
+    padding: 0rem 0rem 0rem 0 !important;
 }
 
-div.long-category span.hide-menu{
+.feather {
+    margin: 0 2px 0 5px !important;
+}
+
+div.long-category span.hide-menu {
     line-height: 20px;
-	padding: 0px 12px 0 0px;
+    padding: 0px 12px 0 0px;
 }
 
-#block_appli_lemon div:first-child i , #block_appli_lemon div:first-child img{
+#block_appli_lemon div:first-child i, #block_appli_lemon div:first-child img {
     width: 50px;
     height: 50px;
 }
 
-
-#block_appli_lemon a:hover{
+#block_appli_lemon a:hover {
     color: var(--global-color);
+}
+
+#main-wrapper[data-sidebartype=mini-sidebar] #sidebarnav:not(.extended_menu) i.fa:not(.fa-book) {
+    margin: 0 15px !important;
+}
+
+#menuLemon .sidebar-link, .sidebar-nav ul .sidebar-item .sidebar-link {
+    padding: 2px 0 0 5px;
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    position: relative;
+    line-height: 25px;
+    font-size: 16px;
+    opacity: 0.6;
+    color: #fff;
+    border-left: 3px solid transparent;
+}
+
+#menuLemon .sidebar-nav .has-arrow::after {
+    top: 15px !important;
+    right: 3px !important;
+}
+
+#lemon_block_id i{
+    color: inherit!important;
 }

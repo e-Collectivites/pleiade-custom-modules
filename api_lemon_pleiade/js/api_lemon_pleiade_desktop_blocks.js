@@ -42,7 +42,7 @@
                         const appLogoURL = drupalSettings.api_lemon_pleiade.field_lemon_url + "/static/common/apps/" + appLogo;
                         logoHTML = `<div class="w-25 d-flex justify-content-end px-2"><img src="${appLogoURL}" alt="App Logo" class="app-logo"></div>`;
                       } else {
-                        logoHTML = `<div class="w-25 d-flex justify-content-end px-2"><i class="fa-3x fa-solid fa-${appLogo}"></i></div>`;
+                        logoHTML = `<div class="w-25 d-flex justify-content-end px-2"><i class="fa fa-3x fa-solid fa-${appLogo}"></i></div>`;
                       }
                     }
                     else

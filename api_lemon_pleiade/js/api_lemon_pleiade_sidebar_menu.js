@@ -56,9 +56,9 @@
                     let Icon;
 
                     if (appLogo && !hasImageExtension) {
-                      Icon = '<i class="feather fa-solid fa-' + appLogo + '"></i>';
+                      Icon = '<i class="fa fa-solid fa-' + appLogo + '"></i>';
                     } else {
-                      Icon = '<i data-feather="arrow-right" class="feather-icon"></i>';
+                      Icon = '<i class="fa fa-arrow-right" aria-hidden="true"></i>';
                     }
                     
                     menuHtml += // on créé ensuite le lien avec le title du lien et le la description, pour créer le bloc
@@ -78,8 +78,7 @@
                
                 menuHtml += "</div>";
   
-                document.getElementById("menuTestLemon2").innerHTML = menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuTestLemon2
-                feather.replace();
+                document.getElementById("menuLemon").innerHTML = menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuLemon
                 // Fo  nction pour gérer le changement de la case à cocher
                 function handleCheckboxChange() {
                   const checkbox = document.querySelector('input[name="extended_menu"]');
