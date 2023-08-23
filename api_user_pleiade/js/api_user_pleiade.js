@@ -16,7 +16,7 @@
             intro: "Bienvenue sur le guide interactif du Bureau Virtuel Pléiade",
           },
           {
-            element: document.querySelector("#menuTestLemon2"),
+            element: document.querySelector("#menuLemon"),
             intro: "En cliquant sur les menus, vous pouvez ici accéder à vos différents applicatifs.",
           },
           {
@@ -54,12 +54,7 @@
           intro: "Si vous voulez personnaliser votre bureau, cliquez ici.",
           position: 'left'
         });
-        
-        steps.push({
-          element: document.querySelector("#sntch_button"),
-          intro: "Une interrogation ? Notre assistant virtuel est à votre service."
-        });
-        
+
         var interactiveGuidElement = document.getElementById("interactive_guid");
         if (interactiveGuideEnabled && interactiveGuidElement) {
           interactiveGuidElement.addEventListener("click", function () {

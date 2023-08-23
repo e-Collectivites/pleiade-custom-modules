@@ -13,6 +13,15 @@
           // Retrieve saved items on page load
           window.addEventListener("load", retrieveItems);
           // Create item with title, message, and remove button
+          // Make item editable on double-click
+          function makeEditable(item) {
+            var p = item.querySelector("p");
+            p.setAttribute("contenteditable", "true");
+            p.addEventListener("blur", function () {
+              saveItems();
+            });
+          }
+
           function createItem(message, top, left, color) {
             var item = document.createElement("div");
             item.classList.add("item");
@@ -42,10 +51,12 @@
             p.style.height = "150px";
 
             // Add CSS properties for overflow
-            p.style.overflow = "hidden";
-            p.style.overflowY = "scroll";
+            // p.style.overflow = "hidden";
+            p.style.overflowY = "auto";
             p.style.cursor = "grab";
             p.style.fontSize = "12px";
+
+            
             item.appendChild(p);
 
             // Create a new <span> element with the "remove-btn" class and set its text content to "X", then append it to the item
@@ -157,13 +168,15 @@
                   15,
                   itemObject.color
                 );
-                console.log(itemObject.transform);
+                
                 item.style.transform = itemObject.transform;
 
                 item.getElementsByTagName("p")[0].style.color =
                   itemObject.text_color;
                 item.getElementsByTagName("span")[0].style.color =
                   itemObject.text_color;
+
+                  makeEditable(item);
                 document.getElementById("post_it_dashboard").appendChild(item);
               }
             }
@@ -210,7 +223,7 @@
                 currentY = e.clientY - initialY;
 
                 var maxX = 990;
-                var maxY = 10;
+                var maxY = 250;
                 currentX = Math.min(Math.max(currentX, 0), maxX);
                 currentY = Math.min(Math.max(currentY, 0), maxY);
 
