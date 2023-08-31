@@ -27,3 +27,6 @@ $token_plus_domain = $config->get('token_plus_domain');
   $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['field_zimbra_for_demo'] = $field_zimbra_for_demo;
   $variables['#attached']['drupalSettings']['api_zimbra_pleiade']['token_plus_domain'] = $token_plus_domain;
 }
+function api_zimbra_pleiade_preprocess_node__landing_page(&$variables) {
+  $variables['#cache']['max-age'] = 0;
+}

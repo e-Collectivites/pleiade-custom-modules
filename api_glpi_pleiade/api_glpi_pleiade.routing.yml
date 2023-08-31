@@ -14,3 +14,10 @@ api_glpi_pleiade.glpi_list_tickets:
     _format: json
   requirements:
     _access: 'TRUE'
+api_glpi_pleiade.glpi_tickets:
+  path: '/glpi_tickets'
+  defaults:
+    _controller: '\Drupal\api_glpi_pleiade\Controller\GlpiController::glpi_tickets'
+    _title: 'Liste des tickets GLPI'
+  requirements:
+    _access: 'TRUE'

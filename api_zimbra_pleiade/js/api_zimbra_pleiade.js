@@ -40,7 +40,7 @@
                                                         <table class="table mb-0">\
                                                         <tbody>';
 
-              console.log(donnees);
+//              console.log(donnees);
               var linkEntities = "";
               if (donnees.userData.Body.SearchResponse.c) {
                 for (
@@ -48,6 +48,7 @@
                   i < donnees.userData.Body.SearchResponse.c.length;
                   i++
                 ) {
+const eArray = donnees.userData.Body.SearchResponse.c[i].e;
                   // var mail_expediteur = donnees.userData.Body.SearchResponse.c[i].e[1].a
                   var id_expediteur =
                     donnees.userData.Body.SearchResponse.c[i].id;
@@ -60,11 +61,12 @@
 
                   linkEntitie +=
                     '<tr class="d-inline-flex mail_content w-100" mail-expe="' +
-                    donnees.userData.Body.SearchResponse.c[i].e[0].a +
+                    donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].a +
                     '">\
                                                 <th class="col d-flex align-items-center profile-picture"></th>\
                                                 <th class="d-flex justify-content-center expediteur align-items-center">' +
-                    donnees.userData.Body.SearchResponse.c[i].e[0].p +
+                   (donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].p ? donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].p : donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].a) +
+
                     '</th>\
                                                 <th scope="col" class="content-mail">\
                                                     <span class="d-block fw-bold">' +
@@ -85,7 +87,7 @@
                     donnees.domainEntry +
                     "modern/email/Inbox/conversation/" +
                     id_expediteur +
-                    '"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>\
+                    '"><i class="fa fa-xl fa-solid fa-envelope" aria-hidden="true"></i></a>\
                                                 </th>\
                                             </tr>\
                                             ';

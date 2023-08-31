@@ -16,7 +16,7 @@ function api_glpi_pleiade_preprocess_page(&$variables){
   $config = \Drupal::config('api_glpi_pleiade.settings');
   $glpi_url = $config->get('glpi_url');
   $app_token = $config->get('app_token');
-  $bot_id = $config->get('endpoint_ticket');
+  $endpoint_ticket = $config->get('endpoint_ticket');
   
 
   //Add the JS library

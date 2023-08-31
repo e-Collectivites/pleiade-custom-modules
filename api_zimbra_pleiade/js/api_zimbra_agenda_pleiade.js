@@ -17,32 +17,30 @@
 
                     xhr.onload = function () {
                         if (xhr.status === 200) {
-                            var donneesArray = xhr.response;
-                            //console.log(donnees.Body.SearchResponse.appt);
-for (var k = 0; k < donneesArray.length; k++) {
-            var donnees = donneesArray[k];
-            //console.log(donnees);
+                            var donnees = xhr.response;
+//            console.log(donnees);
                             if(donnees){
-                              var event_array = [];
-                              document.cookie = "nbOfTasks=" + donnees.Body.SearchResponse.appt.length;
-                              for (var i = 0; i < donnees.Body.SearchResponse.appt.length; i++) {
-				  var start_task = donnees.Body.SearchResponse.appt[i].inst[0].s /1000;
-                                  var end_task = start_task + donnees.Body.SearchResponse.appt[i].dur /1000;
-                                  var endDate = new Date( end_task * 1000 + 3600 * 1000 *2);
-                                  var startDate = new Date( start_task * 1000 + 3600 * 1000*2 );
-                                  
-                                  event_array[i] = {
-                                      title: donnees.Body.SearchResponse.appt[i].name, // titre court
-                                      //title: '<b>'+donnees.Body.SearchResponse.appt[i].name + '</b>, <br><strong>Lieu : </strong>'+ donnees.Body.SearchResponse.appt[i].loc,
-				      start: startDate.toISOString().replace('.000Z', ''),
-                                      end: endDate.toISOString().replace('.000Z', ''),
-                                      url: drupalSettings.api_zimbra_pleiade.field_zimbra_url + 'modern/calendar/event/details/' + donnees.Body.SearchResponse.appt[i].invId + '?utcRecurrenceId=' + donnees.Body.SearchResponse.appt[i].inst[0].ridZ + '&start=' + donnees.Body.SearchResponse.appt[i].inst[0].s + '&end=' + end_task *1000 ,
-                                      extendedProps: { // titre long avec du html pour te faire plaiz ;)
-                                          longTitle: '<b>'+donnees.Body.SearchResponse.appt[i].name + '</b>, <br><strong>Lieu : </strong>'+ donnees.Body.SearchResponse.appt[i].loc
-                                        }
-                                  }                              
-                              } 
+				var event_array = [];
+                            document.cookie = "nbOfTasks=" + donnees.userData.Body.SearchResponse.appt.length;
+                            for (var i = 0; i < donnees.userData.Body.SearchResponse.appt.length; i++) {
+                                var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s /1000;
+                                var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur /1000;
+                                var endDate = new Date( end_task * 1000 + 3600 * 1000 *2);
+                                var startDate = new Date( start_task * 1000 + 3600 * 1000*2 );
+                                
+                                event_array[i] = {
+                                    title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
+                                    //title: '<b>'+donnees.userData.Body.SearchResponse.appt[i].name + '</b>, <br><strong>Lieu : </strong>'+ donnees.userData.Body.SearchResponse.appt[i].loc,
+                                    start: startDate.toISOString().replace('.000Z', ''),
+                                    end: endDate.toISOString().replace('.000Z', ''),
+                                    url: donnees.domainEntry + 'modern/calendar/event/details/' + donnees.userData.Body.SearchResponse.appt[i].invId + '?utcRecurrenceId=' + donnees.userData.Body.SearchResponse.appt[i].inst[0].ridZ + '&start=' + donnees.userData.Body.SearchResponse.appt[i].inst[0].s + '&end=' + end_task *1000 ,
+                                    extendedProps: { // titre long avec du html pour te faire plaiz ;)
+                                        longTitle: '<b>'+donnees.userData.Body.SearchResponse.appt[i].name + '</b>, <br><strong>Lieu : </strong>'+ donnees.userData.Body.SearchResponse.appt[i].loc
+                                      }
+                                }                              
+                            } 
                                // debug
+
 //                              console.log(event_array);
                                   var calendarEl = document.getElementById("zimbra_block_agenda_id");
                                   var currentDateObj = new Date();
@@ -77,10 +75,8 @@ for (var k = 0; k < donneesArray.length; k++) {
   					}
                                   });
                                   calendar.render();
-                                  
+}                                  
                               }
-                            }
-                            }
                     };
                     xhr.onerror = function () {
                     console.log("Error making AJAX call");
