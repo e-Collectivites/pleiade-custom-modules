@@ -71,6 +71,14 @@ $form['token_plus_domain'] = [
       // '#value' => $config->get('field_zimbra_url'),
       '#description' => $this->t('Checkbox to enable demo mode'),
     ];   
+$form['lemon_group'] = [
+      '#type' => 'textfield',
+      '#title' => t('LemonLDAP name group for zimbra module'),
+      '#default_value' => $config->get('lemon_group'),
+      '#description' => $this->t('Lemon group name in lemonLDAP module ')
+    ]; 
+
+
     return parent::buildForm($form, $form_state);
   }
   
@@ -87,7 +95,8 @@ $form['token_plus_domain'] = [
     $config->set('field_zimbra_mail', $form_state->getValue('field_zimbra_mail'));
     $config->set('field_zimbra_agenda', $form_state->getValue('field_zimbra_agenda'));
     $config->set('field_zimbra_for_demo', $form_state->getValue('field_zimbra_for_demo'));
-    $config->save();
+    $config->set('lemon_group', $form_state->getValue('lemon_group'));    
+$config->save();
     
     parent::submitForm($form, $form_state);
   }

@@ -6,7 +6,9 @@ use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\cas\Service\CasProxyHelper;
-
+use Drupal\user\Entity\UserInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\user\Entity\User;
 /**
  * Basic manager of module.
  */
@@ -53,6 +55,10 @@ class ApiPleiadeManager
       $this->settings_nextcloud = \Drupal::config('api_nextcloud_pleiade.settings');
       \Drupal::logger('api_nextcloud_pleiade')->debug('module activé');
 
+    }
+	if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
+      $this->settings_glpi = \Drupal::config('api_glpi_pleiade.settings');
+      \Drupal::logger('api_glpi_pleiade')->debug('module activé');
     }
   }
 
@@ -329,6 +335,71 @@ $responseJson[] = Json::decode($responseXml);
         }
         return ($responseJson);}
 }
+
+    elseif ($application == 'glpi') {
+      $url_api_glpi = $api;
+      $glpi_url = $this->settings_glpi->get('glpi_url');
+      $app_token = $this->settings_glpi->get('app_token');
+      
+      // Load the current user.
+      $current_user = \Drupal::currentUser();
+
+      // Load the user entity.
+      $user = User::load($current_user->id());
+      $sessionCookieValue = $_COOKIE['lemonldap'];
+      // Check if the user entity is valid.
+      if ($user) {
+        // Get the value of the 'glpi_user_token' field.
+        $glpi_user_token = $user->get('field_glpi_user_token')->value;
+
+        // Use the $glpi_user_token value as needed.
+      }
+        $url1 = $glpi_url . '/apirest.php/initSession?app_token='.$app_token.'&user_token='.$glpi_user_token;
+      // // Initialize curl
+        $headers = [
+          'Cookie: lemonldap=' . $sessionCookieValue, // Replace with your cookie value
+        ];
+      $curl1 = curl_init($url1);
+      // // Set the request method to POST
+      curl_setopt($curl1, CURLOPT_POST, true);
+      // // Set the response format to JSON
+      
+      // // Set the option to return the response as a string
+      curl_setopt($curl1, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl1, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+      curl_setopt($curl1, CURLOPT_HTTPHEADER, $headers);  
+    // // Execute the request
+      $response1 = curl_exec($curl1);
+      // // Close the curl session
+      curl_close($curl1);
+      // // Decode the JSON response
+      $data = json_decode($response1);
+
+      // Récupérer la valeur du token
+      $sessionToken = $data->session_token;
+      // // Get the session token from the response
+       $url = $url_api_glpi .'?app_token='. $app_token  .'&session_token='.$sessionToken.'&expand_dropdowns=true';
+      // Session token obtained from initSession API
+      // // Initialize curl
+       $curl = curl_init($url);
+      // // Set the request method to GET 
+       curl_setopt($curl, CURLOPT_HTTPGET, true);
+      // // Set the response format to JSON
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+      // // Set the option to return the response as a string   
+       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      // // Execute the request 
+       $response = curl_exec($curl);
+      // // Close the curl session 
+       curl_close($curl);
+      // // Decode the JSON response
+         $response_data = Json::decode($response); 
+       return ($response_data);
+      //return new JsonResponse(json_encode('null'), 200, [], true);
+
+    }
+
     ////////////////////////////////////////////////////////
     //                                                    //
     //       REQUETE API Iparapheur doc à signer          //
@@ -587,6 +658,26 @@ $responseJson[] = Json::decode($responseXml);
       return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints . '?format=json', 'nextcloud');
     }
   }
+  //////////////////////////////////////////////////////////////
+  //                                                          //
+  //              FONCTIONS POUR API GLPI                     //
+  //                                                          //
+  //////////////////////////////////////////////////////////////
+
+
+  public function getGLPITickets()
+  {
+    \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+      return $this->curlGet([], [], $this->settings_glpi->get('glpi_url') .'/apirest.php/'. $endpoints  , 'glpi');
+    }
+  }
+
+
+
+
 
   /**
    * Function to return first element of the array, compatability with PHP 5, note that array_key_first is only available for PHP > 7.3.

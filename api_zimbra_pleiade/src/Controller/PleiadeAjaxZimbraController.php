@@ -11,6 +11,15 @@ use Drupal\module_api_pleiade\ApiPleiadeManager;
 class PleiadeAjaxZimbraController extends ControllerBase {
 
 public function zimbra_mails_query(Request $request) {
+
+$settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
+    // // API endpoint URL
+    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+    $groupData = $tempstore->get('groups');
+    if ($groupData !== NULL) {
+      $groupDataArray = explode('; ', $groupData);
+    }
+    if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
     $return = []; // Variable to store Zimbra data
     $zimbradataApi = new ApiPleiadeManager();
     $return = $zimbradataApi->searchMyMails();
@@ -72,31 +81,24 @@ public function zimbra_mails_query(Request $request) {
     } else {
         \Drupal::logger('zimbra_mails_query')->info('No API response');
     }
-return new JsonResponse(json_encode('null'), 200, [], true);
+	return new JsonResponse(json_encode('null'), 200, [], true);
+	}
 }
 
 
-
-/*    public function zimbra_tasks_query(Request $request){
-        $return = []; //our variable to fill with data returned by Zimbra
-        // Debug what's in request 
-        $zimbradataApi = new ApiPleiadeManager();
-        $return = $zimbradataApi->searchMyTasks();
-        if($return){
-            \Drupal::logger('zimbra_tasks_query')->info('Return $return: @return', ['@return' => $return ]);
-        
-	}
-        else
-        {
-            \Drupal::logger('zimbra_tasks_query')->info('aucun retour de l\'api');
-        }
-            return new JsonResponse(json_encode($return), 200, [], true);
-    }
-*/
 public function zimbra_tasks_query(Request $request){
-        $return = []; //our variable to fill with data returned by Zimbra
-        
+ 
+$settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
+    // // API endpoint URL
+    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+    $groupData = $tempstore->get('groups');
+    if ($groupData !== NULL) {
+      $groupDataArray = explode('; ', $groupData);
+    }
+    if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
 
+       $return = []; //our variable to fill with data returned by Zimbra
+        
         // Debug what's in request 
         $zimbradataApi = new ApiPleiadeManager();
         $returnEmailUser = $zimbradataApi->searchMySession();
@@ -158,6 +160,7 @@ public function zimbra_tasks_query(Request $request){
             \Drupal::logger('zimbra_tasks_query')->info('aucun retour de l\'api');
         }
         return new JsonResponse(json_encode('null'), 200, [], true);
-    }
+}    
+}
 
 }

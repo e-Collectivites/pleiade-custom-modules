@@ -46,7 +46,12 @@ class NextcloudFields extends ConfigFormBase {
       '#default_value' => $config->get('nextcloud_endpoint_notifs'),
       '#description' => $this->t('Nextcloud Endpoint'),
     ];
-
+$form['nextcloud_lemon_group'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('LemonLDAP Group for Nextcloud'),
+      '#default_value' => $config->get('nextcloud_lemon_group'),
+      '#description' => $this->t('Nextcloud Lemon Group'),
+    ];
 
 
     return parent::buildForm($form, $form_state);
@@ -62,7 +67,8 @@ class NextcloudFields extends ConfigFormBase {
       // Set the submitted configuration setting.
       ->set('nextcloud_url', $form_state->getValue('nextcloud_url'))
       ->set('nextcloud_endpoint_notifs', $form_state->getValue('nextcloud_endpoint_notifs'))
-      ->save();
+       ->set('nextcloud_lemon_group', $form_state->getValue('nextcloud_lemon_group'))
+	->save();
 
     parent::submitForm($form, $form_state);
   }

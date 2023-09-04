@@ -13,9 +13,19 @@ use Drupal\user\PrivateTempStoreFactory;
 class NextCloudController extends ControllerBase {
 
     public function notifs_query(Request $request){
-        $return = []; //our variable to fill with data returned by Pastell
+        $settings_nextcloud = \Drupal::config('api_nextcloud_pleiade.settings');
+    // // API endpoint URL
+    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
+    $groupData = $tempstore->get('groups');
+    if ($groupData !== NULL) {
+      $groupDataArray = explode('; ', $groupData);
+    }
+    if (in_array($settings_nextcloud->get('nextcloud_lemon_group'), $groupDataArray)) {
+
+	 $return = []; //our variable to fill with data returned by Pastell
         $nextcloudataApi = new ApiPleiadeManager();
         $return = $nextcloudataApi->getNextcloudNotifs();
         return new JsonResponse(json_encode($return), 200, [], true);
+ }
     }
 }
