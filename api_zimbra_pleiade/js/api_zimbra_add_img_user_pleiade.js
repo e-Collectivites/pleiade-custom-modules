@@ -5,7 +5,8 @@
         // Load on front page only,
         if (drupalSettings.path.isFront && drupalSettings.api_zimbra_pleiade.field_zimbra_mail) {
            
-          once("APIzimbraUserImgBehavior", "body", context).forEach(
+ setTimeout(function () { 
+         once("APIzimbraUserImgBehavior", "body", context).forEach(
             
             function () {
                     
@@ -57,6 +58,7 @@
 
                     
                 }); // fin once function
+}, 1000); // 1000 millisecondes = 1 seconde
             }
           },
         };

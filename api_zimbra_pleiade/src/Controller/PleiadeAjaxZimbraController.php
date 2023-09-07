@@ -32,10 +32,10 @@ $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
         // Extract domain from user's email
         $userDomain = substr(strrchr($userEmail, "@"), 1);
 
-        \Drupal::logger('zimbra_mails_query')->info('User Email: @email, User Domain: @domain', [
-            '@email' => $userEmail,
-            '@domain' => $userDomain
-        ]);
+       // \Drupal::logger('zimbra_mails_query')->info('User Email: @email, User Domain: @domain', [
+       //     '@email' => $userEmail,
+       //     '@domain' => $userDomain
+       // ]);
 
         // Retrieve configuration value
         $domainPlusToken = $this->config('api_zimbra_pleiade.settings')->get('token_plus_domain');
@@ -109,7 +109,7 @@ $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
             $userEmail = $returnEmailUser['mail'];
             $userDomain = substr(strrchr($userEmail, "@"), 1);
 
-            \Drupal::logger('zimbra_tasks_query')->info('Return $return: @return', ['@return' => $return ]);
+           // \Drupal::logger('zimbra_tasks_query')->info('Return $return: @return', ['@return' => $return ]);
             \Drupal::logger('zimbra_mails_query')->info('User Email: @email, User Domain: @domain', [
                 '@email' => $userEmail,
                 '@domain' => $userDomain

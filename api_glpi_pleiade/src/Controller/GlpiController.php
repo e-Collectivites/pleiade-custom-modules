@@ -32,7 +32,46 @@ class GlpiController extends ControllerBase
     if (in_array($settings_glpi->get('glpi_group'), $groupDataArray)) {
 	$glpiDataAPI = new ApiPleiadeManager();
       $return = $glpiDataAPI->getGLPITickets();
-      return new JsonResponse(json_encode($return), 200, [], true);
+$returnEmailUser = $glpiDataAPI->searchMySession();
+      $userEmail = $returnEmailUser['mail'];
+if ($return) {
+    $allTickets = array(); // Tableau pour stocker tous les tickets
+
+    foreach ($return as $ticket) { // Notez l'utilisation de "&" pour accéder au ticket par référence
+        // Extraire l'ID de chaque ticket
+        $ticketId = $ticket['id'];
+
+        // Effectuer la requête en utilisant $glpiDataAPI->getStatutActorGLPI() avec $ticketId
+        $statut = $glpiDataAPI->getStatutActorGLPI($ticketId);
+
+        // Créer un tableau pour stocker les données extraites de $newData
+        $newData = array();
+
+        foreach ($statut as $status) {
+            // Extraire le type et le users_id de chaque ticket
+            $type = $status['type'];
+            $users_id = $status['users_id'];
+
+            // Créer un nouvel objet JSON avec les informations extraites
+            $newTicketData = array(
+                'type' => $type,
+                'users_id' => $users_id
+            );
+
+            // Ajouter le nouvel objet JSON au tableau $newData
+            $newData[] = $newTicketData;
+        }
+
+        // Ajouter $newData à la fin du ticket actuel
+        $ticket['newData'] = $newData;
+
+        // Ajouter le ticket actuel au tableau de tous les tickets
+        $allTickets[] = $ticket;
+    }
+    
+      }
+ $allTickets['usermail'] = $userEmail;
+      return new JsonResponse(json_encode($allTickets), 200, [], true);
 
     }
   }

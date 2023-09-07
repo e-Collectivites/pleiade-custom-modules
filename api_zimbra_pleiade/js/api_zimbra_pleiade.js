@@ -73,7 +73,7 @@ const eArray = donnees.userData.Body.SearchResponse.c[i].e;
                     donnees.userData.Body.SearchResponse.c[i].su +
                     '</span>\
                                                     <span class="d-block fw-light">' +
-                    donnees.userData.Body.SearchResponse.c[i].fr.substr(0, 65) +
+                    donnees.userData.Body.SearchResponse.c[i].fr.substr(0, 130) +
                     "...  " +
                     '</span>\
                                                 </th>\

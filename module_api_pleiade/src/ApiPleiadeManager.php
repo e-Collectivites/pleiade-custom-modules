@@ -56,7 +56,7 @@ class ApiPleiadeManager
       \Drupal::logger('api_nextcloud_pleiade')->debug('module activé');
 
     }
-	if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
+	if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
       $this->settings_glpi = \Drupal::config('api_glpi_pleiade.settings');
       \Drupal::logger('api_glpi_pleiade')->debug('module activé');
     }
@@ -185,7 +185,7 @@ class ApiPleiadeManager
     elseif ($application == 'zimbra') {
 
 
-      \Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
+      //\Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
 
       if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
         $ZIMBRA_API_URL = $api;
@@ -193,7 +193,7 @@ class ApiPleiadeManager
           $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
           $body = $clientRequest->getBody()->getContents();
         } catch (RequestException $e) {
-          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+         // \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
         }
   
         return Json::decode($body);
@@ -675,7 +675,14 @@ $responseJson[] = Json::decode($responseXml);
     }
   }
 
-
+public function getStatutActorGLPI( $id )
+  {
+   // \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      return $this->curlGet([], [], $this->settings_glpi->get('glpi_url') . '/apirest.php/Ticket/' . $id .'/Ticket_User', 'glpi');
+    }
+  }
 
 
 

@@ -23,7 +23,15 @@
 				var event_array = [];
                             document.cookie = "nbOfTasks=" + donnees.userData.Body.SearchResponse.appt.length;
                             for (var i = 0; i < donnees.userData.Body.SearchResponse.appt.length; i++) {
-                                var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s /1000;
+
+//                                var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s /1000;
+var start_task;
+    if (donnees.userData.Body.SearchResponse.appt[i].alarmData) {
+        start_task = donnees.userData.Body.SearchResponse.appt[i].alarmData[0].alarmInstStart / 1000;
+    } else {
+        start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
+    }
+
                                 var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur /1000;
                                 var endDate = new Date( end_task * 1000 + 3600 * 1000 *2);
                                 var startDate = new Date( start_task * 1000 + 3600 * 1000*2 );
@@ -57,6 +65,7 @@
                                         start: 'title', // will normally be on the left. if RTL, will be on the right
                                         today: false,
                                         end: false,
+//right: 'prev,next',
                                       },
                                       nowIndicator: true,
                                       now: newDateObj,
