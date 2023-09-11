@@ -3,6 +3,7 @@ api_lemon_pleiade_js:
     js/api_lemon_pleiade_sidebar_menu.js: {}
     js/api_lemon_pleiade_desktop_blocks.js: {}
     js/api_lemon_pleiade_history.js: {}
+    js/api_lemon_pleiade_user_infos_block.js: {}
   dependencies:
     - core/drupal
     - core/once

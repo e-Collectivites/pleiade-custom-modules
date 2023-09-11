@@ -51,7 +51,7 @@
                   for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
                     // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
                     const temp = Object.values(donnees.myapplications[i].Applications[f]);
-                    const appLogo = temp[0].AppIcon;
+                    const appLogo = temp[0].AppLogo;
                     const hasImageExtension = appLogo && (appLogo.endsWith(".png") || appLogo.endsWith(".jpg") || appLogo.endsWith(".jpeg") || appLogo.endsWith(".gif"));
                     let Icon;
 
@@ -110,7 +110,7 @@
                 function checkMenusExpanded() {
                   const accordionCollapses = document.querySelectorAll('.accordion-collapse');
                   let allMenusExpanded = true;
-                  console.log(accordionCollapses);
+                  
                 
                   for (let i = 0; i < accordionCollapses.length; i++) {
                     if (!accordionCollapses[i].classList.contains('show')) {

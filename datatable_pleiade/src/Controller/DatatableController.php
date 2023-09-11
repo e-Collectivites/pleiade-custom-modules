@@ -26,7 +26,6 @@ class DatatableController extends ControllerBase {
             $id_e = $request->query->get('id_e');
             // check value exists and is numleric
             if (null !== $id_e && is_numeric($id_e)) {
-                \Drupal::logger('api_pastell_documents')->info('function search Pastell Docs with id_e : ' . $id_e);
                 $pastelldataApi = new ApiPleiadeManager();
                 $return1 = $pastelldataApi->searchMyDocs($id_e);  
                 $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');

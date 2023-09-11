@@ -15,7 +15,7 @@
             xhr.responseType = "json";
             xhr.onload = function () {
               if (xhr.status === 200) {
-                console.log(donnees)
+                
                 var donnees = xhr.response;
                 var blocLemon = "";
 
@@ -32,14 +32,15 @@
                     const temp = Object.values(donnees.myapplications[i].Applications[f]);
                     const appTitle = Object.keys(donnees.myapplications[i].Applications[f]);
                     const appDesc = temp[0].AppDesc;
-                    const appLogo = temp[0].AppIcon;
+                    const appLogo = temp[0].AppLogo;
                     const appUri = temp[0].AppUri;
                     var widthBlock = ''
                     let logoHTML = ''
                     if(appLogo){
                       widthBlock = 'w-75'
                       if (appLogo.endsWith('.png') || appLogo.endsWith('.jpg') || appLogo.endsWith('.jpeg') || appLogo.endsWith('.gif')) {
-                        const appLogoURL = appLogo ;
+                        const appLogoURL = drupalSettings.api_lemon_pleiade.field_lemon_url + "/static/common/apps/" + appLogo;
+                        
                         logoHTML = `<div class="w-25 d-flex justify-content-end px-2"><img src="${appLogoURL}" alt="App Logo" class="app-logo"></div>`;
                       } else {
                         logoHTML = `<div class="w-25 d-flex justify-content-end px-2"><i class="fa fa-3x fa-solid fa-${appLogo}"></i></div>`;

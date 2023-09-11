@@ -4,7 +4,7 @@ description: 'API For gets Users Infos for Pléiade'
 # package: Pleiade User Infos
 package: Pleiade
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 
 # Information 
 version: '1.0.x-dev'

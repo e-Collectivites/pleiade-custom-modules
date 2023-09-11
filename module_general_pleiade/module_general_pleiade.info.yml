@@ -2,7 +2,7 @@ name: 'Module General Pleiade'
 type: module
 package: Pleiade
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 description: 'Module général pour Pléiade, gère les fonctionnalités générales.'
 
 # Information 

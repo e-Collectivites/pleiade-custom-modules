@@ -352,7 +352,7 @@
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '"><i class="fa fa-2x fa-pencil-square-o" aria-hidden="true"></i></a>';
+                          '"><i class="fa fa-2x fa-pencil-square" aria-hidden="true"></i></a>';
                         var lien_pastell_supp =
                           '<a target="_blank" href="' +
                           pastell_url +
@@ -360,7 +360,7 @@
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '&action=supression"><i class="fa fa-2x fa-trash-o" aria-hidden="true"></i></a>';
+                          '&action=supression"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></a>';
                       }
                       document_coll +=
                         "\
@@ -378,7 +378,7 @@
                         etat +
                         "</td>\
                             <td><div class='btn-group dropend'>\
-                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
+                                  <button type='button' class=' d-flex align-items-center btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
                                   <i class='fa fa-lg fa-ellipsis-h' id='dropdown-icon'></i>\
                                   </button>\
                                   <ul class='dropdown-menu'>\

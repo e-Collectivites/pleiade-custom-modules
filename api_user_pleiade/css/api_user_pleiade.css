@@ -310,9 +310,7 @@ tr.introjs-showElement>th {
 .introjs-nextbutton {
   float: right;
   color: #fff!important;
-  background: #2c3e50 ;
-  /* border-radius: inherit!important; */
-  /* padding: inherit!important; */
+  background: #2c3e50!important;
   text-shadow: inherit!important;
 }
 
@@ -489,16 +487,6 @@ tr.introjs-showElement>th {
   opacity: 0
 }
 
-#sntch_button{
-  right: 20px!important;
-  bottom: 20px!important;
-  padding: 25px!important;
-  animation: bounce 2s infinite ease-in-out;
-	-webkit-animation: bounce 2s infinite ease-in-out;
-	-moz-animation: bounce 2s infinite ease-in-out;
-	-o-animation: bounce 2s infinite ease-in-out;
-  animation-iteration-count: 5;
-}
 
 @-webkit-keyframes bounce {
 	0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);}	

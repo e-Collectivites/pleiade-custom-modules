@@ -5,9 +5,10 @@ description: 'API connector Nextcloud for Pléiade dashboard'
 package: Pleiade
 # version: 8.x +
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 dependencies:
   - module_api_pleiade
+  - datatable_pleiade
 # Information 
 version: '1.0.x-dev'
 project: 'api_nextcloud_pleiade'

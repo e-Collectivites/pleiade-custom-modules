@@ -22,6 +22,7 @@ class AlerteModuleController extends ControllerBase
   {
     $entityTypeManager = \Drupal::entityTypeManager();
     $query = $entityTypeManager->getStorage('node')->getQuery();
+    $query->accessCheck(TRUE);
     $query->condition('type', 'message_informatif');
     $query->condition('status', 1); // Published content condition
     $entityIds = $query->execute();

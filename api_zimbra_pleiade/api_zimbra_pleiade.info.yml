@@ -5,7 +5,7 @@ description: 'API connector Zimbra for Pléiade dashboard'
 package: Pleiade
 # version: 8.x +
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 dependencies:
   - module_api_pleiade
 # Information 

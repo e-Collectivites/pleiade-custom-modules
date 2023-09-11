@@ -19,7 +19,8 @@ class NotificationModuleController extends ControllerBase {
       public function notification_fields(Request $request) {
         $entityTypeManager = \Drupal::entityTypeManager();
         $query = $entityTypeManager->getStorage('node')->getQuery();
-        $query->condition('type', 'alerte_notification');
+        $query->accessCheck(TRUE);
+        $query->condition('type', 'notification');
         $query->condition('status', 1); // Published content condition
         $entityIds = $query->execute();
         $notifications = $entityTypeManager->getStorage('node')->loadMultiple($entityIds);

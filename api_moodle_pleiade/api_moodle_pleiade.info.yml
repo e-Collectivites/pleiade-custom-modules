@@ -4,7 +4,7 @@ description: 'API To get entities of Moodle for Pléiade'
 # package: Pleiade User Infos
 package: Pleiade
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 # dependencies:
 #   - module_api_pleiade
 # Information 
