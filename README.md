@@ -3,7 +3,7 @@
 
 
 # pleiade-custom-modules
-Custom modules for [Pléiade dashboard project](https://github.com/e-Collectivites/Pleiade-Bureau-Virtuel)
+Custom modules for [SITIV](https://www.sitiv.fr/)
 
 ## Install core features
 
