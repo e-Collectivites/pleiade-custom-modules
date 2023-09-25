@@ -3,8 +3,7 @@
 
 
 # pleiade-custom-modules
-Custom modules for [SITIV](https://www.sitiv.fr/)
-
+Custom modules for [Pléiade dashboard project](https://github.com/e-Collectivites/Pleiade-Bureau-Virtuel)
 ## Install core features
 
 In your Drupal modules folder, clone the repo as custom folder :
