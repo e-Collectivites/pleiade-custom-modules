@@ -101,6 +101,7 @@ img.profile-pic.rounded-circle {
     max-height: 300px;
     overflow: hidden;
     overflow-y: auto;
+    overflow-x: auto;
 }
 
 body[data-theme=dark] .fc .fc-toolbar.fc-header-toolbar {
@@ -155,4 +156,5 @@ body[data-theme=dark] .fc td.fc-timegrid-slot {
 body[data-theme=dark] #zimbra_block_mail_id {
     background-color: #272b34 !important;
 }
+
 

@@ -1,19 +1,13 @@
 (function (Drupal, $, drupalSettings) {
   "use strict";
-  Drupal.behaviors.DatatableBehavior = {
+  Drupal.behaviors.DatatableDocBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
       if (drupalSettings.path.isFront) {
-        once("DatatableBehavior", "body", context).forEach(function () {
-          // do we have id_e ?
-          // console.log('id_e call : ' + id_e);
-          // show spinner while ajax is loading
-          var userGroupsTempstore =
-            drupalSettings.api_lemon_pleiade.user_groups;
+ setTimeout(function () { 
+        once("DatatableDocBehavior", "body", context).forEach(function () {
           document.getElementById("document_recent_id").innerHTML =
             drupalSettings.api_lemon_pleiade.spinner;
-          // console.log('Pastell Documents target function called...');
-          // console.log('Retrieve localStorage collectivite id : '+localStorage.getItem('collectivite_id'));
 
           // Get the previously selected value from localStorage
           if(localStorage.getItem("collectivite_id")){
@@ -23,8 +17,6 @@
           {
             var previousValue = null
           }
-          
-
           // debug
           function reloadDataTable(previousValue) {
             // Now call again document JS module function to get documents
@@ -43,8 +35,7 @@
               if (xhr.status === 200) {
                 var donnees = xhr.response;
                 // debug
-                
-                if (donnees) {
+                if (donnees != "0" && donnees != "missing_token") {
                   var document_coll =
                     '\
                 <div class="col-lg-12" id="pastell_block"> \
@@ -67,18 +58,28 @@
                             </tr>\
                         </thead>\
                         <tbody>';
+		
                   for (var i = 0; i < donnees.length; i++) {
                     if (
                       donnees[i].type === "Nextcloud" &&
                       donnees[i].titre &&
                       donnees[i].creation &&
-                      donnees[i].status &&
+//                      donnees[i].status &&
                       donnees[i].fileUrl
                     ) {
                       var titre = donnees[i].titre;
                       var type = "Nextcloud"; // Assuming 'Nextcloud' is the type for this item
                       var objectDate = donnees[i].creation;
-
+			if(!donnees[i].status){
+				var etat = '<span class="badge py-2 px-4 bg-secondary">Aucun Statut</span>';
+			}
+			else
+			{
+				 var etat =
+                        '<span class="badge py-2 px-4 bg-primary">' +
+                        donnees[i].status +
+                        "</span>";
+			}			
                       // Split the input string into date and time parts
                       const [datePart, timePart] = objectDate.split(" ");
 
@@ -116,10 +117,6 @@
                         .toString()
                         .padStart(2, "0")}`;
 
-                      var etat =
-                        '<span class="badge py-2 px-4 bg-primary">' +
-                        donnees[i].status +
-                        "</span>";
                       var lien_nc_detail =
                         '<a target="_blank" href="' +
                         donnees[i].fileUrl +
@@ -331,8 +328,11 @@
                       var lien_pastell_supp = "";
                       var objectDate = donnees[i].last_action_date;
 
-                      var pastell_url =
+if (typeof drupalSettings.api_pastell_pleiade !== 'undefined') {
+var pastell_url =
                         drupalSettings.api_pastell_pleiade.field_pastell_url;
+}
+
                       var lien_pastell_detail =
                         '<a target="_blank" href="' +
                         pastell_url +
@@ -352,7 +352,7 @@
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '"><i class="fa fa-2x fa-pencil-square" aria-hidden="true"></i></a>';
+                          '"><i class="fa fa-2x fa-pencil-square-o" aria-hidden="true"></i></a>';
                         var lien_pastell_supp =
                           '<a target="_blank" href="' +
                           pastell_url +
@@ -360,7 +360,7 @@
                           donnees[i].id_d +
                           "&id_e=" +
                           donnees[i].id_e +
-                          '&action=supression"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></a>';
+                          '&action=supression"><i class="fa fa-2x fa-trash-o" aria-hidden="true"></i></a>';
                       }
                       document_coll +=
                         "\
@@ -378,7 +378,7 @@
                         etat +
                         "</td>\
                             <td><div class='btn-group dropend'>\
-                                  <button type='button' class=' d-flex align-items-center btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
+                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
                                   <i class='fa fa-lg fa-ellipsis-h' id='dropdown-icon'></i>\
                                   </button>\
                                   <ul class='dropdown-menu'>\
@@ -410,6 +410,45 @@
                   document.getElementById("document_recent_id").innerHTML =
                     document_coll;
                 }
+else if(donnees == "missing_token") {
+const div_alert = document.querySelector('.message_avertissement');
+div_alert.innerHTML += '<div class="py-3 px-5 text-white bg-warning d-flex align-items-center justify-content-center ">Le ou les tokens Nextcloud est/sont manquant(s), veuillez configurer les champs sur votre &nbsp;<a href="/user/edit#edit-field-nextcloud-api-key-wrapper">profil</div>';
+var parentDiv = document.getElementById("document_recent_id");
+
+// Vérifiez si l'élément parent existe.
+if (parentDiv) {
+  // Trouvez l'élément du spinner à l'intérieur de l'élément parent.
+  var spinnerDiv = parentDiv.querySelector("#spinner-div-menu");
+
+  // Vérifiez si l'élément du spinner existe.
+  if (spinnerDiv) {
+    // Définissez la propriété display sur "none" pour masquer l'élément du spinner.
+    spinnerDiv.style.display = "none";
+  }
+}
+}
+else if(donnees == "0"){
+document.getElementById("document_recent_id").innerHTML = '<div class="col-lg-12" id="glpi_desktop_block"><div class="mb-2 shadow-sm"><div class="card mb-2"><div class="card-header rounded-top bg-white border-bottom rounded-top"><h4 class="card-title text-dark py-2">Documents récents <span></span></h4></div><div class="card-body">Erreur lors de la récupération des documents</div></div></div></div>';
+}
+else
+{
+document.getElementById("document_recent_id").innerHTML =
+                    '\
+			<div class="col-lg-12" id="glpi_desktop_block"> \
+                  <div class="mb-2 shadow-sm">\
+                    <div class="card mb-2">\
+                      <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                        <h4 class="card-title text-dark py-2">\
+                          Documents récents <span></span>\
+                        </h4>\
+                      </div>\
+                      <div class="card-body">\
+			Aucun documents récents</div>\
+                  </div>\
+                </div>\
+              </div>\
+              '
+	}
               }
             };
             xhr.onerror = function () {
@@ -476,6 +515,7 @@
             reloadDataTable(event.target.value);
           });
         }); // end once
+}, 1000); // 1000 millisecondes = 1 seconde
       }
     },
   };

@@ -25,7 +25,7 @@
                         case "Avertissement":
                           div_alert.innerHTML += '<div class="py-3 px-5 text-white bg-warning d-flex align-items-center justify-content-center ">' + donnees[i].body + '</div>';
                           break;
-                        case "Attention":
+                        case "Alerte":
                           div_alert.innerHTML += '<div class="py-3 px-5 text-white bg-danger d-flex align-items-center justify-content-center ">' + donnees[i].body + '</div>';
                           break;
                         default:

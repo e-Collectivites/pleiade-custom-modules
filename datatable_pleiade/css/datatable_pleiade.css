@@ -1,7 +1,5 @@
 .dropend .dropdown-menu.show {
-  height: 2.5em;
-  margin-top: -0.5em!important;
-  min-width: 5em!important;
+    min-width: 5em!important;
     width: 9em!important;
     display: flex;
     align-items: center;

@@ -30,9 +30,6 @@ div#post_it_dashboard {
   
   border-radius: 0;
 }
-.remove-btn{
-  font-family: 'Permanent Marker', cursive;
-}
 
 #post_it_dashboard .item p::-webkit-scrollbar {
   width: 6px; /* Largeur de la barre de défilement */

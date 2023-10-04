@@ -23,7 +23,7 @@
                   // console.log("We are on page : history!!");
   
                   var history_table =
-                    '<h4 class="card-header rounded-top card-title text-light" style="background-color: #1f3889">Dernières connexions</h4><table class="table"><thead><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
+                    '<h4 class="card-header rounded-top card-title text-light" style="background-color: var(--global-color)">Dernières connexions</h4><table class="table"><thead><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
                 if(response._loginHistory.successLogin) {
                   for ( var i = 0; i < response._loginHistory.successLogin.length; i++) 
                   {
@@ -47,7 +47,7 @@
                   }
                 }
                   history_table +=
-                    '</tbody></table><h4 class="card-header rounded-top card-title text-light" style="background-color: #1f3889">Dernières connexions echouées</h4><table class="table mb-5"><thead><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
+                    '</tbody></table><h4 class="card-header rounded-top card-title text-light" style="background-color: var(--global-color)">Dernières connexions echouées</h4><table class="table mb-5"><thead><tr><th scope="col">Date</th><th scope="col">Adresse IP</th></tr></thead><tbody>';
                 if(response._loginHistory.failedLogin) {
                  for (
                     var i = 0;

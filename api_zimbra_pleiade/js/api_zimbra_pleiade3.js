@@ -1,18 +1,17 @@
 (function (Drupal, once, drupalSettings) {
   "use strict";
   Drupal.behaviors.APIzimbraDataHistoryBehavior = {
-    attach: function (context, settings) {
+    attach: async function (context, settings) {
       // Load on front page only,
       if (
         drupalSettings.path.isFront &&
         drupalSettings.api_zimbra_pleiade.field_zimbra_mail
       ) {
-setTimeout(function () { 
-        once(
+        await once(
           "APIzimbraDataHistoryBehavior",
           "#zimbra_block_mail_id",
           context
-        ).forEach(function () {
+        ).forEach(async function () {
           // show spinner while ajax is loading
           document.getElementById("zimbra_block_mail_id").innerHTML =
             drupalSettings.api_lemon_pleiade.spinner;
@@ -31,15 +30,15 @@ setTimeout(function () {
               var donnees = xhr.response; // Assurez-vous que xhr.response contient un tableau d'objets "donnees"
               //console.log(donneesArray)
               var linkEntitie =
-                  '<div id="zimbra_mail" class="col-lg-12 mb-2">\
-                                            <div class="card">\
-                                              <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                                                <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
-                                              </div>\
-                                                    <div class="card-body">\
-                                                      <div class="scroll_on_table">\
-                                                        <table class="table mb-0">\
-                                                        <tbody>';
+                '<div id="zimbra_mail" class="col-lg-12 mb-2">\
+                  <div class="card">\
+                    <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                      <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
+                    </div>\
+                    <div class="card-body">\
+                      <div class="scroll_on_table">\
+                        <table class="table mb-0">\
+                          <tbody>';
 
               if (donnees !== '0') {
                 if (donnees.userData.Body.SearchResponse.c) {
@@ -65,8 +64,8 @@ setTimeout(function () {
                         eArray.length - 1
                       ].a +
                       '">\
-                                                <th class="col d-flex align-items-center profile-picture"></th>\
-                                                <th class="d-flex justify-content-center expediteur align-items-center"><div class="text-break">' +
+                        <th class="col d-flex align-items-center profile-picture"></th>\
+                        <th class="d-flex justify-content-center expediteur align-items-center"><div class="text-break">' +
                       (donnees.userData.Body.SearchResponse.c[i].e[
                         eArray.length - 1
                       ].p
@@ -77,59 +76,58 @@ setTimeout(function () {
                             eArray.length - 1
                           ].a) +
                       '</div></th>\
-                                                <th scope="col" class="w-50">\
-                                                    <span class="d-block fw-bold">' +
+                        <th scope="col" class="w-50">\
+                          <span class="d-block fw-bold">' +
                       donnees.userData.Body.SearchResponse.c[i].su +
                       '</span>\
-                                                    <span class="d-block fw-light">' +
+                          <span class="d-block fw-light">' +
                       donnees.userData.Body.SearchResponse.c[i].fr.substr(
                         0,
                         130
                       ) +
                       "...  " +
                       '</span>\
-                                                </th>\
-                                                <th class="col mailTime d-flex align-items-center" class="fw-bold">' +
+                        </th>\
+                        <th class="col mailTime d-flex align-items-center" class="fw-bold">' +
                       String(objectDate.getHours()).padStart(2, "0") +
                       ":" +
                       String(objectDate.getMinutes()).padStart(2, "0") +
                       '</th>\
-                                                <th class="col readMail d-flex align-items-center">\
-                                                    <a class="hover-zoom" alt="constulter le mail" target="_blank" href="' +
+                        <th class="col readMail d-flex align-items-center">\
+                          <a class="hover-zoom" alt="constulter le mail" target="_blank" href="' +
                       donnees.domainEntry +
                       "modern/email/Inbox/conversation/" +
                       id_expediteur +
                       '"><i class="fa fa-xl fa-solid fa-envelope" aria-hidden="true"></i></a>\
-                                                </th>\
-                                            </tr>\
-                                            ';
+                        </th>\
+                      </tr>\
+                    ';
                   }
                 } else {
                   var linkEntitie =
                     '<div id="zimbra_mail " class="col-lg-12 mb-2">\
-                    <div class="card">\
-                      <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                        <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
-                      </div>\
-                      <div class="d-flex justify-content-center">\
+                      <div class="card">\
+                        <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                          <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
+                        </div>\
+                        <div class="d-flex justify-content-center">\
                           <h3 class="my-5">Aucun nouveau mail</h3>\
+                        </div>\
                       </div>\
                     </div>\
-                  </div>\
-                    ';
+                  ';
                 }
               }
               else{
                 linkEntitie += "<h2> Erreur lors de la récupération des mails </h2>"
-}
+              }
               linkEntitie +=
                 "</tbody></table></div>\
                 </div>\
                 </div>\
-            </div>\
-            </div>\
+              </div>\
+              </div>\
             ";
-            }
             document.getElementById("zimbra_block_mail_id").innerHTML =
               linkEntitie;
           };
@@ -145,9 +143,9 @@ setTimeout(function () {
           xhr.onloadend = function () {};
 
           xhr.send();
-        }); // fin once function
-}, 800); // 1000 millisecondes = 1 seconde
-      }
+        }
+}); // fin once function
+      } // Fin du if
     },
   };
 })(Drupal, once, drupalSettings);

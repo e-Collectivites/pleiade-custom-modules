@@ -4,7 +4,7 @@
     attach: function (context, settings) {
       // Load on front page only,
       if (
-drupalSettings.path &&
+	drupalSettings.path &&
       drupalSettings.path.currentPath &&
       drupalSettings.path.currentPath.includes("calendar") &&
         drupalSettings.api_zimbra_pleiade.field_zimbra_agenda
@@ -46,7 +46,26 @@ drupalSettings.path &&
 			var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
                     var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
 
-                    var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival                   
+if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].until ) {
+                    var endRecur = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].until[0].d          	
+var dateString = endRecur.slice(0, -1);
+// Extraire les composants de la date
+var year = dateString.substring(0, 4);
+var month = dateString.substring(4, 6);
+var day = dateString.substring(6, 8);
+
+// Formater la date résultante
+var formattedDate = `${year}-${month}-${day}`;
+var until = formattedDate
+}
+else
+{
+var until = '2122-01-01'
+}
+
+if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval )  {
+ var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival 
+}
                     var frequenceAppt = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].freq
                     switch (frequenceAppt) {
 			 case 'DAI':
@@ -83,12 +102,41 @@ drupalSettings.path &&
                         freq: frequence,
                         interval: interval,
                         dtstart: startDate.toISOString().replace(".000Z", ""),
-                      }
+			until: until,
+			}
                     };
-		}
+			if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday )  {
+ 				var byWeekDay = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday[0].wkday
+				const jours = [];
+
+				// Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
+				for (const item of byWeekDay) {
+  					if (item.day) {
+    					jours.push(item.day.toLowerCase());
+					event_array[i].rrule.byweekday = jours;
+  					}
+				}
+			}
+			if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday )  {
+                                var everyWeekDay = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday[0].wkday
+                                const everyDay = [];
+
+                                // Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
+                                for (const item of everyWeekDay) {
+                                        if (item.ordwk) {
+                                        everyDay.push(item.ordwk);
+                                        event_array[i].rrule.bysetpos = everyDay;
+                                        }
+                                }
+                        }
+			if ( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].count) {
+                        	var count = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].count[0].num
+                        	event_array[i].rrule.count = count;    
+                        } 
+}
 else
 {
-var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
+		var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
                     var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
                     var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
                     var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
@@ -133,16 +181,16 @@ var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
 		  headerToolbar: {
 			left: 'prev,next today',
       			center: 'title',
-			right: false
+			right: false,
                   },
-                  nowIndicator: true,
+                  height: 675,
+		  nowIndicator: true,
                   now: newDateObj,
-		slotMinTime: "08:00:00",
+                  slotMinTime: "08:00:00",
                   slotMaxTime: "20:00:00",
                   initialView: "timeGridWeek",
 		weekends: false,
 		themeSystem: "bootstrap",
-        	slotDuration: "00:15:00",          
                 events: event_array,
 		eventClick: function (event) {
                     if (event.event.url) {

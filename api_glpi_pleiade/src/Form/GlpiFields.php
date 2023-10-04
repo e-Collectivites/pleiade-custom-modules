@@ -49,12 +49,11 @@ class GlpiFields extends ConfigFormBase {
       '#title' => $this->t('Endpoint Url For tickets'),
       '#default_value' => $config->get('endpoint_ticket'),
     ]; 
-	$form['glpi_group'] = [
+    $form['glpi_group'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Group name for GLPI Lemon Users'),
       '#default_value' => $config->get('glpi_group'),
     ];    
-
     return parent::buildForm($form, $form_state);
   }
   
@@ -68,7 +67,7 @@ class GlpiFields extends ConfigFormBase {
     $config->set('app_token', $form_state->getValue('app_token'));
     $config->set('endpoint_ticket', $form_state->getValue('endpoint_ticket'));
     $config->set('glpi_group', $form_state->getValue('glpi_group'));
-    $config->save();
+	$config->save();
     
     parent::submitForm($form, $form_state);
   }

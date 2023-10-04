@@ -20,6 +20,7 @@
             p.addEventListener("blur", function () {
               saveItems();
             });
+p.style.whiteSpace = "pre-wrap"; // Permet le saut de ligne
           }
 
           function createItem(message, top, left, color) {
@@ -55,7 +56,7 @@
             p.style.overflowY = "auto";
             p.style.cursor = "grab";
             p.style.fontSize = "12px";
-
+p.style.whiteSpace = "pre-wrap"; // Permet le saut de ligne
             
             item.appendChild(p);
 
@@ -71,6 +72,7 @@
             item.style.top = top + "px";
             item.style.left = left + "px";
 
+		makeEditable(item);
             return item;
           }
           // Function to check if a color is light

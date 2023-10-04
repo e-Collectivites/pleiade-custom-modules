@@ -17,8 +17,8 @@ function api_glpi_pleiade_preprocess_page(&$variables){
   $glpi_url = $config->get('glpi_url');
   $app_token = $config->get('app_token');
   $endpoint_ticket = $config->get('endpoint_ticket');
-$glpi_group = $config->get('glpi_group');  
-
+	$glpi_group = $config->get('glpi_group');  
+$nb_of_ticket_on_desktop = $config->get('nb_of_ticket_on_desktop');
   //Add the JS library
   $variables['#attached']['library'][] = 'api_glpi_pleiade/api_glpi_pleiade_js';
   //Add the CSS library
@@ -27,6 +27,6 @@ $glpi_group = $config->get('glpi_group');
   $variables['#attached']['drupalSettings']['api_glpi_pleiade']['glpi_url'] = $glpi_url;
   $variables['#attached']['drupalSettings']['api_glpi_pleiade']['app_token'] = $app_token;
   $variables['#attached']['drupalSettings']['api_glpi_pleiade']['endpoint_ticket'] = $endpoint_ticket;
-  
+  $variables['#attached']['drupalSettings']['api_glpi_pleiade']['nb_of_ticket_on_desktop'] = $nb_of_ticket_on_desktop;
    
 }

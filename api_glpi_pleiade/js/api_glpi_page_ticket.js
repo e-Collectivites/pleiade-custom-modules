@@ -5,6 +5,7 @@
 if (
 drupalSettings.path &&
       drupalSettings.path.currentPath &&
+drupalSettings.path.currentPath.includes("glpi_tickets") &&
 drupalSettings.api_glpi_pleiade.glpi_url
     ) {
           once("APIGLPITicketPageBehavior", "body", context).forEach(
@@ -30,7 +31,7 @@ drupalSettings.api_glpi_pleiade.glpi_url
       
                       return `${day}/${month}/${year} ${hours}:${minutes}`;
                     }
-if (donnees) {
+if (donnees != "0") {
                 var userMail = donnees.usermail;
                 var blocGLPI =
                   '\
@@ -107,10 +108,11 @@ if (donnees) {
                     donnees[i] && donnees[i].newData
                       ? donnees[i].newData
                       : "Priorité manquante";
-                  var url_ticket =
+                var id = donnees[i].id  
+		 var url_ticket =
                     drupalSettings.api_glpi_pleiade.glpi_url +
                     "/index.php?redirect=ticket_" +
-                    donnees[i].id;
+                    id
 
                   const formattedOpenDate = formatDate(open_date);
                   const formattedModifDate = formatDate(modif_date);
@@ -245,10 +247,21 @@ if (donnees) {
                   </div>\
                 </div>\
                 ";
+}
+
+
+else {
+                var blocGLPI =
+                  '<div id="glpi_tickets_list" class="col-lg-12 mb-2">\
+                      <div class="d-flex justify-content-center">\
+                          <h3 class="my-5">Erreur lors de la récupération des tickets</h3>\
+                      </div>\
+                  </div>\
+                    ';
+              }
 
                 document.getElementById("glpi_list_tickets").innerHTML = blocGLPI;
 document.getElementById('spinner-history').style.display = 'none';              
-}
             }
           };      
                 xhr.onerror = function () {
@@ -260,12 +273,33 @@ document.getElementById('spinner-history').style.display = 'none';
                 xhr.ontimeout = function () {
                   console.log("AJAX call timed out");
                 };
-                xhr.onloadend = function () {};
+                xhr.onloadend = function () {
+
+			$("#glpi_table").DataTable({
+                aoColumnDefs: [
+                  { bSortable: false, aTargets: [6,7] },
+		  { width: "20%", targets: 3 },
+                  { width: "22%", targets: 2 },
+                  { width: "25%", targets: 1 },
+                  { width: "25%", targets: 0 },
+                ],
+                order: [[3, "desc"]],
+                paging: true,
+                language: {
+                  url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json",
+                },
+                responsive: true,
+                lengthMenu: [
+                  [5, 10, 25],
+                  [5, 10, 25],
+                ],
+            });
+		};
       
                 xhr.send();
               }); // fin once function
             }
           },
         };
-      })(Drupal, once, drupalSettings);
+      })(Drupal, jQuery, drupalSettings);
       
