@@ -21,7 +21,7 @@ return
 document.getElementById("glpi_tickets_id").innerHTML =
             drupalSettings.api_lemon_pleiade.spinner;
           var xhr = new XMLHttpRequest();
-          xhr.open("GET", Drupal.url("v1/api_glpi_pleiade/glpi_list_tickets"));
+          xhr.open("GET", Drupal.url("v1/api_glpi_pleiade/glpi_list_last_tickets"));
           xhr.responseType = "json";
 
           xhr.onload = function () {

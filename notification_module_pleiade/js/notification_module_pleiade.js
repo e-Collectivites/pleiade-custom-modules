@@ -3,7 +3,7 @@
   Drupal.behaviors.APInotificationBlocksBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
-      if (drupalSettings.path) {
+      if (drupalSettings.path.isFront) {
         once(
           "APInotificationBlocksBehavior",
           "body",

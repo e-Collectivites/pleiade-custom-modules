@@ -9,16 +9,18 @@ use Symfony\Component\HttpFoundation\Request;
 
 
 class NotificationModuleController extends ControllerBase {
-    public function __construct() {
+/*    public function __construct() {
         $moduleHandler = \Drupal::service('module_handler');
         if ($moduleHandler->moduleExists('notification_module_pleiade')) {
           $this->settings_notification = \Drupal::config('notification_module_pleiade.settings');    
         }
       }
-    
+  */  
       public function notification_fields(Request $request) {
         $entityTypeManager = \Drupal::entityTypeManager();
         $query = $entityTypeManager->getStorage('node')->getQuery();
+        // RL : add mandatory access check
+        $query->accessCheck(FALSE);
         $query->condition('type', 'notification');
         $query->condition('status', 1); // Published content condition
         $entityIds = $query->execute();

@@ -64,37 +64,42 @@ class DatatableController extends ControllerBase
                     $return_nc = $nextcloudataApi->getNextcloudNotifs();
                     $tempstore = \Drupal::service('tempstore.private')->get('api_nextcloud_pleiade');
                     $tempstore->set('documents_nextcloud', $return_nc);
-
+//var_dump($return_nc);
                     if ($return_nc) {
+			$data = $return_nc->ocs->data;
+			if ($data){
+                            foreach ($data as $item) {
+                                if (!isset($item->subjectRichParameters->file)) {
+                                    continue; // Skip the iteration if 'file' is not present
+                                }
 
-                        $data = $return_nc->ocs->data; // Access the 'data' property of the object
+                                $status = '';
+                                if (strpos($item->subject, 'modif') !== false) {
+                                    $status = 'Modifié';
+                                } elseif (strpos($item->subject, 'partag') !== false) {
+                                    $status = 'Partagé';
+                                } elseif (strpos($item->subject, 'télécharg') !== false) {
+                                     $status = 'Téléchargé par lien public';
+				}
+                                $fileUrl = isset($item->subjectRichParameters->file->link) ? $item->subjectRichParameters->file->link : null;
+                                $fileName = isset($item->subjectRichParameters->file->name) ? $item->subjectRichParameters->file->name : null;
 
-                        foreach ($data as $item) {
-                            if (!isset($item->subjectRichParameters->file)) {
-                                continue; // Skip the iteration if 'file' is not present
+                                $formattedItem = [
+                                    'type' => 'Nextcloud',
+                                    'titre' => $fileName,
+                                    'creation' => date('d/m/Y H:i', strtotime($item->datetime)),
+                                    // 'subject' => $item->subject,
+                                    'status' => $status,
+                                    'fileUrl' => $fileUrl
+                                ];
+                                $formattedData[] = $formattedItem;
                             }
-
-                            $status = '';
-                            if (strpos($item->subject, 'modif') !== false) {
-                                $status = 'Modifié';
-                            } elseif (strpos($item->subject, 'partag') !== false) {
-                                $status = 'Partagé';
-                            }
-
-                            $fileUrl = isset($item->subjectRichParameters->file->link) ? $item->subjectRichParameters->file->link : null;
-                            $fileName = isset($item->subjectRichParameters->file->name) ? $item->subjectRichParameters->file->name : null;
-
-                            $formattedItem = [
-                                'type' => 'Nextcloud',
-                                'titre' => $fileName,
-                                'creation' => date('d/m/Y H:i', strtotime($item->datetime)),
-                                // 'subject' => $item->subject,
-                                'status' => $status,
-                                'fileUrl' => $fileUrl
-                            ];
-                            $formattedData[] = $formattedItem;
+                            $jsonData = json_encode($formattedData); // Convert the array to a JSON string
                         }
-			$jsonData = json_encode($formattedData); // Convert the array to a JSON string
+                        else
+                        {
+                            return new JsonResponse(json_encode('nothing'), 200, [], true);
+                        }
 			if($jsonData == "null"){
 return new JsonResponse(json_encode('0'), 200, [], true);
 			}

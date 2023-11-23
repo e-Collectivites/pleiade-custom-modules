@@ -35,7 +35,8 @@
               if (xhr.status === 200) {
                 var donnees = xhr.response;
                 // debug
-                if (donnees != "0" && donnees != "missing_token") {
+	
+                if (donnees != "0" && donnees != "missing_token" && donnees !== "nothing") {
                   var document_coll =
                     '\
                 <div class="col-lg-12" id="pastell_block"> \
@@ -120,7 +121,7 @@
                       var lien_nc_detail =
                         '<a target="_blank" href="' +
                         donnees[i].fileUrl +
-                        '"><i class="fa fa-2x fa-eye" aria-hidden="true"></i></a>';
+                        '"><i class="fa fa-xl fa-eye align-middle" aria-hidden="true"></i></a>';
                       var document_row =
                         "\
                               <tr>\
@@ -134,17 +135,11 @@
                         formattedDate +
                         "</td>\
                                 <td>" +
-                        etat +
+etat +
                         "</td>\
-                                <td><div class='btn-group dropend'>\
-                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
-                                  <i class='fa fa-lg fa-ellipsis-h d-flex align-items-center justify-content-center' id='dropdown-icon'></i>\
-                                  </button>\
-                                  <ul class='dropdown-menu'>\
-                                  " +
+                                <td>" +
                         lien_nc_detail +
-                        "</ul>\
-                                </div></td>\
+                        "</td>\
                                 </tr>\
                               ";
 

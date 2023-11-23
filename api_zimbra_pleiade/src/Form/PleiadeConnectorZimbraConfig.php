@@ -32,7 +32,7 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('api_zimbra_pleiade.settings');
     
-    $form['field_zimbra_mail'] = [
+/*    $form['field_zimbra_mail'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Zimbra endpoint Mails'),
       '#default_value' => $config->get('field_zimbra_mail'),
@@ -46,6 +46,7 @@ class PleiadeConnectorZimbraConfig extends ConfigFormBase {
       // '#value' => $config->get('field_zimbra_url'),
       '#description' => $this->t('Enter the Zimbra SOAP request for agenda, start with "SearchRequest and end with /SearchRequest"'),
     ];
+*/
 $form['token_plus_domain'] = [
       '#type' => 'textarea',
       '#title' => t('Domain + Token Authenticator Zimbra .'),

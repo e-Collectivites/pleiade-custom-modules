@@ -22,6 +22,8 @@ class PleiadeUserController extends ControllerBase
 
     // Load the user storage service.
     $query = \Drupal::entityQuery('user');
+    // RL : add mandatory access check
+    $query->accessCheck(FALSE);
     $uids = $query->execute();
     $users = array();
 
@@ -34,7 +36,9 @@ class PleiadeUserController extends ControllerBase
       if ($user->hasField('user_picture')) {
         $picture_fid = $user->get('user_picture')->target_id;
         if (!empty($picture_fid)) {
-          $picture_url = file_create_url(\Drupal\file\Entity\File::load($picture_fid)->getFileUri());
+          # RL : fix deprecated
+          # $picture_url = file_create_url(\Drupal\file\Entity\File::load($picture_fid)->getFileUri());
+          $picture_url = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal\file\Entity\File::load($picture_fid)->getFileUri());
         } else {
           $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
         }

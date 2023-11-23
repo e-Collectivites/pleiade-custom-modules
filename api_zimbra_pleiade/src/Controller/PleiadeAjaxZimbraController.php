@@ -10,166 +10,178 @@ use Drupal\module_api_pleiade\ApiPleiadeManager;
 
 class PleiadeAjaxZimbraController extends ControllerBase
 {
-
     public function zimbra_mails_query(Request $request)
     {
+        /////////////VARIABLE GLOBALE MAIL ENDPOIN///////////////////
+        $limit_mail = 500;
+        $mail_endpoint = '<SearchRequest xmlns="urn:zimbraMail"  limit="' .$limit_mail .'"><query>is:unread</query></SearchRequest>';
+        /////////////VARIABLE GLOBALE MAIL ENDPOINT//////////////////
 
-        $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
-        // // API endpoint URL
-        $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-        $groupData = $tempstore->get('groups');
-        if ($groupData !== NULL) {
-            $groupDataArray = explode('; ', $groupData);
+        $settings_zimbra = \Drupal::config("api_zimbra_pleiade.settings");
+        $tempstore = \Drupal::service("tempstore.private")->get("api_lemon_pleiade");
+        $groupData = $tempstore->get("groups");
+        if ($groupData !== null) {
+            $groupDataArray = explode("; ", $groupData);
         }
-        if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
+        if (in_array($settings_zimbra->get("lemon_group"), $groupDataArray)) {
+            $domainPlusToken = $this->config("api_zimbra_pleiade.settings")->get("token_plus_domain");
+            $lines = explode("\n", $domainPlusToken);
+            $domainArray = [];
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    list($domain, $token) = explode("| |", $line);
+                    $domainArray[] = [
+                        "domain" => $domain,
+                        "token" => $token,
+                    ];
+                }
+            }
+            $user = \Drupal\user\Entity\User::load(
+                \Drupal::currentUser()->id()
+            );
+            $email = $user->getEmail();
+            $userDomain = substr(strrchr($email, "@"), 1);
+
+            foreach ($domainArray as $item) {
+                $domainInArray = parse_url($item["domain"], PHP_URL_HOST);
+                if (
+                    strpos($domainInArray, $userDomain) !== false ||
+                    strpos($userDomain, $domainInArray) !== false
+                ) {
+                    $token = $item["token"];
+                    $domain = $item["domain"];
+                    break; 
+                }
+            }
+
             $return = []; // Variable to store Zimbra data
             $zimbradataApi = new ApiPleiadeManager();
-            $return = $zimbradataApi->searchMyMails();
-            $returnEmailUser = $zimbradataApi->searchMySession();
+            $return = $zimbradataApi->searchMyMails($mail_endpoint,$email,$token,$domain);
 
             if ($return) {
-                // Retrieve user's email
-                $userEmail = $returnEmailUser['mail'];
+                $userDomainData = $return[0] ?? null;
 
-                // Extract domain from user's email
-                $userDomain = substr(strrchr($userEmail, "@"), 1);
-
-                // Retrieve configuration value
-                $domainPlusToken = $this->config('api_zimbra_pleiade.settings')->get('token_plus_domain');
-
-                // Split configuration value into lines
-                $lines = explode("\n", $domainPlusToken);
-
-                // Initialize an array to store domains
-                $domainArray = array();
-
-                // Iterate through each line
-                foreach ($lines as $line) {
-                    // Remove leading and trailing spaces
-                    $line = trim($line);
-                    if (!empty($line)) {
-                        // Split the line into domain and token using "| |" as separator
-                        list($domain, $token) = explode("| |", $line);
-
-                        // Add the domain to the array
-                        $domainArray[] = $domain;
-                    }
-                }
-
-                $userDomainKey = false;
-
-                foreach ($domainArray as $key => $domainEntry) {
-                    // Check if the user's domain matches the current domain or is part of the value
-                    if ($userDomain === $domainEntry || strpos($domainEntry, $userDomain) !== false) {
-                        $userDomainKey = $key;
-                        break; // Exit the loop once a match is found
-                    }
-                }
-                // If the user's domain is found, return the corresponding data from $return
-                if ($userDomainKey !== false) {
-                    $userDomainData = $return[$userDomainKey];
-                    return new JsonResponse(json_encode([
-                        'domainEntry' => $domainEntry,
-                        // Add domainEntry to the JSON response
-                        'userData' => $userDomainData
-                    ]), 200, [], true);
-                }
+                return new JsonResponse(
+                    json_encode([
+                        "domainEntry" => $domain,
+                        "userData" => $userDomainData,
+                    ]), 200, [], true
+                );
             } else {
-                \Drupal::logger('zimbra_mails_query')->info('No API response');
+                \Drupal::logger("zimbra_mails_query")->info("No API response");
             }
-            return new JsonResponse(json_encode('0'), 200, [], true);
+            return new JsonResponse(json_encode("0"), 200, [], true);
+        } else {
+            \Drupal::logger("zimbra_mails_query")->info("Not in group LemonLDAP");
+            return new JsonResponse(json_encode("0"), 200, [], true);
         }
-        else {
-            \Drupal::logger('zimbra_mails_query')->info('Not in group Zimbra');
-            return new JsonResponse(json_encode('0'), 200, [], true);
-        }
-        
     }
-
 
     public function zimbra_tasks_query(Request $request)
     {
+        /////////////VARIABLE GLOBALE TASKS ENDPOINT //////////////////
+        $limit_tasks = 1000;
+        $currentDateTime = new \DateTime();
+        $limitEndTimeStamp = $currentDateTime->modify("+30 days")->getTimestamp() * 1000;
+        $currentDateTime = new \DateTime();
+        $limitStartTimeStamp = $currentDateTime->modify("-30 days")->getTimestamp() * 1000;
+        $tasks_endpoint =
+            '<SearchRequest xmlns="urn:zimbraMail" types="appointment" calExpandInstStart="' .
+            $limitStartTimeStamp .
+            '" calExpandInstEnd="' .
+            $limitEndTimeStamp .
+            '" limit="' .
+            $limit_tasks .
+            '" sortBy="idDesc"><query>inid:10</query></SearchRequest>';
 
-        $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
-        // // API endpoint URL
-        $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-        $groupData = $tempstore->get('groups');
-        if ($groupData !== NULL) {
-            $groupDataArray = explode('; ', $groupData);
+        /////////////FIN VARIABLE GLOBALE TASKS ENDPOINT //////////////////
+
+        /////////////CODE DE TEST SITIV //////////////////
+        /*$ZIMBRA_API_URL = '/var/www/html/pleiade_sitiv/web/themes/custom/pleiadebv/assets/temp.txt';
+
+        $fileContent = file_get_contents($ZIMBRA_API_URL);
+
+        if ($fileContent !== false) {    
+        return new JsonResponse($fileContent, 200, [], true);
+        } else {
+            $error = error_get_last();
+            echo "Erreur lors de la lecture du fichier : " . $error['message'];
+        }*/
+        /////////////FIN CODE DE TEST SITIV //////////////////
+
+        $settings_zimbra = \Drupal::config("api_zimbra_pleiade.settings");
+        $tempstore = \Drupal::service("tempstore.private")->get("api_lemon_pleiade");
+        $groupData = $tempstore->get("groups");
+
+        if ($groupData !== null) {
+            $groupDataArray = explode("; ", $groupData);
         }
-        if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
+        if (in_array($settings_zimbra->get("lemon_group"), $groupDataArray)) {
+            $domainPlusToken = $this->config("api_zimbra_pleiade.settings")->get("token_plus_domain");
+            $lines = explode("\n", $domainPlusToken);
 
-            $return = []; //our variable to fill with data returned by Zimbra
+            $domainArray = [];
 
-            // Debug what's in request 
-            $zimbradataApi = new ApiPleiadeManager();
-            $returnEmailUser = $zimbradataApi->searchMySession();
-
-            $return = $zimbradataApi->searchMyTasks();
-            if ($return) {
-
-                $userEmail = $returnEmailUser['mail'];
-                $userDomain = substr(strrchr($userEmail, "@"), 1);
-
-                // \Drupal::logger('zimbra_tasks_query')->info('Return $return: @return', ['@return' => $return ]);
-                // Retrieve configuration value
-                $domainPlusToken = $this->config('api_zimbra_pleiade.settings')->get('token_plus_domain');
-
-                // Split configuration value into lines
-                $lines = explode("\n", $domainPlusToken);
-
-                // Initialize an array to store domains
-                $domainArray = array();
-
-                // Iterate through each line
-                foreach ($lines as $line) {
-                    // Remove leading and trailing spaces
-                    $line = trim($line);
-                    if (!empty($line)) {
-                        // Split the line into domain and token using "| |" as separator
-                        list($domain, $token) = explode("| |", $line);
-
-                        // Add the domain to the array
-                        $domainArray[] = $domain;
-                    }
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (!empty($line)) {
+                    list($domain, $token) = explode("| |", $line);
+                    $domainArray[] = [
+                        "domain" => $domain,
+                        "token" => $token,
+                    ];
                 }
-
-                $userDomainKey = false;
-
-                foreach ($domainArray as $key => $domainEntry) {
-                    // Check if the user's domain matches the current domain or is part of the value
-                    if ($userDomain === $domainEntry || strpos($domainEntry, $userDomain) !== false) {
-                        $userDomainKey = $key;
-                        break; // Exit the loop once a match is found
-                    }
-                }
-                // If the user's domain is found, return the corresponding data from $return
-                if ($userDomainKey !== false) {
-                    $userDomainData = $return[$userDomainKey];
-                    return new JsonResponse(json_encode([
-                        'domainEntry' => $domainEntry,
-                        // Add domainEntry to the JSON response
-                        'userData' => $userDomainData
-                    ]), 200, [], true);
-                }
-            } else {
-                \Drupal::logger('zimbra_tasks_query')->info('aucun retour de l\'api');
             }
-            return new JsonResponse(json_encode('0'), 200, [], true);
-        }
-        else {
-            \Drupal::logger('zimbra_tasks_query')->info('Not in group Zimbra');
-            return new JsonResponse(json_encode('0'), 200, [], true);
+            $user = \Drupal\user\Entity\User::load(
+                \Drupal::currentUser()->id()
+            );
+            $email = $user->getEmail();
+            $userDomain = substr(strrchr($email, "@"), 1);
+
+            foreach ($domainArray as $item) {
+                $domainInArray = parse_url($item["domain"], PHP_URL_HOST);
+                if (
+                    strpos($domainInArray, $userDomain) !== false ||
+                    strpos($userDomain, $domainInArray) !== false
+                ) {
+                    $token = $item["token"];
+                    $domain = $item["domain"];
+                    break;
+                }
+            }
+            $return = [];
+            $zimbradataApi = new ApiPleiadeManager();
+            $return = $zimbradataApi->searchMyTasks($tasks_endpoint, $email, $token, $domain);
+
+            if ($return) {
+                $userDomainData = $return[0] ?? null;
+
+                return new JsonResponse(
+                    json_encode([
+                        "domainEntry" => $domain,
+                        "userData" => $userDomainData,
+                    ]), 200, [], true
+                );
+            } else {
+                \Drupal::logger("zimbra_tasks_query")->info("No API response");
+            }
+            return new JsonResponse(json_encode("0"), 200, [], true);
+        } else {
+            \Drupal::logger("zimbra_tasks_query")->info("Not in group LemonLDAP");
+            return new JsonResponse(json_encode("0"), 200, [], true);
         }
     }
- public function get_full_calendar() {
-    return [
-      '#markup' => '
+    public function get_full_calendar()
+    {
+        return [
+            "#markup" => '
       <div class="d-flex justify-content-center">
         <div id="spinner-history" class="spinner-border text-primary" role="status">
         </div>
       </div>
       <div id="zimbra_full_calendar"></div>',
-    ];
-  }
+        ];
+    }
 }

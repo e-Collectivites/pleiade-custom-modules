@@ -80,6 +80,7 @@ margin: 0!important;
 #lemon_block_id i{
     color: inherit!important;
 }
-/*nav .expand-logo:first-child #main-wrapper[data-sidebartype=mini-sidebar] #sidebarnav:not(.extended_menu) #menuLemon i.fa{
-	margin: 0!important;
-}*/
+
+nav .expand-logo:first-child #main-wrapper[data-sidebartype=mini-sidebar] #sidebarnav:not(.extended_menu) #menuLemon i.fa{
+
+}

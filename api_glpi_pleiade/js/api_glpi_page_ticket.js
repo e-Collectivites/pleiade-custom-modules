@@ -10,6 +10,7 @@ drupalSettings.api_glpi_pleiade.glpi_url
     ) {
           once("APIGLPITicketPageBehavior", "body", context).forEach(
             function () {
+		
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", Drupal.url("v1/api_glpi_pleiade/glpi_list_tickets"));
                 xhr.responseType = "json";

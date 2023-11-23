@@ -14,6 +14,16 @@ api_glpi_pleiade.glpi_list_tickets:
     _format: json
   requirements:
     _access: 'TRUE'
+
+api_glpi_pleiade.glpi_list_last_tickets:
+  path: '/v1/api_glpi_pleiade/glpi_list_last_tickets'
+  defaults:
+    _controller: '\Drupal\api_glpi_pleiade\Controller\GlpiController::glpi_list_last_tickets'
+    _title: 'Last Tickets Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+
 api_glpi_pleiade.glpi_tickets:
   path: '/glpi_tickets'
   defaults:

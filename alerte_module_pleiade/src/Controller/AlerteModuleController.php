@@ -10,20 +10,22 @@ use Symfony\Component\HttpFoundation\Request;
 
 class AlerteModuleController extends ControllerBase
 {
-  public function __construct()
+/*  public function __construct()
   {
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('alerte_module_pleiade')) {
       $this->settings_message = \Drupal::config('alerte_module_pleiade.settings');
     }
   }
-
+*/
   public function message_fields(Request $request)
   {
     $entityTypeManager = \Drupal::entityTypeManager();
     $query = $entityTypeManager->getStorage('node')->getQuery();
     $query->condition('type', 'message_informatif');
     $query->condition('status', 1); // Published content condition
+    // RL : access check
+    $query->accessCheck(FALSE);
     $entityIds = $query->execute();
     $messages = $entityTypeManager->getStorage('node')->loadMultiple($entityIds);
 

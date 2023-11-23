@@ -4,9 +4,9 @@
     attach: function (context, settings) {
       // Load on front page only,
       if (
-	drupalSettings.path &&
-      drupalSettings.path.currentPath &&
-      drupalSettings.path.currentPath.includes("calendar") &&
+        drupalSettings.path &&
+        drupalSettings.path.currentPath &&
+        drupalSettings.path.currentPath.includes("calendar") &&
         drupalSettings.api_zimbra_pleiade.field_zimbra_agenda
       ) {
         once(
@@ -28,58 +28,85 @@
           xhr.onload = function () {
             if (xhr.status === 200) {
               var donnees = xhr.response;
-              //            console.log(donnees);
+		console.log(donnees.userData.Body.SearchResponse.appt.length)
               if (donnees && donnees != "0") {
                 var event_array = [];
-                document.cookie =
-                  "nbOfTasks=" +
-                  donnees.userData.Body.SearchResponse.appt.length;
                 for (
                   var i = 0;
                   i < donnees.userData.Body.SearchResponse.appt.length;
                   i++
                 ) {
+                  console.log(donnees.userData.Body.SearchResponse.appt[i]);
+                  if (donnees.userData.Body.SearchResponse.appt[i].recur) {
+                    var start_task =
+                      donnees.userData.Body.SearchResponse.appt[i].inst[0].s /
+                      1000;
+                    var startDate = new Date(start_task * 1000 + 3600*1000);
+                    //+3600 * 1000
+		    console.log(start_task, startDate);
+                    var end_task =
+                      start_task +
+                      donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
+                    console.log(donnees.userData.Body.SearchResponse.appt[i].dur)
+		    var endDate = new Date(end_task * 1000 + 3600*1000);
+                    console.log(end_task, endDate);
+                    if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].until
+                    ) {
+                      var endRecur =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].until[0].d;
+                      var dateString = endRecur.slice(0, -1);
+                      // Extraire les composants de la date
+                      var year = dateString.substring(0, 4);
+                      var month = dateString.substring(4, 6);
+                      var day = dateString.substring(6, 8);
 
-		if(donnees.userData.Body.SearchResponse.appt[i].recur){
- 			var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
-                    var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
-			var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
-                    var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
+                      // Formater la date résultante
+                      var formattedDate = `${year}-${month}-${day}`;
+                      var until = formattedDate;
+                    } else {
+                      var until = "2122-01-01";
+                    }
 
-if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].until ) {
-                    var endRecur = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].until[0].d          	
-var dateString = endRecur.slice(0, -1);
-// Extraire les composants de la date
-var year = dateString.substring(0, 4);
-var month = dateString.substring(4, 6);
-var day = dateString.substring(6, 8);
+                    if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].interval
+                    ) {
+                      var interval =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].interval[0].ival;
+                    }
 
-// Formater la date résultante
-var formattedDate = `${year}-${month}-${day}`;
-var until = formattedDate
-}
-else
-{
-var until = '2122-01-01'
-}
+		var timestamp = donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
 
-if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval )  {
- var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival 
-}
-                    var frequenceAppt = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].freq
+		// Créer un objet Date à partir du timestamp
+ 		var date = new Date(timestamp * 1000);
+                     
+ 		// Récupérer les heures et les minutes
+ 		var hours = date.getHours();     
+ 		var minutes = 	date.getMinutes();                
+                               
+		// Formater les heures et les minutes
+		var formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+
+                    var frequenceAppt =
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].freq;
                     switch (frequenceAppt) {
-			 case 'DAI':
-                        var frequence = 'daily'
+                      case "DAI":
+                        var frequence = "daily";
                         break;
-                      case 'YEA':
-                        var frequence = 'yearly'
+                      case "YEA":
+                        var frequence = "yearly";
                         break;
-                      case 'MON':
-                        var frequence = 'monthly'
+                      case "MON":
+                        var frequence = "monthly";
                         break;
-			case 'WEE':
-                          var frequence = 'weekly'
-                          break;
+                      case "WEE":
+                        var frequence = "weekly";
+                        break;
                       default:
                         break;
                     }
@@ -98,54 +125,72 @@ if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interva
                         donnees.userData.Body.SearchResponse.appt[i].inst[0].s +
                         "&end=" +
                         end_task * 1000,
-		      rrule: {
+                      rrule: {
                         freq: frequence,
                         interval: interval,
                         dtstart: startDate.toISOString().replace(".000Z", ""),
-			until: until,
-			}
+                        until: until,
+		      },
+			duration: formattedTime 
                     };
-			if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday )  {
- 				var byWeekDay = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday[0].wkday
-				const jours = [];
+                    if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].byday
+                    ) {
+                      var byWeekDay =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].byday[0].wkday;
+                      const jours = [];
 
-				// Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
-				for (const item of byWeekDay) {
-  					if (item.day) {
-    					jours.push(item.day.toLowerCase());
-					event_array[i].rrule.byweekday = jours;
-  					}
-				}
-			}
-			if( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday )  {
-                                var everyWeekDay = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].byday[0].wkday
-                                const everyDay = [];
-
-                                // Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
-                                for (const item of everyWeekDay) {
-                                        if (item.ordwk) {
-                                        everyDay.push(item.ordwk);
-                                        event_array[i].rrule.bysetpos = everyDay;
-                                        }
-                                }
+                      // Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
+                      for (const item of byWeekDay) {
+                        if (item.day) {
+                          jours.push(item.day.toLowerCase());
+                          event_array[i].rrule.byweekday = jours;
                         }
-			if ( donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].count) {
-                        	var count = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].count[0].num
-                        	event_array[i].rrule.count = count;    
-                        } 
-}
-else
-{
-		var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
-                    var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
-                    var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
-                    var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
+                      }
+                    }
+                    if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].byday
+                    ) {
+                      var everyWeekDay =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].byday[0].wkday;
+                      const everyDay = [];
+
+                      // Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
+                      for (const item of everyWeekDay) {
+                        if (item.ordwk) {
+                          everyDay.push(item.ordwk);
+                          event_array[i].rrule.bysetpos = everyDay;
+                        }
+                      }
+                    }
+                    if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].count
+                    ) {
+                      var count =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].count[0].num;
+                      event_array[i].rrule.count = count;
+                    }
+                  } else {
+                    var start_task =
+                      donnees.userData.Body.SearchResponse.appt[i].inst[0].s /
+                      1000;
+                    var startDate = new Date(start_task * 1000 + 3600 * 1000);
+                    var end_task =
+                      start_task +
+                      donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
+                    var endDate = new Date(end_task * 1000 + 3600 * 1000);
 
                     event_array[i] = {
                       title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
                       start: startDate.toISOString().replace(".000Z", ""),
                       end: endDate.toISOString().replace(".000Z", ""),
-                      url: 
+                      url:
                         donnees.domainEntry +
                         "modern/calendar/event/details/" +
                         donnees.userData.Body.SearchResponse.appt[i].invId +
@@ -156,11 +201,9 @@ else
                         donnees.userData.Body.SearchResponse.appt[i].inst[0].s +
                         "&end=" +
                         end_task * 1000,
-                      
                     };
-		}
-
                   }
+                }
                 console.log(event_array);
                 var calendarEl = document.getElementById(
                   "zimbra_full_calendar"
@@ -169,30 +212,30 @@ else
 
                 var numberOfMlSeconds = currentDateObj.getTime();
 
-                var addMlSeconds = 60 * 60 * 1000 * 2;
-                var newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
+//                var addMlSeconds = 60 * 60 * 1000 * 2;
+                //var newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
+                 var newDateObj = new Date(numberOfMlSeconds);
                 //console.log(newDateObj)
                 var calendar = new FullCalendar.Calendar(calendarEl, {
-		  timeZone: "UTC",
                   locale: "fr",
                   buttonText: {
-			today: 'Cette semaine',
-		  },
-		  headerToolbar: {
-			left: 'prev,next today',
-      			center: 'title',
-			right: false,
+                    today: "Cette semaine",
+                  },
+                  headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: false,
                   },
                   height: 675,
-		  nowIndicator: true,
+                  nowIndicator: true,
                   now: newDateObj,
-                  slotMinTime: "08:00:00",
+                  slotMinTime: "07:00:00",
                   slotMaxTime: "20:00:00",
                   initialView: "timeGridWeek",
-		weekends: false,
-		themeSystem: "bootstrap",
-                events: event_array,
-		eventClick: function (event) {
+                  weekends: false,
+                  themeSystem: "bootstrap",
+                  events: event_array,
+                  eventClick: function (event) {
                     if (event.event.url) {
                       event.jsEvent.preventDefault();
                       window.open(event.event.url, "_blank");
@@ -200,20 +243,21 @@ else
                   },
                 });
                 calendar.render();
-document.getElementById('spinner-history').style.display = 'none'; 
+                document.getElementById("spinner-history").style.display =
+                  "none";
               } else {
                 var linkEntitie =
                   '<div id="zimbra_agenda" class="col-lg-12 ">\
-                    <div>\
-                      <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                        <h4 class="card-title text-dark py-2"><span>Agenda du jour</span></h4>\
+                      <div>\
+                        <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                          <h4 class="card-title text-dark py-2"><span>Agenda du jour</span></h4>\
+                          </div>\
+                              <div class="card-body">\
+                                <h2> Erreur lors de la récupération de l\'agenda </h2></div>\
+                              </div>\
+                          </div>\
                         </div>\
-                            <div class="card-body">\
-                              <h2> Erreur lors de la récupération de l\'agenda </h2></div>\
-                            </div>\
-                        </div>\
-                      </div>\
-          ';
+            ';
                 document.getElementById("zimbra_full_calendar").innerHTML =
                   linkEntitie;
               }

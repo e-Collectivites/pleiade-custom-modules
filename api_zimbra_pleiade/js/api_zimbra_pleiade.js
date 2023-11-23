@@ -29,7 +29,7 @@ setTimeout(function () {
             if (xhr.status === 200) {
               var linkEntitie = ""; // Initialiser la variable linkEntitie ici
               var donnees = xhr.response; // Assurez-vous que xhr.response contient un tableau d'objets "donnees"
-              console.log(donnees)
+//              console.log(donnees)
               var linkEntitie =
                   '<div id="zimbra_mail" class="col-lg-12 mb-2">\
                                             <div class="card">\
@@ -58,21 +58,19 @@ setTimeout(function () {
                     var hour_mail =
                       donnees.userData.Body.SearchResponse.c[i].d / 1000;
                     var objectDate = new Date(hour_mail * 1000);
-                        console.log(donnees.userData.Body.SearchResponse.c[i].e)
-                         linkEntitie +=
+//			console.log(donnees.userData.Body.SearchResponse.c[i].e)
+			 linkEntitie +=
                       '<tr class="d-inline-flex mail_content w-100" mail-expe="' +
                       (donnees.userData.Body.SearchResponse.c[i].e 
-                        ? donnees.userData.Body.SearchResponse.c[i].e[0].a
-                        : "Brouillon"
-                        ) +
-                        '">\
-                                                <th class="col d-flex align-items-center profile-picture"></th>\
-                                                <th class="d-flex justify-content-center expediteur align-items-center"><div class="text-break">' +
+			? donnees.userData.Body.SearchResponse.c[i].e[0].a
+			: "Brouillon"
+			) +
+			'">\
+                                <th class="col d-flex align-items-center profile-picture"></th>\
+                                <th class="d-flex justify-content-center expediteur align-items-center"><div class="text-break">' +
                       (donnees.userData.Body.SearchResponse.c[i].e
-                        ? donnees.userData.Body.SearchResponse.c[i].e[
-                            0
-                          ].p
-                        : "Brouillon" ) +
+                        ? donnees.userData.Body.SearchResponse.c[i].e[0].a
+                        : donnees.userData.Body.SearchResponse.c[i].e[0].d ) +
                       '</div></th>\
                                                 <th scope="col" class="w-50">\
                                                     <span class="d-block fw-bold">' +

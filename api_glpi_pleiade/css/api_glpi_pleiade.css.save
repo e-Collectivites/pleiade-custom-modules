@@ -71,7 +71,4 @@ table.dataTable tbody tr.selected {
 #glpi_table_wrapper .pagination{
 justify-content: flex-end;
 }
-i.fa-solid.fa-magnifying-glass {
-    vertical-align: middle;
-    font-size: larger;
-}
+
