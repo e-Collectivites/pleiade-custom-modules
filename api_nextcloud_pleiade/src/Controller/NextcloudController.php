@@ -43,8 +43,8 @@ class NextCloudController extends ControllerBase
           $nextcloudataApi = new ApiPleiadeManager();
           $return = $nextcloudataApi->getNextcloudNotifs();
 //var_dump($return);
-		if ($return = "null"){
-          return new JsonResponse(json_encode("0"), 200, [], true);
+		if ($return == NULL){ 
+         return new JsonResponse(json_encode("0"), 200, [], true);
 }
 else
 {

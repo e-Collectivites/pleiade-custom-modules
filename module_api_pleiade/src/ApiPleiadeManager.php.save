@@ -10,13 +10,21 @@ use Drupal\user\Entity\UserInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\user\Entity\User;
 
+/**
+ * Basic manager of module.
+ */
 class ApiPleiadeManager
 {
 
+  /**
+   * Drupal's settings manager.
+   */
   protected $settings;
-  protected $settings_nextcloud, $settings_glpi, $settings_lemon, $settings_zimbra;
+	protected $settings_nextcloud, $settings_glpi, $settings_lemon,$settings_zimbra;
   public $client;
-
+  /**
+   * Constructor.
+   */
   public function __construct()
   {
     if (!isset($_COOKIE['lemonldap'])) {
@@ -72,7 +80,9 @@ class ApiPleiadeManager
   {
 
     ////////////////////////////////////////////////////////
+    //                                                    //
     //  REQUETE SI API LEMONLDAP RECUPERATION APPLIS ETC  //
+    //                                                    //
     ////////////////////////////////////////////////////////
 
     if ($application == 'lemon') {
@@ -115,9 +125,12 @@ class ApiPleiadeManager
     }
 
     ////////////////////////////////////////////////////////
+    //                                                    //
     //     REQUETE SI API PASTELL DOCUMENTS + ENTITES     //
+    //                                                    //
     ////////////////////////////////////////////////////////
     elseif ($application == 'pastell') {
+
 
       if ($this->settings_pastell->get('field_pastell_auth_method') == 'cas' || $this->settings_pastell->get('field_pastell_auth_method') == 'oidc') {
         $PT_request_url = $api . '?auth=cas';
@@ -132,13 +145,18 @@ class ApiPleiadeManager
       \Drupal::logger('api_pastell_pleiade')->alert('PT: ' . $proxy_ticket);
 
       $PASTELL_API_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
+
+
       $options = [
         'headers' => [
           'Content-Type' => 'application/json',
           'Cookie' => 'lemonldap=' . $_COOKIE['lemonldap'],
         ],
       ];
+
       if (!empty($inputs)) {
+
+
         if ($method == 'GET') {
           $PASTELL_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
           foreach ($inputs as $param => $value) {
@@ -161,42 +179,103 @@ class ApiPleiadeManager
     }
 
     ////////////////////////////////////////////////////////
+    //                                                    //
     //   REQUETE API ZIMBRA RECUPERATION AGENDA / MAILS   //
+    //                                                    //
     ////////////////////////////////////////////////////////
     elseif ($application == 'zimbra') {
 
-      $sessionCookieValue = $_COOKIE['lemonldap'];
-      // Get the user's email and other required data
-      $value1 = $zimbra_mail;
-      $value2 = 'name';
-      $value3 = '0';
-      $value4 = time() * 1000; // Convert to milliseconds as the original code did
-      $key = $zimbra_token;
-      $data = $value1 . "|" . $value2 . "|" . $value3 . "|" . $value4;
-      $hmac = hash_hmac('sha1', $data, $key);
-      $preauthURL = $zimbra_domain . "service/preauth?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
 
-      ob_start();
-      try {
-        $clientRequest = $this->client->request('GET', $preauthURL, [
-          'headers' => [
-            'Content-Type' => 'application/json',
-            'Cookie' => 'lemonldap=' . $sessionCookieValue,
-          ],
-          'debug' => true,
-          'allow_redirects' => false,
-        ]);
-        $responseToken = $clientRequest->getBody()->getContents();
-        $debugInfo = ob_get_clean();
-      } catch (RequestException $e) {
-        \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      }
-      $pattern = '/Set-Cookie: ZM_AUTH_TOKEN=([^;]+)/';
-      if (preg_match($pattern, $debugInfo, $matches)) {
-        $zmAuthToken = $matches[1];
-        $apiEndpoint = $zimbra_domain . 'service/soap';
-        $requestXml =
-          '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+      //\Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
+
+      if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
+        $ZIMBRA_API_URL = $api;
+        try {
+          $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
+          $body = $clientRequest->getBody()->getContents();
+        } catch (RequestException $e) {
+          // \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        }
+
+        return Json::decode($body);
+        // Zimbra API endpoint
+      } else {
+
+ $sessionCookieValue = $_COOKIE['lemonldap'];
+
+            // Get the user's email and other required data
+        $value1= $zimbra_mail;    
+	$value2 = 'name';
+            $value3 = '0';
+            $value4 = time() * 1000; // Convert to milliseconds as the original code did
+
+ 	    $key = $zimbra_token;
+
+            $data = $value1 . "|" . $value2 . "|" . $value3 . "|" . $value4;
+            //              echo $data;
+            $hmac = hash_hmac('sha1', $data, $key);
+
+            // Construct the preauth URL
+            $WEB_MAIL_PREAUTH_URL = $zimbra_domain . "service/preauth"; // Replace with your preauth URL
+
+            $preauthURL = $WEB_MAIL_PREAUTH_URL . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
+		
+
+            // Set up the headers and data as needed for your request.
+            $headers = [
+              'Content-Type: application/json',
+              'Cookie: lemonldap=' . $sessionCookieValue,
+            ];
+$response = $this->client->request('GET', $preauthURL, [
+        'headers' => $headers,
+        'verify' => false, // Adjust this option based on your SSL/TLS configuration
+    ]);
+
+    // Get the HTTP response code
+    $httpCode = $response->getStatusCode();
+
+    // Get the response headers
+    $responseHeaders = $response->getHeaders();
+
+    // Get the ZM_AUTH_TOKEN from the response body
+    $responseBody = $response->getBody()->getContents();
+
+var_dump($responseBody);
+/*
+            // Initialize cURL session
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, $preauthURL); // Set the URL
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the transfer as a string instead of outputting it directly
+            curl_setopt($ch, CURLOPT_HEADER, true); // Include the response headers in the output
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the custom headers
+
+            // Execute the cURL request
+            $response = curl_exec($ch);
+            $pattern = '/ZM_AUTH_TOKEN=([^;]+)/';
+ 	//var_dump($response);
+            // Check for cURL errors
+
+            if (curl_errno($ch)) {
+              echo 'cURL error: ' . curl_error($ch);
+            }
+
+            // Get the HTTP response code
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            // Close cURL session
+            curl_close($ch);
+*/
+            if (preg_match($pattern, $response, $matches)) {
+              // Extract the token value from the first capturing group ($matches[1])
+              $zmAuthToken = $matches[1];
+              $apiEndpoint = $zimbra_domain . 'service/soap';
+              // Get the Zimbra SearchRequest value from the settings (replace 'field_zimbra_agenda' with the actual field name)
+  // The SOAP request XML
+              $requestXml =
+                '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
                     <soap:Header>
                         <context xmlns="urn:zimbra">
                             <format type="js"/>
@@ -206,31 +285,38 @@ class ApiPleiadeManager
                     <soap:Body>' . $endpoint . '</soap:Body>
                 </soap:Envelope>';
 
-        try {
-          $clientRequest = $this->client->request('POST', $apiEndpoint, [
-            'headers' => [
-              'Content-Type' => 'application/soap+xml',
-              'Cookie' => 'lemonldap=' . $sessionCookieValue,
-            ],
-            'body' => $requestXml,
-          ]);
-          $responseSecond = $clientRequest->getBody()->getContents();
-        } catch (RequestException $e) {
-          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-        }
+              // Create cURL resource
+              $curl = curl_init();
+              // Set cURL options
+              curl_setopt($curl, CURLOPT_URL, $apiEndpoint);
+              curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+              curl_setopt($curl, CURLOPT_POST, true);
+              curl_setopt($curl, CURLOPT_POSTFIELDS, $requestXml);
+              curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/soap+xml'));
+              curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification (use with caution)
 
-        $responseJson[] = Json::decode($responseSecond);
+              // Execute the cURL request
+              $responseXml = curl_exec($curl);
 
-        if (strpos($endpoint, 'types="appointment"') !== false) {
-          foreach ($responseJson[0]['Body']['SearchResponse']['appt'] as &$appointment) {
+              // Check for cURL errors
+              if (curl_errno($curl)) {
+                echo "cURL Error: " . curl_error($curl);
+              }
 
-            // Check if 'recur' exists in the appointment
-            if (isset($appointment['recur']) && $appointment['recur'] == 1) {
-              $id_appointment = $appointment['id'];
+              // Close cURL resource
+              curl_close($curl);
+              $responseJson[] = Json::decode($responseXml);
 
-              $ApptApiEndpoint = $zimbra_domain . 'service/soap';
-              $ApptRequestXml =
-                '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+if (strpos($endpoint, 'types="appointment"') !== false) {             
+ foreach ($responseJson[0]['Body']['SearchResponse']['appt'] as &$appointment) {
+
+                // Check if 'recur' exists in the appointment
+                if (isset($appointment['recur']) && $appointment['recur'] == 1) {
+                  $id_appointment = $appointment['id'];
+
+                  $ApptApiEndpoint = $zimbra_domain . 'service/soap';
+                  $ApptRequestXml =
+                    '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
                       <soap:Header>
                           <context xmlns="urn:zimbra">
                               <format type="js"/>
@@ -240,36 +326,41 @@ class ApiPleiadeManager
                       <soap:Body><GetAppointmentRequest xmlns="urn:zimbraMail" id="' . $id_appointment . '" sync="1"/></soap:Body>
                   </soap:Envelope>';
 
-              try {
-                $clientRequest = $this->client->request('POST', $ApptApiEndpoint, [
-                  'headers' => [
-                    'Content-Type' => 'application/soap+xml',
-                    'Cookie' => 'lemonldap=' . $sessionCookieValue,
-                  ],
-                  'body' => $ApptRequestXml,
-                ]);
-                $responseAppt = $clientRequest->getBody()->getContents();
-              } catch (RequestException $e) {
-                \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+                  // Créez la ressource cURL
+                  $ApptCurl = curl_init();
+
+                  // Configurez les options cURL
+                  curl_setopt($ApptCurl, CURLOPT_URL, $ApptApiEndpoint);
+                  curl_setopt($ApptCurl, CURLOPT_RETURNTRANSFER, true);
+                  curl_setopt($ApptCurl, CURLOPT_POST, true);
+                  curl_setopt($ApptCurl, CURLOPT_POSTFIELDS, $ApptRequestXml);
+                  curl_setopt($ApptCurl, CURLOPT_HTTPHEADER, array('Content-Type: application/soap+xml'));
+                  curl_setopt($ApptCurl, CURLOPT_SSL_VERIFYPEER, false); // Désactivez la vérification SSL (utilisez avec précaution)
+
+                  // Exécutez la requête cURL
+
+                  $ApptResponseXml = curl_exec($ApptCurl);
+                  // Check for cURL errors
+                  if (curl_errno($ApptCurl)) {
+                    echo "cURL Error: " . curl_error($ApptCurl);
+                  }
+
+                  // Close cURL resource
+                  curl_close($ApptCurl);
+                  $responseApptJson = Json::decode($ApptResponseXml);
+                  $recur_detail = $responseApptJson["Body"]["GetAppointmentResponse"]["appt"][0]['inv'][0]['comp'][0]['recur'];
+
+                  // Replace 'recur' with $recur_detail in the appointment
+                  $appointment['recur'] = $recur_detail;
               }
-
-              $responseApptJson = Json::decode($responseAppt);
-              $recur_detail = $responseApptJson["Body"]["GetAppointmentResponse"]["appt"][0]['inv'][0]['comp'][0]['recur'];
-
-              // Replace 'recur' with $recur_detail in the appointment
-              $appointment['recur'] = $recur_detail;
             }
+}
           }
-        }
+       // }
+        return ($responseJson);
       }
-      return ($responseJson);
+    } elseif ($application == 'glpi') {	
 
-
-      ////////////////////////////////////////////////////////
-      //       REQUETE API glpi doc à signer             
-      ////////////////////////////////////////////////////////
-
-    } elseif ($application == 'glpi') {
 
       $url_api_glpi = $api;
       $glpi_url = $this->settings_glpi->get('glpi_url');
@@ -283,54 +374,76 @@ class ApiPleiadeManager
       $sessionCookieValue = $_COOKIE['lemonldap'];
       // Check if the user entity is valid.
       if ($user) {
+        // Get the value of the 'glpi_user_token' field.
         $glpi_user_token = $user->get('field_glpi_user_token')->value;
         if (!$glpi_user_token) {
           \Drupal::logger('api_glpi_pleiade')->alert("User token manquant");
           return;
         }
+        // Use the $glpi_user_token value as needed.
       }
       $url1 = $glpi_url . '/apirest.php/initSession?app_token=' . $app_token . '&user_token=' . $glpi_user_token;
-      try {
-        $clientRequest = $this->client->request('POST', $url1, [
-          'headers' => [
-            'Content-Type' => 'text/plain',
-            'Cookie' => 'lemonldap=' . $sessionCookieValue,
-          ],
-        ]);
-        $response1 = $clientRequest->getBody()->getContents();
-      } catch (RequestException $e) {
-        \Drupal::logger('api_glpi_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      }
+      // // Initialize curl
+      $headers = [
+        'Cookie: lemonldap=' . $sessionCookieValue,
+        // Replace with your cookie value
+      ];
+      $curl1 = curl_init($url1);
+      // // Set the request method to POST
+      curl_setopt($curl1, CURLOPT_POST, true);
+      // // Set the response format to JSON
+
+      // // Set the option to return the response as a string
+      curl_setopt($curl1, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl1, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+      curl_setopt($curl1, CURLOPT_HTTPHEADER, $headers);
+      // // Execute the request
+      $response1 = curl_exec($curl1);
+      // // Close the curl session
+      curl_close($curl1);
+      // // Decode the JSON response
       $data = json_decode($response1);
+
+      // Récupérer la valeur du token
       $sessionToken = $data->session_token;
+      // // Get the session token from the response
       if (substr($url_api_glpi, -7) === "/Ticket") {
-        if ($inputs) {
-          $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdown=true&sort=status&' . $inputs;
-        } else {
-          $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdowns=true&sort=status';
-        }
-      } else {
+	if($inputs){
+$url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdown=true&sort=status&' . $inputs;
+	}
+else
+{
+        $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdowns=true&sort=status';
+} 
+     } else {
         $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdowns=true';
       }
 
-      try {
-        $clientRequest = $this->client->request('GET', $url, [
-          'headers' => [
-            'Content-Type' => 'text/plain',
-            'Cookie' => 'lemonldap=' . $sessionCookieValue,
-          ],
-        ]);
-        $response = $clientRequest->getBody()->getContents();
-      } catch (RequestException $e) {
-        \Drupal::logger('api_glpi_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-      }
+      // Session token obtained from initSession API
+      // // Initialize curl
+      $curl = curl_init($url);
+      // // Set the request method to GET 
+      curl_setopt($curl, CURLOPT_HTTPGET, true);
+      // // Set the response format to JSON
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+      // // Set the option to return the response as a string   
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      // // Execute the request 
+      $response = curl_exec($curl);
+      // // Close the curl session 
+      curl_close($curl);
+      // // Decode the JSON response
       $response_data = Json::decode($response);
       return ($response_data);
+      //return new JsonResponse(json_encode('null'), 200, [], true);
 
     }
 
     ////////////////////////////////////////////////////////
-    //       REQUETE API Iparapheur doc à signer          
+    //                                                    //
+    //       REQUETE API Iparapheur doc à signer          //
+    //                                                    //
     ////////////////////////////////////////////////////////
     elseif ($application == 'parapheur') {
 
@@ -386,11 +499,16 @@ class ApiPleiadeManager
       //   //  return Json::decode($body);
       //   //   }
     }
-
     ////////////////////////////////////////////////////////
+    //                                                    //
     //     REQUETE SI API NEXTCLOUD --- NOTIFICATIONS     //
+    //                                                    //
     ////////////////////////////////////////////////////////
     elseif ($application == 'nextcloud') {
+      // Nextcloud API URL
+      $apiUrl = $api; // Replace with your Nextcloud API URL
+
+      // Create a new cURL resource
 
       $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
       if ($user->get('field_nextcloud_api_key')->value) {
@@ -409,31 +527,47 @@ class ApiPleiadeManager
 
       // Fin AJOUT modif pour SITIV
       $token_authent = base64_encode($displayName . ':' . $nc_key);
+      // var_dump($token_authent);
 
       $headers = array(
         'OCS-APIRequest: true',
         'Authorization: Basic ' . $token_authent
       );
 
-      try {
-        $clientRequest = $this->client->request($method, $api, [
-          'headers' => [
-            'OCS-APIRequest' => 'true',
-            'Content-Type' => 'text/plain',
-            'Authorization' => 'Basic ' . $token_authent,
-          ],
-        ]);
-        $response = $clientRequest->getBody()->getContents();
-        $response = json_decode($response);
-        return ($response);
-      } catch (RequestException $e) {
-        \Drupal::logger('api_nextcloud_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
-        return (json_decode("0"));
+      // Set the cURL options
+      // $url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
+      $ch = curl_init();
+      // Set the URL to send the request to
+      curl_setopt($ch, CURLOPT_URL, $apiUrl);
+
+      // Set the HTTP method to GET
+      curl_setopt($ch, CURLOPT_HTTPGET, true);
+
+      // Return the response as a string instead of outputting it directly
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+      // Execute the cURL request
+      $response = curl_exec($ch);
+      $response = json_decode($response);
+      // Check for any errors
+      if (curl_errno($ch)) {
+        echo 'Error: ' . curl_error($ch);
       }
+
+      // Close the cURL resource
+      curl_close($ch);
+
+      return ($response);
     }
   }
   /**
    * Get Request of API.
+   *
+   * @param string $endpoint
+   *   A request action.
+   * @param string $input
+   *   A data of curl request.
+   *
    * @return array
    *   A respond data.
    */
@@ -444,6 +578,12 @@ class ApiPleiadeManager
 
   /**
    * Post Request of API.
+   *
+   * @param string $endpoint
+   *   A request action.
+   * @param string $inputs
+   *   A data of curl request.
+   *
    * @return array
    *   A respond data.
    */
@@ -453,7 +593,9 @@ class ApiPleiadeManager
   }
 
   //////////////////////////////////////////////////////////////
-  //  FONCTIONS POUR API LEMONLDAP APPLICATION + SESSIONTIME  
+  //                                                          //
+  //  FONCTIONS POUR API LEMONLDAP APPLICATION + SESSIONTIME  //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
   public function searchMyApps()
@@ -470,7 +612,9 @@ class ApiPleiadeManager
   }
 
   //////////////////////////////////////////////////////////////
-  //  FONCTIONS POUR API PASTELL ENTITES ET DOCUMENTS ENTITE  
+  //                                                          //
+  //  FONCTIONS POUR API PASTELL ENTITES ET DOCUMENTS ENTITE  //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
   public function searchMyDocs($id_e)
@@ -496,7 +640,9 @@ class ApiPleiadeManager
 
 
   //////////////////////////////////////////////////////////////
-  //   FONCTIONS POUR API ZIMBRA MAILS / AGENDA 
+  //                                                          //
+  //              FONCTIONS POUR API ZIMBRA MAILS / AGENDA    //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
 
@@ -523,7 +669,9 @@ class ApiPleiadeManager
   }
 
   //////////////////////////////////////////////////////////////
-  //              FONCTIONS POUR API IPARAPHEUR               
+  //                                                          //
+  //              FONCTIONS POUR API IPARAPHEUR               //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
 
@@ -535,7 +683,9 @@ class ApiPleiadeManager
   }
 
   //////////////////////////////////////////////////////////////
-  //              FONCTIONS POUR API NEXTCLOUD               
+  //                                                          //
+  //              FONCTIONS POUR API NEXTCLOUD               //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
 
@@ -549,7 +699,9 @@ class ApiPleiadeManager
     }
   }
   //////////////////////////////////////////////////////////////
-  //              FONCTIONS POUR API GLPI                     
+  //                                                          //
+  //              FONCTIONS POUR API GLPI                     //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
 
@@ -573,14 +725,14 @@ class ApiPleiadeManager
   }
 
   public function getLastGLPITickets()
-  {
-    \Drupal::logger('api_glpi_pleiade')->info('function getLastGLPITickets triggered !');
-    $moduleHandler = \Drupal::service('module_handler');
-    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
-      $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie>
-      return $this->curlGet([], 'range=0-4', $this->settings_glpi->get('glpi_url') . '/apirest.php/' . $endpoints, 'glpi', '', '', '');
-    }
-  }
+   {
+     \Drupal::logger('api_glpi_pleiade')->info('function getLastGLPITickets triggered !');
+     $moduleHandler = \Drupal::service('module_handler');
+     if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+       $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie>
+       return $this->curlGet([], 'range=0-4', $this->settings_glpi->get('glpi_url') . '/apirest.php/' . $endpoints, 'glpi', '', '', '');
+     }
+   }
 
   /**
    * Function to return first element of the array, compatability with PHP 5, note that array_key_first is only available for PHP > 7.3.

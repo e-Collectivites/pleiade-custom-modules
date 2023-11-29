@@ -232,7 +232,7 @@
                   slotMinTime: "07:00:00",
                   slotMaxTime: "20:00:00",
                   initialView: "timeGridWeek",
-                  weekends: false,
+		weekends: false,
                   themeSystem: "bootstrap",
                   events: event_array,
                   eventClick: function (event) {

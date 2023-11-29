@@ -154,7 +154,23 @@
                           }
                         }
                       }
+			if (
+                      donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                        .add[0].rule[0].byday
+                    ) {
+                      var everyWeekDay =
+                        donnees.userData.Body.SearchResponse.appt[i].recur[0]
+                          .add[0].rule[0].byday[0].wkday;
+                      const everyDay = [];
 
+                      // Parcourez le tableau wkday pour extraire les jours et les convertir en minuscules
+                      for (const item of everyWeekDay) {
+                        if (item.ordwk) {
+                          everyDay.push(item.ordwk);
+                          event_array[i].rrule.bysetpos = everyDay;
+                        }
+                      }
+                    }
                       if (
                         donnees.userData.Body.SearchResponse.appt[i].recur[0]
                           .add[0].rule[0].count
@@ -194,7 +210,7 @@
                       };
                     }
                   }
-                  //console.log(event_array);
+                  console.log(event_array);
                   var calendarEl = document.getElementById(
                     "zimbra_block_agenda_id"
                   );
