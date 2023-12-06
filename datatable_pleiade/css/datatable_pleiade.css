@@ -1,6 +1,6 @@
 .dropend .dropdown-menu.show {
   height: 2.5em;
-  margin-top: -0.5em!important;
+top: -0.6em!important;  
   min-width: 5em!important;
     width: 9em!important;
     display: flex;
@@ -84,4 +84,13 @@ table.dataTable tbody tr.selected {
   width: 100%!important;
 }
 
-    
+body[data-theme=dark] .table-striped > tbody > tr:nth-of-type(even) {
+    --bs-table-accent-bg: #313642;
+}
+#document_recent_id i.fa {
+    font-size: 1.5em;
+}
+#document_recent_id td {
+    vertical-align: middle;
+}
+

@@ -28,7 +28,7 @@ class ApiPleiadeManager
   {
     if (!isset($_COOKIE['lemonldap'])) {
       $msg = 'Pas authentifié dans le SSO Lemon';
-      // \Drupal::logger('module_api_pleiade')->error($msg);
+      \Drupal::logger('module_api_pleiade')->error($msg);
       // return;
     }
     $this->client = \Drupal::httpClient();
@@ -36,23 +36,29 @@ class ApiPleiadeManager
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_lemon_pleiade')) {
       $this->settings_lemon = \Drupal::config('api_lemon_pleiade.settings');
+     // \Drupal::logger('api_lemon_pleiade')->debug('module activé');
     }
     if ($moduleHandler->moduleExists('api_pastell_pleiade')) {
-      $this->settings_pastell = \Drupal::config('api_pastell_pleiade.settings');  
+      $this->settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
+    //  \Drupal::logger('api_pastell_pleiade')->debug('module activé');
     }
     if ($moduleHandler->moduleExists('api_zimbra_pleiade')) {
       $this->settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
+    //  \Drupal::logger('api_zimbra_pleiade')->debug('module activé');
 
     }
     // if ($moduleHandler->moduleExists('api_parapheur_pleiade')) {
     //   $this->settings_parapheur = \Drupal::config('api_parapheur_pleiade.settings');
-    //   // \Drupal::logger('api_parapheur_pleiade')->debug('module activé');
+    //   \Drupal::logger('api_parapheur_pleiade')->debug('module activé');
     // }
     if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
       $this->settings_nextcloud = \Drupal::config('api_nextcloud_pleiade.settings');
+    //  \Drupal::logger('api_nextcloud_pleiade')->debug('module activé');
+
     }
 	if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
       $this->settings_glpi = \Drupal::config('api_glpi_pleiade.settings');
+    //  \Drupal::logger('api_glpi_pleiade')->debug('module activé');
     }
   }
 
@@ -80,8 +86,10 @@ class ApiPleiadeManager
 
     if ($application == 'lemon') {
 
+      // Si on a le cookie Lemon on le loggue dans Drupal pour test - TODO : supprimer
       \Drupal::logger('api_lemon_pleiade')->info('Cookie Lemon: @cookie', ['@cookie' => $_COOKIE['lemonldap']]);
       $LEMON_API_URL = $api . "/" . $endpoint;
+      \Drupal::logger('api_lemon_pleiade')->info('LEMON_API_URL: @api', ['@api' => $LEMON_API_URL]);
 
       $options = [
         'headers' => [
@@ -92,7 +100,7 @@ class ApiPleiadeManager
 
       if (!empty($inputs)) {
 
-        // \Drupal::logger('api_lemon_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs]);
+        \Drupal::logger('api_lemon_pleiade')->info('Inputs dans la requête: @inp', ['@inp' => $inputs]);
 
         if ($method == 'GET') {
           $LEMON_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
@@ -105,17 +113,11 @@ class ApiPleiadeManager
         }
       }
 
-      // Create a message string with all the information
-      $message = "Lemon API URL: $LEMON_API_URL | Lemon API Method: $method | Lemon API Options: " . json_encode($options);
-
-      // Log the message
-      \Drupal::logger('api_lemon_pleiade')->info($message);
-
       try {
         $clientRequest = $this->client->request($method, $LEMON_API_URL, $options);
         $body = $clientRequest->getBody();
       } catch (RequestException $e) {
-         \Drupal::logger('api_lemon_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        \Drupal::logger('api_lemon_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
       }
 
       return Json::decode($body);
@@ -138,8 +140,12 @@ class ApiPleiadeManager
       // ProxyTicket
       // On utilise le sergvice du module CAS Drupal\cas\Service\CasProxyHelper;
       $proxy_ticket = \Drupal::service('cas.proxy_helper')->getProxyTicket($PT_request_url);
+      
+      \Drupal::logger('api_pastell_pleiade')->debug('PT: ' . $proxy_ticket);
 
       $PASTELL_API_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
+
+
       $options = [
         'headers' => [
           'Content-Type' => 'application/json',
@@ -148,6 +154,7 @@ class ApiPleiadeManager
       ];
 
       if (!empty($inputs)) {
+
 
         if ($method == 'GET') {
           $PASTELL_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
@@ -159,16 +166,13 @@ class ApiPleiadeManager
           $options['body'] = $inputs;
         }
       }
-
-      $message = "Pastell API URL: $PASTELL_API_URL | Pastell API Method: $method | Pastell API Options: " . json_encode($options);
-      \Drupal::logger('api_pastell_pleiade')->info($message);
-      
+      \Drupal::logger('api_pastell_pleiade')->debug('requête incoming: ' . $PASTELL_API_URL);
       try {
         $clientRequest = $this->client->request($method, $PASTELL_API_URL, $options);
         $body = $clientRequest->getBody()->getContents();
 
       } catch (RequestException $e) {
-        \Drupal::logger('api_pastell_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        \Drupal::logger('api_pastell_pleiade')->debug('Curl error: @error', ['@error' => $e->getMessage()]);
       }
       return Json::decode($body);
     }
@@ -180,13 +184,16 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'zimbra') {
 
+
+      //\Drupal::logger('api_zimbra_pleiade')->info('ZIMBRA_API_URL: @api', ['@api' => $zimbraApiUrl]);
+
       if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
         $ZIMBRA_API_URL = $api;
         try {
           $clientRequest = $this->client->request($method, $ZIMBRA_API_URL, []);
           $body = $clientRequest->getBody()->getContents();
         } catch (RequestException $e) {
-          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+         // \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
         }
   
         return Json::decode($body);
@@ -194,7 +201,7 @@ class ApiPleiadeManager
       } 
       else
       { 
-        $domainPlusTokenValue = $this->settings_zimbra->get('token_plus_domain');
+$domainPlusTokenValue = $this->settings_zimbra->get('token_plus_domain');
 
         // Initialiser un tableau pour stocker les objets.
         $domainTokenArray = [];
@@ -210,7 +217,7 @@ class ApiPleiadeManager
             // Vérifier s'il y a deux parties (domaine et token).
             if (count($parts) === 2) {
                 $domain = trim($parts[0]);
- 		            $token = trim($parts[1]);               
+ 		$token = trim($parts[1]);               
                 // Créer un objet avec les propriétés domaine et token.
                 $domainToken = (object) [
                     'domain' => $domain,
@@ -224,104 +231,107 @@ class ApiPleiadeManager
 
         $responseJson = array();
         foreach ($domainTokenArray as $domainToken) {      
-            $sessionCookieValue = $_COOKIE['lemonldap'];
+		 $sessionCookieValue = $_COOKIE['lemonldap'];
 
-            // Get the user's email and other required data
-            $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-            $value1 = $user->getEmail();
-            $value2 = 'name';
-            $value3 = '0';
-            $value4 = time() * 1000; // Convert to milliseconds as the original code did	
+		// Get the user's email and other required data
+		$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+		$value1 = $user->getEmail();
+		$value2 = 'name';
+		$value3 = '0';
+		$value4 = time() * 1000; // Convert to milliseconds as the original code did	
 
-            $key = $domainToken->token; // Replace with your secret key   
-    
-            $data = $value1 ."|". $value2 ."|". $value3 ."|". $value4;
+        	$key = $domainToken->token; // Replace with your secret key   
 
-            $hmac = hash_hmac('sha1', $data, $key);
+		//$key = $this->settings_zimbra->get('zm_auth_token'); // Replace with your secret key   
+	
+   	        $data = $value1 ."|". $value2 ."|". $value3 ."|". $value4;
+//		echo $data;
+		$hmac = hash_hmac('sha1', $data, $key);
 
-            // Construct the preauth URL
-            $WEB_MAIL_PREAUTH_URL = $domainToken->domain."service/preauth"; // Replace with your preauth URL
+// Construct the preauth URL
+          	$WEB_MAIL_PREAUTH_URL = $domainToken->domain."service/preauth"; // Replace with your preauth URL
 
-            $preauthURL = $WEB_MAIL_PREAUTH_URL . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
+		$preauthURL = $WEB_MAIL_PREAUTH_URL . "?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
 
-            
 
-            // Set up the headers and data as needed for your request.
-            $headers = [
-              'Content-Type: application/json',
-              'Cookie: lemonldap=' . $sessionCookieValue, // Replace with your cookie value
-            ];
+// Set up the headers and data as needed for your request.
+$headers = [
+  'Content-Type: application/json',
+  'Cookie: lemonldap=' . $sessionCookieValue, // Replace with your cookie value
+];
 
-            $message = "Zimbra InitSession API URL: $preauthURL | Zimbra API Method: $method | Zimbra API Options: " . json_encode($headers);
-            \Drupal::logger('api_pastell_pleiade')->info($message);
+// Initialize cURL session
+$ch = curl_init();
 
-            // Initialize cURL session
-            $ch = curl_init();
+// Set cURL options
+curl_setopt($ch, CURLOPT_URL, $preauthURL); // Set the URL
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the transfer as a string instead of outputting it directly
+curl_setopt($ch, CURLOPT_HEADER, true); // Include the response headers in the output
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the custom headers
 
-            // Set cURL options
-            curl_setopt($ch, CURLOPT_URL, $preauthURL); // Set the URL
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the transfer as a string instead of outputting it directly
-            curl_setopt($ch, CURLOPT_HEADER, true); // Include the response headers in the output
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Set the custom headers
+// Execute the cURL request
+$response = curl_exec($ch);
+$pattern = '/ZM_AUTH_TOKEN=([^;]+)/';
+// Check for cURL errors
+if (curl_errno($ch)) {
+    echo 'cURL error: ' . curl_error($ch);
+}
 
-            // Execute the cURL request
-            $response = curl_exec($ch);
-            $pattern = '/ZM_AUTH_TOKEN=([^;]+)/';
-            // Check for cURL errors
-            if (curl_errno($ch)) {
-              \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => curl_error($ch)]);
-            }
+// Get the HTTP response code
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-            // Close cURL session
-            curl_close($ch);
+// Close cURL session
+curl_close($ch);
 
-            if (preg_match($pattern, $response, $matches)) {
-                // Extract the token value from the first capturing group ($matches[1])
-                $zmAuthToken = $matches[1];
-                $apiEndpoint = $domainToken->domain .'service/soap';
-                // Get the Zimbra SearchRequest value from the settings (replace 'field_zimbra_agenda' with the actual field name)
-                $searchRequest = $endpoint;
-              
-                // The SOAP request XML
-                $requestXml = 
-                '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-                    <soap:Header>
-                        <context xmlns="urn:zimbra">
-                            <format type="js"/>
-                            <authToken>' . $zmAuthToken . '</authToken>
-                        </context>
-                    </soap:Header>
-                    <soap:Body>' . $searchRequest . '</soap:Body>
-                </soap:Envelope>';
+if (preg_match($pattern, $response, $matches)) {
+    // Extract the token value from the first capturing group ($matches[1])
+    $zmAuthToken = $matches[1];
+$apiEndpoint = $domainToken->domain .'service/soap';
+// Get the Zimbra SearchRequest value from the settings (replace 'field_zimbra_agenda' with the actual field name)
+$searchRequest = $endpoint;
+//$searchRequest = htmlspecialchars($searchRequest);
+// The SOAP request XML
+$requestXml = 
+'<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Header>
+        <context xmlns="urn:zimbra">
+            <format type="js"/>
+            <authToken>' . $zmAuthToken . '</authToken>
+        </context>
+    </soap:Header>
+    <soap:Body>' . $searchRequest . '</soap:Body>
+</soap:Envelope>';
 
-                // Create cURL resource
-                $curl = curl_init();
+//echo $requestXml;
 
-                $message = "Zimbra getInfo API URL: $apiEndpoint | Zimbra API Method: $method | Zimbra API Options: " . $requestXml;
-                \Drupal::logger('api_pastell_pleiade')->info($message);
+// Create cURL resource
+$curl = curl_init();
 
-                // Set cURL options
-                curl_setopt($curl, CURLOPT_URL, $apiEndpoint);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $requestXml);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/soap+xml'));
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification (use with caution)
+// Set cURL options
+curl_setopt($curl, CURLOPT_URL, $apiEndpoint);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, $requestXml);
+curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/soap+xml'));
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification (use with caution)
 
-                // Execute the cURL request
-                $responseXml = curl_exec($curl);
+// Execute the cURL request
+$responseXml = curl_exec($curl);
+//var_dump($responseXml);
+// Check for cURL errors
+if (curl_errno($curl)) {
+    echo "cURL Error: " . curl_error($curl);
+}
 
-                // Check for cURL errors
-                if (curl_errno($curl)) {
-                  \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => curl_error($curl)]);
-                }
-
-                // Close cURL resource
-                curl_close($curl);
-                $responseJson[] = Json::decode($responseXml);
-            
-            }
+// Close cURL resource
+curl_close($curl);
+$responseJson[] = Json::decode($responseXml);
+//var_dump(($responseJson));
+}
+          //$responseJson[] = $responseXml;
+          //var_dump(gettype($responseXml));
+// Return the JSON response
         }
         return ($responseJson);}
 }
@@ -353,8 +363,7 @@ class ApiPleiadeManager
       // // Set the request method to POST
       curl_setopt($curl1, CURLOPT_POST, true);
       // // Set the response format to JSON
-      $message = "GLPI InitSession API URL: $url1 | GLPI API Method: $method | GLPI API Options: " . $headers;
-      \Drupal::logger('api_pastell_pleiade')->info($message);
+      
       // // Set the option to return the response as a string
       curl_setopt($curl1, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl1, CURLOPT_SSL_VERIFYPEER, false); // Adjust this option based on your SSL/TLS configuration
@@ -372,10 +381,7 @@ class ApiPleiadeManager
        $url = $url_api_glpi .'?app_token='. $app_token  .'&session_token='.$sessionToken.'&expand_dropdowns=true';
       // Session token obtained from initSession API
       // // Initialize curl
-      $message = "GLPI Get Tickets API URL: $url ";
-      \Drupal::logger('api_pastell_pleiade')->info($message);
-      
-      $curl = curl_init($url);
+       $curl = curl_init($url);
       // // Set the request method to GET 
        curl_setopt($curl, CURLOPT_HTTPGET, true);
       // // Set the response format to JSON
@@ -390,7 +396,8 @@ class ApiPleiadeManager
       // // Decode the JSON response
          $response_data = Json::decode($response); 
        return ($response_data);
-  
+      //return new JsonResponse(json_encode('null'), 200, [], true);
+
     }
 
     ////////////////////////////////////////////////////////
@@ -445,7 +452,7 @@ class ApiPleiadeManager
     //     $body = $clientRequest->getBody()->getContents();
 
     //   } catch (RequestException $e) {
-    //     // \Drupal::logger('api_parapheur_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+    //     \Drupal::logger('api_parapheur_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
     //   }
 
     //   return Json::encode('A configurer');
@@ -554,13 +561,13 @@ class ApiPleiadeManager
   public function searchMyApps()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_myapps_url'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-    // \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+    \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
     return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
   }
   public function searchMySession()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_sessioninfo_url'); // Endpoint myapplications de Lemon qui renvoie les dernières connexions
-    // \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
+    \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
     return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
   }
 
@@ -573,20 +580,22 @@ class ApiPleiadeManager
   public function searchMyDocs($id_e)
   {
     $endpoints = $this->settings_pastell->get('field_pastell_documents_url'); // Endpoint field_pastell_documents_url de Pastell qui renvoi la liste des documents Pastell
-    // \Drupal::logger('api_pastell_pleiade')->alert('function searchMyApps triggered !');
+    \Drupal::logger('api_pastell_pleiade')->alert('function searchMyApps triggered !');
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings_pastell->get('field_pastell_limit_documents'), 'pastell');
   }
   public function searchMyEntities()
   {
     $endpoints = $this->settings_pastell->get('field_pastell_entities_url');
-    // \Drupal::logger('api_pastell_pleiade')->alert('function searchMyentities triggered !');
+    \Drupal::logger('api_pastell_pleiade')->alert('function searchMyentities triggered !');
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell');
+    // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function searchMyFlux()
   {
     $endpoints = $this->settings_pastell->get('field_pastell_flux_url');
-    // \Drupal::logger('api_pastell_pleiade')->alert('function searchMyFlux triggered !');
+    \Drupal::logger('api_pastell_pleiade')->debug('function searchMyFlux triggered !');
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
+    // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
 
 
@@ -599,6 +608,8 @@ class ApiPleiadeManager
 
   public function searchMyMails()
   {
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
+    \Drupal::logger('api_zimbra_pleiade')->info('function searchMyMails triggered !');
     if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
       return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/zimbra_test.json', 'zimbra');
     } else {
@@ -608,6 +619,8 @@ class ApiPleiadeManager
 
   public function searchMyTasks()
   {
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url');  // Endpoint mail de Zimbra configuré dans l'admin du module
+    \Drupal::logger('api_zimbra_pleiade')->info('function searchMyTasks triggered !');
     if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
       return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json', 'zimbra');
     } else {
@@ -638,7 +651,7 @@ class ApiPleiadeManager
 
   public function getNextcloudNotifs()
   {
-    // \Drupal::logger('api_nextcloud_pleiade')->info('function getNextcloudNotifs triggered !');
+    \Drupal::logger('api_nextcloud_pleiade')->info('function getNextcloudNotifs triggered !');
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
       $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
@@ -654,7 +667,7 @@ class ApiPleiadeManager
 
   public function getGLPITickets()
   {
-    // \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+    \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
       $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
@@ -664,7 +677,7 @@ class ApiPleiadeManager
 
 public function getStatutActorGLPI( $id )
   {
-   // // \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+   // \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
       return $this->curlGet([], [], $this->settings_glpi->get('glpi_url') . '/apirest.php/Ticket/' . $id .'/Ticket_User', 'glpi');

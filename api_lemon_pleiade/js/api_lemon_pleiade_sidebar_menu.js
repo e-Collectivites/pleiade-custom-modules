@@ -110,7 +110,7 @@
                 function checkMenusExpanded() {
                   const accordionCollapses = document.querySelectorAll('.accordion-collapse');
                   let allMenusExpanded = true;
-                  
+                  console.log(accordionCollapses);
                 
                   for (let i = 0; i < accordionCollapses.length; i++) {
                     if (!accordionCollapses[i].classList.contains('show')) {

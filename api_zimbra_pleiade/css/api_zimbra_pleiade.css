@@ -8,9 +8,9 @@
 th.d-flex.expediteur {
     width: 20%;
 }
-/*.content-mail{
+.content-mail{
 width: 480px;
-}*/
+}
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
@@ -69,9 +69,9 @@ tbody .fc-scrollgrid-section:first-child {
     border: 0 !important;
 }
 
-/*.fc-theme-standard td, .fc-theme-standard th {
+.fc-theme-standard td, .fc-theme-standard th {
     border: 0px !important;
-}*/
+}
 
 .fc-timegrid-event .fc-event-main {
     padding: 10px 1px 0;

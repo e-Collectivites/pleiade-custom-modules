@@ -1,0 +1,24 @@
+.card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+	height: 100px;
+overflow: hidden;
+}
+.actualites img{
+width: 160px;
+}
+.actualites .card-text{
+font-size: smaller;
+}
+.actualites .card-title{
+font-size: medium;
+    text-decoration: underline;
+}
+.actualites .card-body{
+	overflow-y: scroll;
+	padding: 0.4em 1.25rem!important; 
+}
+.actualites a {
+	text-decoration: underline;
+	font-weight: 700;
+}

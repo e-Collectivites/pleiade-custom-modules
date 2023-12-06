@@ -1,0 +1,8 @@
+module_actu_pleiade.actu_list:
+  path: '/v1/module_actu_pleiade/actu_list'
+  defaults:
+    _controller: '\Drupal\module_actu_pleiade\Controller\ActuPleiadeController::actu_list'
+    _title: 'Alerte à afficher'
+    _format: json
+  requirements:
+    _access: 'TRUE'

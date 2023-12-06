@@ -30,9 +30,9 @@
                     (localStorage.getItem('extended_menu') === '1' ? ' show' : '') + // Add 'show' class if localStorage has extended_menu value of 1
                     '" aria-labelledby="headingOne" style="">\
                     <a class="sidebar-link waves-effect waves-dark" title="Lister les documents" target="_blank" href="' + url_pastell + '/Document/list?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
-                    <i class="fa fa-arrow-right" aria-hidden="true"></i><span class="hide-menu px-2">Lister les documents</span></a>\
+                    <i class="fa fa-ellipsis" aria-hidden="true"></i><span class="hide-menu px-2">Lister les documents</span></a>\
                     <a class="sidebar-link waves-effect waves-dark" title="Créer un document" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
-                    <i class="fa fa-arrow-right" aria-hidden="true"></i><span class="hide-menu px-2">Créer un document</span></a>\
+                    <i class="fa fa-plus" aria-hidden="true"></i><span class="hide-menu px-2">Créer un document</span></a>\
                     </div></div>';
                 }
 

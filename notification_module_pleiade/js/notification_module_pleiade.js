@@ -42,7 +42,10 @@
                   var date_creation = donnees[i].creation_date;
                   var minutesAgo = Math.floor((Date.now() / 1000 - date_creation) / 60); // Calculate minutes ago
                   var notification;
-                  if (minutesAgo <= 60) {
+                  
+                  if (minutesAgo <= 1) {
+                    notification = "Maintenant";
+                  } else if (minutesAgo <= 60) {
                     notification = "Il y a " + minutesAgo + " minutes";
                   } else if (minutesAgo <= 1440) { // 1440 minutes = 24 hours
                     var hoursAgo = Math.floor(minutesAgo / 60);
@@ -53,7 +56,7 @@
                   }
                   div.innerHTML += '<div class="dropdown-item" id="notifications_alert">\
                   <span class="application">' + donnees[i].application + '</span>\
-                  <span class="body">' + donnees[i].body + '</span>\
+                  <span class="body">' + donnees[i].field_description + '</span>\
                   <span class="date_creation">' + notification + '</span>\
                 </div>\
                 <div class="dropdown-divider"></div>';

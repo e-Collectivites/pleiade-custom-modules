@@ -81,7 +81,7 @@ $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
     } else {
         \Drupal::logger('zimbra_mails_query')->info('No API response');
     }
-	return new JsonResponse(json_encode('0'), 200, [], true);
+	return new JsonResponse(json_encode('null'), 200, [], true);
 	}
 }
 
@@ -159,19 +159,8 @@ $settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
         {
             \Drupal::logger('zimbra_tasks_query')->info('aucun retour de l\'api');
         }
-        return new JsonResponse(json_encode('0'), 200, [], true);
+        return new JsonResponse(json_encode('null'), 200, [], true);
 }    
 }
-  public function get_full_calendar()
-  {
-    return [
-      '#markup' => '
-      <div class="d-flex justify-content-center">
-        <div id="spinner-history" class="spinner-border text-primary" role="status">
-        </div>
-      </div>
-      <div id="zimbra_full_calendar"></div>',
-    ];
-  }
 
 }

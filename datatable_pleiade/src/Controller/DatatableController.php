@@ -26,8 +26,21 @@ class DatatableController extends ControllerBase {
             $id_e = $request->query->get('id_e');
             // check value exists and is numleric
             if (null !== $id_e && is_numeric($id_e)) {
-                $pastelldataApi = new ApiPleiadeManager();
-                $return1 = $pastelldataApi->searchMyDocs($id_e);  
+                \Drupal::logger('api_pastell_documents')->info('function search Pastell Docs with id_e : ' . $id_e);
+                $dataApi = new ApiPleiadeManager();
+                $return1 = $dataApi->searchMyDocs($id_e); 
+                $return2 = $dataApi->searchMyFlux();
+                
+                // Parcourir le tableau $data1
+                foreach ($return1 as &$document) {
+                    // Vérifier si le type existe dans $data2
+                    if (isset($return2[$document['type']]['nom'])) {
+                        // Remplacer le type par le nom associé
+                        $document['type'] = $return2[$document['type']]['nom'];
+                    }
+                }
+
+                
                 $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
                 $tempstore->set('documents_pastell', $return1);
             }

@@ -5,7 +5,7 @@ description: 'API connector for Pléiade dashboard and compatible apps with Lemo
 package: Pleiade
 # version: 8.x +
 core: 8.x
-core_version_requirement: ^8 || ^9 || ^10 
+core_version_requirement: ^9.5 || ^10 || ^10
 dependencies:
   - module_api_pleiade
 # Information 

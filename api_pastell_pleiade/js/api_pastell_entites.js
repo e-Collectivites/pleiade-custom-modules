@@ -8,14 +8,6 @@
                 once("APIpastellEntitesBehavior", "#collectiviteChoice", context).forEach(
                     function () {
                         // le nom du groupe LDAP pour pastell doit etre renseigné dans l'admin
-                        // check si existe + si dans le Drupal tempstore stocké par le module Lemon Pléiade
-                        var pastellLDAPGroup = drupalSettings.api_pastell_pleiade.field_pastell_ldap_group;
-                        var userGroupsTempstore = drupalSettings.api_lemon_pleiade.user_groups;
-                        // console.log('Pastell ldap group from Pastell Pléiade setting: ' + pastellLDAPGroup);
-                        // console.log('Drupal tempstore groups from Lemon Pléiade module: ' + userGroupsTempstore);
-
-                        // Call only if pastell group set and in private tempstore user_groups
-                        if (pastellLDAPGroup && userGroupsTempstore.includes(pastellLDAPGroup)) {
                             // prepare menu 
                             var linkEntitie = document.getElementById("collectiviteChoice");
                             // make ajax call
@@ -27,10 +19,9 @@
                             xhr.onload = function () {
                                 if (xhr.status === 200) {
                                     var donnees = xhr.response;
-                                    // debug
                                     // console.log(donnees);
                                     // construct menu
-                                    if(donnees && userGroupsTempstore.includes('pastell')){
+                                    if(donnees && donnees != 0){
                                         donnees.forEach(function (value) {
                                             if (value.entite_mere == 0) {
                                                 var option = document.createElement("option");
@@ -39,7 +30,6 @@
                                                 option.value = value.id_e;
                                                 option.text = unescape(value.denomination);
                                                 linkEntitie.appendChild(option);
-    
                                                 donnees.forEach(function (value_child) {
                                                     if (value_child.entite_mere == value.id_e) {
                                                         var option_child = document.createElement("option");
@@ -132,7 +122,6 @@
 
                             };
                             xhr.send();
-                        } // end if pastell group & in tempstore
                     }); // end once
             } // fin only on frontpage 
         },

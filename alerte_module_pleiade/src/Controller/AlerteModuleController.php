@@ -22,20 +22,20 @@ class AlerteModuleController extends ControllerBase
   {
     $entityTypeManager = \Drupal::entityTypeManager();
     $query = $entityTypeManager->getStorage('node')->getQuery();
-    $query->accessCheck(TRUE);
     $query->condition('type', 'message_informatif');
     $query->condition('status', 1); // Published content condition
+    $query->accessCheck(FALSE);
     $entityIds = $query->execute();
     $messages = $entityTypeManager->getStorage('node')->loadMultiple($entityIds);
 
     $msg = [];
 
     foreach ($messages as $message) {
-      $body = $message->get('body')->value;
+      $body = $message->get('field_message_a_afficher')->value;
       $importance = $message->get('field_importance_du_message')->value;
 
       $msg[] = [
-        'body' => $body,
+        'field_message_a_afficher' => $body,
         'importance' => $importance,
       ];
     }

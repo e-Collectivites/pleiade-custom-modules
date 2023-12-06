@@ -4,6 +4,7 @@
     attach: function (context, settings) {
       // only on frontpage (desktop)
       if (drupalSettings.path.isFront) {
+setTimeout(function () {
         once("DatatableBehavior", "body", context).forEach(function () {
           // do we have id_e ?
           // console.log('id_e call : ' + id_e);
@@ -19,10 +20,6 @@
           if(localStorage.getItem("collectivite_id")){
             var previousValue = localStorage.getItem("collectivite_id");
           }
-          else
-          {
-            var previousValue = null
-          }
           
 
           // debug
@@ -30,6 +27,9 @@
             // Now call again document JS module function to get documents
             var xhr = new XMLHttpRequest();
             // Pass collectivite ID to our PHP endpoint as a param as server side, it can not access cookie set on client side 
+
+
+
             xhr.open(
               "GET",
               Drupal.url(
@@ -43,7 +43,6 @@
               if (xhr.status === 200) {
                 var donnees = xhr.response;
                 // debug
-                
                 if (donnees) {
                   var document_coll =
                     '\
@@ -64,6 +63,8 @@
                             <th scope="col">Dernière modification</th>\
                             <th scope="col">Statut</th>\
                             <th></th>\
+			    <th></th>\
+		            <th></th>\
                             </tr>\
                         </thead>\
                         <tbody>';
@@ -124,7 +125,7 @@
                         '<a target="_blank" href="' +
                         donnees[i].fileUrl +
                         '"><i class="fa fa-2x fa-eye" aria-hidden="true"></i></a>';
-                      var document_row =
+var document_row =
                         "\
                               <tr>\
                                 <td>" +
@@ -139,17 +140,12 @@
                                 <td>" +
                         etat +
                         "</td>\
-                                <td><div class='btn-group dropend'>\
-                                  <button type='button' class='btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
-                                  <i class='fa fa-lg fa-ellipsis-h d-flex align-items-center justify-content-center' id='dropdown-icon'></i>\
-                                  </button>\
-                                  <ul class='dropdown-menu'>\
-                                  " +
+                                <td>" +
                         lien_nc_detail +
-                        "</ul>\
-                                </div></td>\
+                        "</td><td></td><td></td>\
                                 </tr>\
                               ";
+
 
                       document_coll += document_row;
                     } else if (donnees[i].type !== "Nextcloud") {
@@ -160,6 +156,7 @@
                       var titre_doc = donnees[i].titre;
                       var type_doc = donnees[i].type;
                       var last_etat = donnees[i].last_action_display;
+
                       switch (titre_doc) {
                         case null:
                         //console.log('NULL');
@@ -170,37 +167,6 @@
 
                         default:
                           titre = donnees[i].titre;
-                      }
-                      switch (type_doc) {
-                        case "actes-ecollectivites":
-                          type = "Acte";
-                          break;
-
-                        case "actes-generique":
-                          type = "Acte (Générique)";
-                          break;
-
-                        case "facture-cpp":
-                          type = "Facture Chorus";
-                          break;
-
-                        case "document-a-signer":
-                          type = "Document à faire signer";
-                          break;
-
-                        case "convocation":
-                          type = "Convocation des élus";
-                          break;
-
-                        case "helios-ecollectivites":
-                          type = "Flux Hélios";
-                          break;
-
-                        case "helios-generique":
-                          type = "Flux Hélios (Générique)";
-                          break;
-                        default:
-                          type_doc = donnees[i].type;
                       }
                       switch (last_etat) {
                         case "creation":
@@ -231,6 +197,11 @@
                         case "acquiter-tdt":
                           etat =
                             '<span class="badge py-2 px-4 bg-success">Acquité</span>';
+                          break;
+
+                        case "document-transmis-tdt":
+                          etat =
+                            '<span class="badge py-2 px-4 bg-success">Transmis au TDT</span>';
                           break;
 
                         case "reception-partielle":
@@ -324,15 +295,13 @@
                           break;
 
                         default:
-                          etat = donnees[i].last_action_display;
+                          etat = '<span class="badge py-2 px-4 bg-secondary">'+ last_etat +'</span>';
                       }
 
                       var lien_pastell_edition = "";
                       var lien_pastell_supp = "";
-                      var objectDate = donnees[i].last_action_date;
-
-                      var pastell_url =
-                        drupalSettings.api_pastell_pleiade.field_pastell_url;
+                      var objectDate = donnees[i].last_action_date
+                      var pastell_url =  drupalSettings.api_pastell_pleiade.field_pastell_url;
                       var lien_pastell_detail =
                         '<a target="_blank" href="' +
                         pastell_url +
@@ -362,14 +331,14 @@
                           donnees[i].id_e +
                           '&action=supression"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></a>';
                       }
-                      document_coll +=
+ document_coll +=
                         "\
                           <tr>\
                             <td>" +
                         titre +
                         "</td>\
                             <td>" +
-                        type +
+                        type_doc +
                         "</td>\
                             <td>" +
                         objectDate +
@@ -377,22 +346,15 @@
                             <td>" +
                         etat +
                         "</td>\
-                            <td><div class='btn-group dropend'>\
-                                  <button type='button' class=' d-flex align-items-center btn dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>\
-                                  <i class='fa fa-lg fa-ellipsis-h' id='dropdown-icon'></i>\
-                                  </button>\
-                                  <ul class='dropdown-menu'>\
-                                  " +
+                            <td>" +
                         lien_pastell_detail +
-                        "\
-                                  " +
+"</td>\
+                            <td>" +
                         lien_pastell_edition +
-                        "\
-                                  " +
+"</td>\
+                            <td>" +
                         lien_pastell_supp +
-                        "\
-                                  </ul>\
-                                </div></td>\
+                        "</td>\
                                 </tr>\
                           ";
                     }
@@ -425,7 +387,7 @@
               
               // Datatables effect on doc list
               $("#tablealldocs").DataTable({
-                columns: [
+                 columns: [
                   { data: "titre" },
                   { data: "type" },
                   {
@@ -436,11 +398,14 @@
                         : moment(data).format("DD/MM/YYYY HH:mm");
                     },
                   },
-                  { data: "etat" },
+		{ data: "etat" },
+                { data: "voir" },
+		{ data: "edition" },
+		{ data: "supp" },
                 ],
 
                 aoColumnDefs: [
-                  { bSortable: false, aTargets: [4] },
+                  { bSortable: false, aTargets: [4, 5, 6] },
                   { width: "20%", targets: 3 },
                   { width: "22%", targets: 2 },
                   { width: "25%", targets: 1 },
@@ -476,6 +441,8 @@
             reloadDataTable(event.target.value);
           });
         }); // end once
+
+        }, 2000); // 1000 millisecondes = 1 seconde
       }
     },
   };

@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @param $variables
+ */
+
+function module_actu_pleiade_preprocess_page(&$variables){
+// Add the CSS library
+  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_css';
+
+// Add the JS library
+  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_js';
+}

@@ -1,10 +1,3 @@
-# alerte_module_pleiade.settings:
-#   path: '/admin/config/alerte_module_pleiade/settings'
-#   defaults:
-#     _form: '\Drupal\alerte_module_pleiade\Form\AlerteModuleFields'
-#     _title: 'Alerte Module Pléiade Settings'
-#   requirements:
-#     _permission: 'administer site configuration'
 alerte_module_pleiade.message_fields:
   path: '/v1/alerte_module_pleiade/message_fields'
   defaults:

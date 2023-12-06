@@ -68,5 +68,9 @@ table.dataTable tbody tr.selected {
 .table#tablealldocs{
   width: 100%!important;
 }
-
-    
+body[data-theme=dark] .table th.sorting {
+color: #FFF!important;
+}    
+body[data-theme=dark] tr.even td{
+color: #b2b9bf!important;
+}
