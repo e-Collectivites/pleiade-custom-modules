@@ -10,7 +10,7 @@
             var request = new XMLHttpRequest();
             request.open(
               "POST",
-              Drupal.url("v1/api_lemon_pleiade/lemon-session-query"),
+              Drupal.url("v1/api_lemon_pleiade/lemon_session_query"),
               true
             );
             request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");

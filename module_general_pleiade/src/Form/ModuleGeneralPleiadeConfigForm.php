@@ -45,6 +45,17 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('url_lien_documentation'),
       '#description' => $this->t('<span style="display: flex; align-items: center">Url correspondant à ce lien du menu : &nbsp;&nbsp;<img src="/themes/custom/pleiadebv/assets/images/url_documentation.png"></span>')
     ];
+    $form['numero_telephone_support'] = [
+      '#type' => 'tel',
+      '#title' => $this->t('Numéro de téléphone du support'),
+      '#default_value' => $config->get('numero_telephone_support')
+    ];
+    $form['adresse_mail_support'] = [
+      '#type' => 'email',
+      '#title' => $this->t('Adresse mail du support'),
+      '#default_value' => $config->get('adresse_mail_support'),
+      '#description' => $this->t('Adresse mail du support à contacter si problème et si chatbot marche pas')
+    ];
   
     return parent::buildForm($form, $form_state);
   }
@@ -62,11 +73,11 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
 
   if ($form_state->getTriggeringElement()['#name'] == 'reset_color') {
     $form_state->setValue('color_theme', null);
-    // Optional: Add any additional actions you want to perform when resetting the color field.
   } else {
-    // Save the submitted values to the configuration.
     $config->set('color_theme', $form_state->getValue('color_theme'));
     $config->set('url_lien_documentation', $form_state->getValue('url_lien_documentation'));
+    $config->set('numero_telephone_support', $form_state->getValue('numero_telephone_support'));
+    $config->set('adresse_mail_support', $form_state->getValue('adresse_mail_support'));
     $config->save();
   }
 

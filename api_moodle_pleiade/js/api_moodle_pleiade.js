@@ -1,4 +1,4 @@
-(function (Drupal, once, drupalSettings) {
+(function ($, Drupal, once, drupalSettings) {
   "use strict";
   Drupal.behaviors.APIMoodleBehavior = {
     attach: function (context, settings) {
@@ -21,39 +21,33 @@
                                 <div>\
                                   <div class="card mb-2">\
                                     <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                                      <h4 class="card-title text-dark py-2">Cours E-Learning d\'E-collectivités</h4></div>\
-                                        <div class="d-flex justify-content-evenly mx-2">\
+                                      <h4 class="card-title text-dark py-2">E-Learning E-collectivités</h4></div>\
+                                        <div class="" id="carousel_elearning">\
                   '
-                var count_entities = donnees.length - 1
-                var usedNumbers = [1];
-                for (var i = 0; i < 3; i++) {
-                  var number = Math.floor(Math.random() * count_entities + 1);
-                  if (usedNumbers.includes(number)) {
-                    // Number is already used, decrement the loop index to try again
-                    i--;
-                  }
-                  else {
-                    usedNumbers.push(number);
+                
+                for (var i = 0; i < donnees.length; i++) {
+                
+                  
 
-                    if (donnees[number].overviewfiles[0]) {
-                      if (donnees[number].overviewfiles[0].fileurl) {
-                        var imageurl = donnees[number].overviewfiles[0].fileurl
+                    if (donnees[i].overviewfiles[0]) {
+                      if (donnees[i].overviewfiles[0].fileurl) {
+                        var imageurl = donnees[i].overviewfiles[0].fileurl
                       }
                     }
                     else {
                       var imageurl = "https://ecollectivites.fr/sites/default/files/inline-images/logo-ecollectivites.jpg"
                     }
-                    if (donnees[number].categoryname) {
-                      var categoryCourse = donnees[number].categoryname
+                    if (donnees[i].categoryname) {
+                      var categoryCourse = donnees[i].categoryname
                     }
                     else {
                       var categoryCourse = ""
                     }
 
 
-                    if (number !== 0) {
+                    if (i !== 0) {
                       blocMoodle +=
-                        '<a href="https://preprod.ecollectivites.fr/moodle/course/view.php?id=' + donnees[number].id + '?authCAS=CAS">\
+                        '<a href="https://preprod.ecollectivites.fr/moodle/course/view.php?id=' + donnees[i].id + '?authCAS=CAS">\
                         <div class="mt-3 d-flex justify-content-center">\
                           <div class="card">\
                             <img src="'+ imageurl + '" class="card-img-top" alt="Course Image">\
@@ -67,7 +61,7 @@
                     }
 
 
-                  }
+                  
                 }
                 blocMoodle += "</div></div></div></div>";
               }
@@ -96,7 +90,19 @@
             console.log("AJAX call timed out");
           };
           xhr.onloadend = function () {
+            
+              $('#carousel_elearning').slick({
+                arrows: false,
+                infinite: true,
+                slidesToShow: 4,
+                slidesToScroll: 2,
+                autoplay: true,
+                autoplaySpeed: 4000,
+              });
 
+
+             
+           
           };
 
           xhr.send();
@@ -104,4 +110,4 @@
       }
     }
   }
-})(Drupal, once, drupalSettings);
+})(jQuery, Drupal, once, drupalSettings);

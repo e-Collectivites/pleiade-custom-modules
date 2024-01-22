@@ -14,7 +14,7 @@
           xhr.onload = function () {
             if (xhr.status === 200) {
               var donnees = xhr.response;
-              console.log(donnees);
+             
               if (donnees.length > 0) {
                 const div_actus = document.querySelector('.actualites');
                 for (var i = 0; i < donnees.length; i++) {

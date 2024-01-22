@@ -10,7 +10,7 @@
             document.getElementById("lemon_block_id").innerHTML = drupalSettings.api_lemon_pleiade.spinner;
             // make ajax call
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon-myapps-query"));
+            xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"));
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.responseType = "json";
             xhr.onload = function () {

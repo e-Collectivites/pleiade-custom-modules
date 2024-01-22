@@ -144,33 +144,40 @@ class ApiPleiadeManager
       \Drupal::logger('api_pastell_pleiade')->debug('PT: ' . $proxy_ticket);
 
       $PASTELL_API_URL = $PT_request_url . '&ticket=' . $proxy_ticket;
-
-
+      
       $options = [
         'headers' => [
-          'Content-Type' => 'application/json',
+          'Content-Type' => 'multipart/form-data',
           'Cookie' => 'lemonldap=' . $_COOKIE['lemonldap'],
         ],
       ];
-
+      
       if (!empty($inputs)) {
 
-
+        
         if ($method == 'GET') {
           $PASTELL_API_URL .= '?' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
           foreach ($inputs as $param => $value) {
             $PASTELL_API_URL .= '&' . $param . '=' . $value;
           }
-        } else {
-          //POST request send data in array index form_params.
-          $options['body'] = $inputs;
+        } 
+        else
+        {
+          $PASTELL_API_URL = $api . '&' . self::arrayKeyfirst($inputs) . '=' . array_shift($inputs);
+          foreach ($inputs as $param => $value) {
+            $PASTELL_API_URL .= '&' . $param . '=' . $value;
+          }
+          $options += [
+            'auth' => [$this->settings_pastell->get('field_pastell_username_doc_lots'), $this->settings_pastell->get('field_pastell_password_doc_lots')]
+          ];
         }
       }
+      
       \Drupal::logger('api_pastell_pleiade')->debug('requête incoming: ' . $PASTELL_API_URL);
       try {
         $clientRequest = $this->client->request($method, $PASTELL_API_URL, $options);
         $body = $clientRequest->getBody()->getContents();
-
+       
       } catch (RequestException $e) {
         \Drupal::logger('api_pastell_pleiade')->debug('Curl error: @error', ['@error' => $e->getMessage()]);
       }
@@ -595,6 +602,25 @@ $responseJson[] = Json::decode($responseXml);
     $endpoints = $this->settings_pastell->get('field_pastell_flux_url');
     \Drupal::logger('api_pastell_pleiade')->debug('function searchMyFlux triggered !');
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
+    // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
+  }
+  public function creationDoc($id_e)
+  {
+    $endpoints = $this->settings_pastell->get('field_pastell_flux_url');
+    \Drupal::logger('api_pastell_pleiade')->debug('function creationDoc triggered !');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . "api/create-document.php&id_e=" . $id_e . "&type=document-a-signer", 'pastell');
+    // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
+  }
+  public function getSousTypeDoc($data)
+  {
+    \Drupal::logger('api_pastell_pleiade')->debug('function getSousTypeDoc triggered !');
+    return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "api/external-data.php", 'pastell');
+    // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
+  }
+  public function postModifDoc($data)
+  {
+    \Drupal::logger('api_pastell_pleiade')->debug('function postModifDoc triggered !');
+    return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "/api/modif-document.php", 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
 

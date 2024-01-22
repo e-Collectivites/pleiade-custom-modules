@@ -74,3 +74,6 @@ color: #FFF!important;
 body[data-theme=dark] tr.even td{
 color: #b2b9bf!important;
 }
+body.path-webform #collectiviteChoice, body.path-webform #sidebarnav hr{
+  display: none;
+}

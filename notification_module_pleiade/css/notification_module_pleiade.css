@@ -14,3 +14,7 @@
 #notifications_alert {
     line-height: 1; /* Adjust the line-height value as needed */
   }
+
+#notifications_alert p{
+  white-space: break-spaces;
+}

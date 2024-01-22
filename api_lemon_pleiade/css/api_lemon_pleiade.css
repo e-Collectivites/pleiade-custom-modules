@@ -8,21 +8,20 @@
     white-space: nowrap;
     align-items: center;
     position: relative;
-    line-height: 25px;
-    font-size: 16px;
+    line-height: 20px;
+    font-size: 15px;
     opacity: 0.6;
     color: #fff;
     border-left: 3px solid transparent;
 }
 
 .sidebar-nav ul .nav-small-cap {
-    font-size: 12px;
+    font-size: 16px;
     line-height: 30px;
     color: #fff;
     opacity: 1;
-    text-transform: uppercase;
-    font-weight: 500;
-    padding: 0px 14px 0px 15px;
+    font-weight: 600;
+    padding: 0px 28px 0px 15px;
     display: flex;
     align-items: center;
     /* white-space: nowrap; */

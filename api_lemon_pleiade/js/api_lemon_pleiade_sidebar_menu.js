@@ -6,7 +6,7 @@
         if (!drupalSettings.path.currentPath.includes("admin") && drupalSettings.api_lemon_pleiade.field_lemon_myapps_url && drupalSettings.api_lemon_pleiade.field_lemon_url ) {
           once("APIlemonMenuBehavior", "body", context).forEach(function () {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon-myapps-query"));
+            xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"));
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onload = function () {
               if (xhr.status === 200) {
@@ -54,19 +54,25 @@
                     const appLogo = temp[0].AppLogo;
                     const hasImageExtension = appLogo && (appLogo.endsWith(".png") || appLogo.endsWith(".jpg") || appLogo.endsWith(".jpeg") || appLogo.endsWith(".gif"));
                     let Icon;
-
+                    var target; 
                     if (appLogo && !hasImageExtension) {
                       Icon = '<i class="fa fa-solid fa-' + appLogo + '"></i>';
                     } else {
                       Icon = '<i class="fa fa-arrow-right" aria-hidden="true"></i>';
                     }
-                    
+                    if( temp[0].AppDesc == 'visio cisco-webex'){
+                      target = ''
+                    }
+                    else{
+                      target = '_blank'
+                    }
+
                     menuHtml += // on créé ensuite le lien avec le title du lien et le la description, pour créer le bloc
                       '<a class="sidebar-link waves-effect waves-dark" title="' +
                       temp[0].AppDesc +
                       '" href="' +
                       temp[0].AppUri +
-                      '" aria-expanded="false" target="_blank">' +
+                      '" aria-expanded="false" target="' + target +'">' +
                       Icon +
                       '<span class="hide-menu px-2">' +
                       Object.keys(donnees.myapplications[i].Applications[f]) +

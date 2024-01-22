@@ -23,3 +23,11 @@ api_pastell_pleiade.pastell_flux_query:
     _format: json
   requirements:
     _access: 'TRUE'
+
+api_pastell_pleiade.pastell_docs_lots:
+  path: '/lots/docs'
+  defaults:
+    _form: '\Drupal\api_pastell_pleiade\Form\PleiadePastellDocLotsForm'
+    _title: 'Pastell : Envoi de documents en lots'
+  requirements:
+    _access: 'TRUE'

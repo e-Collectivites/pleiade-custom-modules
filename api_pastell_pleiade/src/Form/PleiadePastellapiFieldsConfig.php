@@ -59,6 +59,18 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
       '#default_value' => $config->get('field_pastell_limit_documents'),
       '#description' => $this->t('Number of max docs retrieved during Pastell API request'),
     ];
+    $form['field_pastell_username_doc_lots'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Username pour utilisateur doc en lots'),
+      '#default_value' => $config->get('field_pastell_username_doc_lots'),
+      '#description' => $this->t('Username pour utilisateur doc en lots'),
+    ];
+    $form['field_pastell_password_doc_lots'] = [
+      '#type' => 'password',
+      '#title' => $this->t('Password pour utilisateur doc en lots'),
+      '#default_value' => $config->get('field_pastell_username_doc_lots'),
+      '#description' => $this->t('Password pour utilisateur doc en lots'),
+    ];
 
     $form['field_pastell_flux_url'] = [
       '#type' => 'textfield',
@@ -107,6 +119,8 @@ class PleiadePastellapiFieldsConfig extends ConfigFormBase {
     $config->set('field_pastell_flux_url', $form_state->getValue('field_pastell_flux_url'));
     $config->set('field_pastell_ldap_group', $form_state->getValue('field_pastell_ldap_group'));
     $config->set('field_pastell_auth_method', $form_state->getValue('field_pastell_auth_method'));
+    $config->set('field_pastell_username_doc_lots', $form_state->getValue('field_pastell_username_doc_lots'));
+    $config->set('field_pastell_password_doc_lots', $form_state->getValue('field_pastell_password_doc_lots'));
     $config->save();
     
     parent::submitForm($form, $form_state);
