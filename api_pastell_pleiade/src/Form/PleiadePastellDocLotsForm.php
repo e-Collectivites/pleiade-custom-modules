@@ -33,17 +33,17 @@ class PleiadePastellDocLotsForm extends ConfigFormBase
                         // https://pastell.ecollectivites.fr/api/external-data.php?id_e=24&id_d=R3Mmu1m&page=0&field=iparapheur_sous_type
                         // on cree un doc bidon
                         $id_d = ecv_creadoc($id_e);
-                        // puis on recup les sous-types
                         $data = array(
                                 'id_e' => $id_e,
-                                'id_d' => $id_d,
+                                'id_d' => $id_d->id_d,
                                 'field' => 'iparapheur_sous_type',
                         );
 
                         $sstypes = ecv_getsoustype($data);
                         
+                        
                         if($sstypes == null || $sstypes['status'] == 'error'){
-                                $suppr = ecv_suppr($id_e, $id_d);
+                                $suppr = ecv_suppr($id_e, $id_d->id_d);
                                 \Drupal::messenger()->addError($this->t('Veuillez selectionner une collectivité qui possède des sous-types i-parapheur'));        
                                 return $form;
                         }
@@ -66,7 +66,7 @@ class PleiadePastellDocLotsForm extends ConfigFormBase
                         );
                         $form['soustype']['#prefix'] = '<div class="expli"><span class="explinum">1</span>Choisissez un circuit et une date limite.</div>';
 
-                        $suppr = ecv_suppr($id_e, $id_d);
+                        $suppr = ecv_suppr($id_e, $id_d->id_d);
                         $current_date = new DrupalDateTime();
                         $form['datelimite'] = array(
                                 '#title' => t('Date limite de signature :'),

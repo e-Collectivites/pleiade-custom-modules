@@ -25,10 +25,15 @@ class PleiadeAjaxPastellController extends ControllerBase
             $return = $pastelldataApi->searchMyEntities();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('entites', $return);
-            // $arrayAsString = print_r($return, true);
-            // \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des entités :' . $arrayAsString);
-            
-            return new JsonResponse(json_encode($return), 200, [], true);
+            if($return != null){
+                return new JsonResponse(json_encode($return), 200, [], true);
+            }
+            else
+            {
+                \Drupal::logger('api_pastell_pleiade')->error('Aucune entitée Pastell');
+                return new JsonResponse(json_encode('null'), 200, [], true);
+            }
+
         } else {
             \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
             return new JsonResponse(json_encode([]), 200, [], true);
@@ -45,10 +50,14 @@ class PleiadeAjaxPastellController extends ControllerBase
             $return = $pastelldataApi->searchMyFlux();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('flux', $return);
-            // $arrayAsString = print_r($return, true);
-            // \Drupal::logger('api_pastell_pleiade')->debug('retour de la requête des flux :' . $arrayAsString);
-
-            return new JsonResponse(json_encode($return), 200, [], true);
+            if($return != null){
+                return new JsonResponse(json_encode($return), 200, [], true);
+            }
+            else
+            {
+                \Drupal::logger('api_pastell_pleiade')->error('Erreur lors de la récupération des flux Pastell');
+                return new JsonResponse(json_encode('null'), 200, [], true);
+            }
         } else {
             \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
             return new JsonResponse(json_encode([]), 200, [], true);

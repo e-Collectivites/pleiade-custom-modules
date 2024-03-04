@@ -34,7 +34,6 @@ function api_pastell_pleiade_preprocess_page(&$variables){
   $field_pastell_url = $config->get('field_pastell_url');
   $field_pastell_documents_url = $config->get('field_pastell_documents_url');
   $field_pastell_entitites_url = $config->get('field_pastell_entities_url');
-  $limit_documents = $config->get('field_pastell_limit_documents');
   $field_pastell_flux_url = $config->get('field_pastell_flux_url');
   $pastell_group = $config->get('field_pastell_ldap_group');
   $field_pastell_auth_method = $config->get('field_pastell_auth_method');
@@ -51,7 +50,8 @@ function api_pastell_pleiade_preprocess_page(&$variables){
 
   //Add the CSS library
   $variables['#attached']['library'][] = 'api_pastell_pleiade/api_pastell_pleiade_css';
-  
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['groups_pastell'] =  $_COOKIE['groups'];
+
   //Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_url'] = $field_pastell_url;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_documents_url'] = $field_pastell_documents_url;
@@ -60,36 +60,59 @@ function api_pastell_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_ldap_group'] =  $pastell_group;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_auth_method'] =  $field_pastell_auth_method;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['documents_pastell'] =  $documents_pastell;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['documents_pastell'] =  $field_pastell_username_doc_lots;
-  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['documents_pastell'] =  $field_pastell_password_doc_lots;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_username_doc_lots'] =  $field_pastell_username_doc_lots;
+  $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_password_doc_lots'] =  $field_pastell_password_doc_lots;
 }
 function ecv_creadoc($id_e){
-  $return = []; //our variable to fill with data returned by Pastell
-  $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-  $storedGroups = $tempstoreGroup->get('groups');
-  if (is_string($storedGroups) && strpos($storedGroups, 'pastell-docs-signer') !== false) {
-      $pastelldataApi = new ApiPleiadeManager();
-      $return = $pastelldataApi->creationDoc($id_e);
-      if($return && $return['id_d']){
-      return $return['id_d'];
-      }
-  } else {
-      \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
-      return new JsonResponse(json_encode([]), 200, [], true);
+  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
+  $ch = curl_init();
+
+  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . '/api/create-document.php&id_e=' . $id_e . '&type=document-a-signer');
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  global $headers;
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  // curl_setopt($ch, CURLOPT_POST, true);
+  $result = curl_exec($ch);
+  if (curl_errno($ch)) {
+    echo 'Error:' . curl_error($ch);
   }
+  $result = json_decode($result);
+  return $result;
+  curl_close($ch);
+
+  print_r($result);
 }
 function ecv_getsoustype($data){
-  $return = []; //our variable to fill with data returned by Pastell
-  $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-  $storedGroups = $tempstoreGroup->get('groups');
-  if (is_string($storedGroups) && strpos($storedGroups, 'pastell-docs-signer') !== false) {
-      $pastelldataApi = new ApiPleiadeManager();
-      $return = $pastelldataApi->getSousTypeDoc($data); 
-      return $return;
-  } else {
-      \Drupal::logger('api_pastell_pleiade')->debug('pas dans le groupe pastell');
-      return new JsonResponse(json_encode([]), 200, [], true);
+  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
+  $ch = curl_init();
+
+  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . '/api/external-data.php');
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+
+  global $headers;
+  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  $result = curl_exec($ch);
+  if (curl_errno($ch)) {
+    echo 'Error:' . curl_error($ch);
+
   }
+  $result = json_decode($result);
+  return $result;
+  curl_close($ch);
+
+  print_r($result);
   
 }
 function ecv_modifdoc($data){
@@ -175,7 +198,7 @@ function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sst
   $id_d = ecv_creadoc($id_e);
   $data = array(
     'id_e' => $id_e,
-    'id_d' => $id_d,
+    'id_d' => $id_d->id_d,
     'libelle' => $nomfic,
     'has_date_limite' => 1,
     'date_limite' => $year . '-' . $month . '-' . $day,
@@ -189,7 +212,7 @@ function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sst
   ecv_modifdoc($data);
 
   // // puis on envoie au parapheur
-  $ok = ecv_sendparaph($id_e, $id_d);
+  ecv_sendparaph($id_e, $id_d->id_d);
  
   }
   function ecv_batch_lot_finished($success, $results, $operations)

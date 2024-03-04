@@ -3,12 +3,8 @@
   Drupal.behaviors.APInotificationBlocksBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
-      if (drupalSettings.path.isFront) {
-        once(
-          "APInotificationBlocksBehavior",
-          "body",
-          context
-        ).forEach(function () {
+      
+        once( "APInotificationBlocksBehavior", "body", context ).forEach(function () {
           // make ajax call
           var xhr = new XMLHttpRequest();
           xhr.open("GET", Drupal.url("v1/notification_module_pleiade/notification_fields"));
@@ -23,7 +19,7 @@
                 window.onload = function () {
                   var displayNotif =
                     document.getElementById("notification_alert"); // replace "myDiv" with the actual id of your div
-                  displayNotif.style.display = "block";
+                  // displayNotif.style.display = "block";
                 };
                 var svg_bell = document.querySelector(".alert_popup i"); // if notifictation hide svg bell
                 if (svg_bell) {
@@ -64,9 +60,11 @@
                 }
               } // if no notification
               else {
+                var displayNotif = document.getElementById("notification_alert"); 
+                  displayNotif.classList.remove("show");
                 div.innerHTML +=
                   '<div class="dropdown-item">\
-                              <div class="d-flex justify-content-center">Aucune nouvelle notification</div>';
+                              <h6 class="d-flex justify-content-center">Aucune nouvelle notification</h6>';
               }
             }
             xhr.onerror = function () {
@@ -82,7 +80,7 @@
           };
           xhr.send();
         }); // end once
-      }
+      
     },
   };
 })(Drupal, drupalSettings, once);

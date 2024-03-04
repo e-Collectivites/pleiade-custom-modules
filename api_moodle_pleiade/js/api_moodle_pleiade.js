@@ -19,9 +19,9 @@
 
                 blocMoodle += '<div class="col-lg-12">\
                                 <div>\
-                                  <div class="card mb-2">\
-                                    <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                                      <h4 class="card-title text-dark py-2">E-Learning E-collectivités</h4></div>\
+                                  <div class="card">\
+                                    <div class="card-header rounded-top bg-white rounded-top">\
+                                      <h4 class="card-title text-dark py-2">Autoformation</h4></div>\
                                         <div class="" id="carousel_elearning">\
                   '
                 
@@ -37,8 +37,8 @@
                     else {
                       var imageurl = "https://ecollectivites.fr/sites/default/files/inline-images/logo-ecollectivites.jpg"
                     }
-                    if (donnees[i].categoryname) {
-                      var categoryCourse = donnees[i].categoryname
+                    if (donnees[i].fullname) {
+                      var categoryCourse = donnees[i].fullname
                     }
                     else {
                       var categoryCourse = ""
@@ -47,13 +47,13 @@
 
                     if (i !== 0) {
                       blocMoodle +=
-                        '<a href="https://preprod.ecollectivites.fr/moodle/course/view.php?id=' + donnees[i].id + '?authCAS=CAS">\
+                        '<a target="_blank" href="https://preprod.ecollectivites.fr/moodle/course/view.php?id=' + donnees[i].id + '?authCAS=CAS">\
                         <div class="mt-3 d-flex justify-content-center">\
-                          <div class="card">\
+                          <div class="card d-flex align-items-center">\
                             <img src="'+ imageurl + '" class="card-img-top" alt="Course Image">\
-                            <div class="card-body d-flex flex-column">\
+                            <div class="card-body d-flex flex-column align-items-center">\
                               <h5 class="card-title d-flex justify-content-center">'+ categoryCourse + '</h5>\
-                              <p class="d-flex align-items-center justify-content-center btn mt-auto btn-e-coll text-white w-100">Voir ce cours</p>\
+                              <h5 class="tag_btn position-absolute w-auto p-2">' + donnees[i].categoryname + '</h5>\
                             </div>\
                           </div>\
                         </div>\
@@ -92,12 +92,15 @@
           xhr.onloadend = function () {
             
               $('#carousel_elearning').slick({
-                arrows: false,
-                infinite: true,
                 slidesToShow: 4,
-                slidesToScroll: 2,
-                autoplay: true,
-                autoplaySpeed: 4000,
+                slidesToScroll: 3,
+                arrows: true,
+                dots: true,
+                customPaging: function (slider, i) {
+                  // this example would render "tabs" with titles
+                  return '<i class="fa-solid fa-circle"></i>';
+                },
+
               });
 
 

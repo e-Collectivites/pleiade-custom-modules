@@ -19,7 +19,7 @@ class DatatableController extends ControllerBase
         $storedGroups = $tempstoreGroup->get('groups');
         if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
 
-            $formattedData = [];
+            $formattedData['docs'] = [];
 
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->delete('documents_pastell');
@@ -32,33 +32,33 @@ class DatatableController extends ControllerBase
                 $dataApi = new ApiPleiadeManager();
                 $return1 = $dataApi->searchMyDocs($id_e);
                 $return2 = $dataApi->searchMyFlux();
-
-                // Parcourir le tableau $data1
-                foreach ($return1 as &$document) {
-                    // Vérifier si le type existe dans $data2
-                    if (isset($return2[$document['type']]['nom'])) {
-                        // Remplacer le type par le nom associé
-                        $document['type'] = $return2[$document['type']]['nom'];
+                // var_dump(gettype($return1));
+                if($return1){
+                    foreach ($return1 as &$document) {
+                        if (isset($return2[$document['type']]['nom'])) {
+                            // Remplacer le type par le nom associé
+                            $document['type'] = $return2[$document['type']]['nom'];
+                        }
                     }
+                    $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
+                    $tempstore->set('documents_pastell', $return1);
+                } else {
+                    $return1 = [];                   
                 }
 
-
-                $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
-                $tempstore->set('documents_pastell', $return1);
             } else {
                 $return1 = [];
+                \Drupal::logger('api_pastell_pleiade')->error('Aucun retour API PAstell, veuillez vérifier si Pastell est fonctionnel, à minima si la configuration du module est bonne');
             }
-            $formattedData = array_merge($formattedData, $return1);
+            $formattedData['docs'] = array_merge($formattedData['docs'], $return1);
         }
-
-        $return = []; // our variable to fill with data returned by Pastell
         $nextcloudataApi = new ApiPleiadeManager();
         $return_nc = $nextcloudataApi->getNextcloudNotifs();
         $tempstore = \Drupal::service('tempstore.private')->get('api_nextcloud_pleiade');
         $tempstore->set('documents_nextcloud', $return_nc);
 
-
-        if ($return_nc) {
+        
+        if ($return_nc->ocs->data) {
 
             $data = $return_nc->ocs->data; // Access the 'data' property of the object
 
@@ -85,12 +85,19 @@ class DatatableController extends ControllerBase
                     'status' => $status,
                     'fileUrl' => $fileUrl
                 ];
-                $formattedData[] = $formattedItem;
+                $formattedItems[] = $formattedItem;
             }
+            if($formattedItems !== null){
+            $formattedData['docs'] = array_merge($formattedData['docs'], $formattedItems);
+            }
+        } else {
+            $formattedItems = [];
+            \Drupal::logger('api_pastell_pleiade')->error('Aucun retour API Nextcloud, veuillez vérifier votre token Nextlcoud et votre identifiant Nextcloud sur votre profil');
         }
-
-        $jsonData = json_encode($formattedData); // Convert the array to a JSON string
-       
+        
+        // $formattedData['error'] = $error_count;
+        $jsonData = json_encode($formattedData); 
+        
         if ($jsonData !== 'null' ) {
             return new JsonResponse($jsonData, 200, [], true);
         } else {

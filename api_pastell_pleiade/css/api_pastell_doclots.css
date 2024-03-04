@@ -40,7 +40,9 @@
 #doclotform select {
 	font-size: 1em;
 }
-
+#edit-soustype{
+	height: unset!important;
+}
 
 #edit-datelimite, #edit-soustype{
 	width: 70%;

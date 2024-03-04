@@ -15,16 +15,18 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $field_lemon_myapps_url = $config->get('field_lemon_myapps_url');
   $field_lemon_sessioninfo_url = $config->get('field_lemon_sessioninfo_url');
   $field_lemon_totp_url = $config->get('field_lemon_totp_url');
+  
   // Get groups in Drupal private tempstore to serve to other modules later
    $tempstore = \Drupal::service('tempstore.private'); 
    $store = $tempstore->get('api_lemon_pleiade');
    $groups = $store->get('groups');
+
   
   // Add the CSS library
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_css';
 
   // Add the JS library
-  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
+  
 
   // Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
@@ -33,6 +35,7 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_totp_url'] = $field_lemon_totp_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['user_groups'] =  $groups;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_block_id'] =  $field_lemon_block_id;
+  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
   // Define spinner for our JS modules
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['spinner'] = 
    ' <div class="d-flex justify-content-center align-items-center"><div id="spinner-div-menu" class="spinner-border text-primary" role="status"></div></div>';

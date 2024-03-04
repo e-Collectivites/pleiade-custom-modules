@@ -38,28 +38,31 @@ class PleiadeParapheurApiFieldsConfig extends ConfigFormBase {
         '#default_value' => $config->get('field_parapheur_url'),
         '#description' => $this->t('Enter the full IParapheur url with / at the end, ex: https://parapheur.mydomain.com/'),
       ]; 
-
+    $form['field_parapheur_auth_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('IParapheur auth endpoint'),
+      '#default_value' => $config->get('field_parapheur_auth_url'),
+      '#description' => $this->t('Enter the endpoint to authenticate desktop on the parapheur'),
+    ]; 
     $form['field_parapheur_bureaux_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('IParapheur docs endpoint'),
       '#default_value' => $config->get('field_parapheur_bureaux_url'),
       '#description' => $this->t('Enter the endpoint for bureaux with / at the end, i.e: api/v2/Document/'),
+    ]; 
+    $form['field_parapheur_username'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('IParapheur username to auth'),
+      '#default_value' => $config->get('field_parapheur_username'),
+      '#description' => $this->t('Enter the username to get desktop'),
+    ]; 
+    $form['field_parapheur_password'] = [
+      '#type' => 'password',
+      '#title' => $this->t('IParapheur password to auth'),
+      '#default_value' => $config->get('field_parapheur_password'),
+      '#description' => $this->t('Enter the password to get desktop'),
     ];  
-
-    $form['field_parapheur_auth_method'] = [
-      '#type' => 'select',
-      '#title' => t('Méthode d\'authentification.'),
-      '#options' => array(
-          'cas' => t('CAS'),
-          'oidc' => t('OpenID Connect'),
-          'saml' => t('SAML'),
-          'http' => t('Http Header'),
-      ),
-      '#default_value' => $config->get('field_parapheur_auth_method'),
-      '#description' => $this->t('Authentification method for IParapheur API'),
-      '#required' => TRUE,
-    ];  
-    
+  
     return parent::buildForm($form, $form_state);
   }
   
@@ -75,6 +78,9 @@ class PleiadeParapheurApiFieldsConfig extends ConfigFormBase {
     $config->set('field_parapheur_url', $form_state->getValue('field_parapheur_url'));
     $config->set('field_parapheur_bureaux_url', $form_state->getValue('field_parapheur_bureaux_url'));
     $config->set('field_parapheur_auth_method', $form_state->getValue('field_parapheur_auth_method'));
+    $config->set('field_parapheur_auth_url', $form_state->getValue('field_parapheur_auth_url'));
+    $config->set('field_parapheur_username', $form_state->getValue('field_parapheur_username'));
+    $config->set('field_parapheur_password', $form_state->getValue('field_parapheur_password'));
     $config->save();
     
     parent::submitForm($form, $form_state);

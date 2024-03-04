@@ -1,0 +1,18 @@
+
+<?php 
+/**
+ * @param $variables
+ */
+function api_humhub_pleiade_preprocess_page(&$variables){
+
+  $config = \Drupal::config('api_humhub_pleiade.settings');
+  
+  $humhub_url = $config->get('humhub_url');
+  $variables['#attached']['drupalSettings']['api_humhub_pleiade']['humhub_url'] = $humhub_url;
+  
+  $variables['#attached']['library'][] = 'api_humhub_pleiade/api_humhub_pleiade_js';
+  $variables['#attached']['library'][] = 'api_humhub_pleiade/api_humhub_pleiade_css';
+
+ 
+
+}

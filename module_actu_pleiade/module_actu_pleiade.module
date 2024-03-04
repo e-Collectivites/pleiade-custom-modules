@@ -1,5 +1,5 @@
 <?php
-
+use Drupal\module_api_pleiade\ApiPleiadeManager;
 /**
  * @param $variables
  */
@@ -11,3 +11,49 @@ function module_actu_pleiade_preprocess_page(&$variables){
 // Add the JS library
   $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_js';
 }
+
+
+
+// function module_actu_pleiade_cron() {
+//   // Vérifiez la dernière exécution de la fonction
+//   $last_execution_time = variable_get('mymodule_last_execution_time', 0);
+//   $current_time = REQUEST_TIME;
+  
+//   // Vérifiez si ça fait plus de 24 heures depuis la dernière exécution
+//   if ($current_time - $last_execution_time >= 86400) {
+//     // Exécutez votre fonction ici
+//     get_all_artciles_from_ecoll_site();
+
+//     // Mettez à jour le temps de dernière exécution
+//     variable_set('mymodule_last_execution_time', $current_time);
+//   }
+// }
+
+// /**
+//  * Fonction à exécuter toutes les 24 heures.
+//  */
+// function get_all_artciles_from_ecoll_site() {
+  
+//   $return = []; //our variable to fill with data returned by Pastell
+//   $getArticles = new ApiPleiadeManager();
+//   $return = $getArticles->getEcollArticles();
+  
+// dpm($return);
+//   $node = \Drupal\node\Entity\Node::create([
+//     'type' => 'article',
+//     'title' => 'Nouvel article créé automatiquement',
+//     'body' => [
+//       'value' => 'Contenu de l\'article créé automatiquement.',
+//       'format' => 'full_html',
+//     ],
+//   ]);
+
+//   // Enregistrez le nœud
+//   $node->save();
+
+
+//   return new JsonResponse(json_encode($return), 200, [], true);
+// }
+
+
+
