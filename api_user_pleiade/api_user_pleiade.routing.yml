@@ -6,31 +6,13 @@ api_user_pleiade.settings:
   requirements:
     _permission: 'administer site configuration'
     
-api_user_pleiade.user_list_query:
-  path: '/v1/api_user_pleiade/user_list_query'
+api_user_pleiade.user_infos:
+  path: '/v1/api_user_pleiade/user_infos'
   defaults:
-    _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::user_list_query'
+    _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::user_infos'
     _title: 'User Query'
     _format: json
   requirements:
     _access: 'TRUE'
 
-# api_user_pleiade.user_infos_query:
-#   path: '/v1/api_user_pleiade/user_infos_query'
-#   defaults:
-#     _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::user_infos_query'
-#     _title: 'User Query'
-#     _format: json
-#   requirements:
-#     _access: 'TRUE'
-
-
-# api_user_pleiade.notification_query:
-#   path: '/v1/api_user_pleiade/notification_query'
-#   defaults:
-#     _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::notification_query'
-#     _title: 'Test Query'
-#     _format: json
-#   requirements:
-#     _access: 'TRUE'
 

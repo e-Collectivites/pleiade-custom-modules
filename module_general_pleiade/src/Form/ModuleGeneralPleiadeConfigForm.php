@@ -45,6 +45,11 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('url_lien_documentation'),
       '#description' => $this->t('<span style="display: flex; align-items: center">Url correspondant à ce lien du menu : &nbsp;&nbsp;<img src="/themes/custom/pleiadebv/assets/images/url_documentation.png"></span>')
     ];
+    $form['menu_ecollectivites'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Nouveau menu à 3 semaine de la mise en production ? '),
+      '#default_value' => $config->get('menu_ecollectivites'),
+    ];
     $form['numero_telephone_support'] = [
       '#type' => 'tel',
       '#title' => $this->t('Numéro de téléphone du support'),
@@ -55,6 +60,12 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#title' => $this->t('Adresse mail du support'),
       '#default_value' => $config->get('adresse_mail_support'),
       '#description' => $this->t('Adresse mail du support à contacter si problème et si chatbot marche pas')
+    ];
+    $form['sites_internets'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Paramètrage des sites par collectivité. Entrez une collectivité par ligne sous le format "ID LDAP","URl du site internet","URL de la GRU",... '),
+      '#default_value' => $config->get('sites_internets'),
+      '#placeholder' => $this->t('"ID LDAP de la commune ","URL du site internet","URL de la GRU",...')
     ];
   
     return parent::buildForm($form, $form_state);
@@ -78,6 +89,8 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
     $config->set('url_lien_documentation', $form_state->getValue('url_lien_documentation'));
     $config->set('numero_telephone_support', $form_state->getValue('numero_telephone_support'));
     $config->set('adresse_mail_support', $form_state->getValue('adresse_mail_support'));
+    $config->set('menu_ecollectivites', $form_state->getValue('menu_ecollectivites'));
+    $config->set('sites_internets', $form_state->getValue('sites_internets'));
     $config->save();
   }
 

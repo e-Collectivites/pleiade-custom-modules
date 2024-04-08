@@ -58,6 +58,7 @@ class PleiadeUserFieldsConfig extends ConfigFormBase
       'visible' => [
         ':input[name="have_chatbot"]' => ['checked' => TRUE],
       ],
+    
     ];
 
     return parent::buildForm($form, $form_state);

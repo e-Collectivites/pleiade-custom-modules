@@ -17,52 +17,34 @@ class PleiadeUserController extends ControllerBase
       $this->settings_user = \Drupal::config('api_user_pleiade.settings');
     }
   }
-  public function user_list_query(Request $request)
+  public function user_infos(Request $request)
   {
 
-    // Load the user storage service.
-    $query = \Drupal::entityQuery('user');
-    $uids = $query->execute();
-    $users = array();
+    $current_user = \Drupal::currentUser();
 
+// Get the user entity.
+$user = \Drupal\user\Entity\User::load($current_user->id());
 
-    foreach ($uids as $uid) {
-      $user = \Drupal\user\Entity\User::load($uid);
+// Initialize an array to store user information.
+$user_info = array();
 
-      // Get user's profile picture URL.
-      $picture_url = '';
-      if ($user->hasField('user_picture')) {
-        $picture_fid = $user->get('user_picture')->target_id;
-        if (!empty($picture_fid)) {
-          $picture_url = file_create_url(\Drupal\file\Entity\File::load($picture_fid)->getFileUri());
-        } else {
-          $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
-        }
-      }
+// Check if the user entity exists.
+if ($user) {
+    // Get all user fields and their values.
+    $fields = $user->getFields();
 
-      // Get user's last login timestamp.
-      $last_login_timestamp = '';
-      if ($user->getLastLoginTime()) {
-        $last_login_timestamp = $user->getLastLoginTime();
-      }
+    // Iterate through each field.
+    foreach ($fields as $field_name => $field) {
+        // Get the field value.
+        $field_value = $field->getValue();
 
-      // Get user's email.
-      $email = '';
-      if ($user->getEmail()) {
-        $email = $user->getEmail();
-      }
-
-      $users[] = array(
-        'id' => $user->id(),
-        'picture_url' => $picture_url,
-        'last_login_timestamp' => $last_login_timestamp,
-        'email' => $email,
-      );
+        // Store the field name and value in the user info array.
+        $user_info[$field_name] = $field_value;
     }
+}
+    if ($user_info) {
 
-    if ($users) {
-
-      return new JsonResponse(json_encode($users), 200, [], true);
+      return new JsonResponse(json_encode($user_info), 200, [], true);
     } else {
       echo 'erreur lors de la récupération des users';
     }

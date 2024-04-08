@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * quick check modules orders of execution (default all zero)
@@ -11,11 +12,16 @@
 /**
  * @param $variables
  */
-function module_general_pleiade_preprocess_page(&$variables) {
+function module_general_pleiade_preprocess_page(&$variables)
+{
   $config = \Drupal::config('module_general_pleiade.settings');
   $colorTheme = $config->get('color_theme');
   $numero_telephone_support = $config->get('numero_telephone_support');
   $adresse_mail_support = $config->get('adresse_mail_support');
+  $menu_ecoll = $config->get('menu_ecollectivites');
+  $sites_internets = $config->get('sites_internets');
+  $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+  $sites_internet_current_user = $user->get('field_site_internet')->getValue();
   // Add the JS library.
   $variables['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_js';
   // Add the CSS library.
@@ -24,5 +30,33 @@ function module_general_pleiade_preprocess_page(&$variables) {
   $variables['#attached']['drupalSettings']['module_general_pleiade']['color_theme'] = $colorTheme;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['numero_telephone_support'] = $numero_telephone_support;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['adresse_mail_support'] = $adresse_mail_support;
+  $variables['#attached']['drupalSettings']['module_general_pleiade']['menu_ecoll'] = $menu_ecoll;
+  $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internets'] = $sites_internets;
+  $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internet_current_user'] = $sites_internet_current_user;
+}
+function module_general_pleiade_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+  if ($form_id == 'user_form') {
+    $form['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_js';
+    $config = \Drupal::config('module_general_pleiade.settings');
+    $sites_internet = $config->get('sites_internets');
+    $items = explode("\n", $sites_internet);
+    foreach ($items as $item) {
+      // Diviser chaque élément en valeurs en utilisant ":"
+      list($key, $value1, $value2) = explode(",", $item);
 
+      // Ajouter la paire clé-valeur au tableau associatif
+      $array[$key] = array($value1, $value2);
+    }
+    $cookie_groups = explode(", ", $_COOKIE['groups']);
+    $array_keys = array_keys($array);
+
+    $form['field_site_internet']['#access'] = TRUE;
+    foreach ($array_keys as $commune) {
+      // Vérifier si la clé est présente dans les clés de $cookie_groups
+      if (in_array($commune, $cookie_groups)) {
+        $form['field_site_internet']['#access'] = FALSE;
+      }
+    }
+  }
 }

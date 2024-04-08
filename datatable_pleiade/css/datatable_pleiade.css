@@ -14,31 +14,37 @@ div.dropend button{
 }
 
 
-#tablealldocs_wrapper .form-select {
-    margin: 0px 15px; 
-    width: 40%;  
+#tablealldocs_filter .form-control {
+    /* margin: 0px 15px;  */
+    width: 400px; 
+    border: 1px solid #383E42 ;
+    border-radius: 5px;    
 }
-#tablealldocs_wrapper .form-control {
-    margin-left: 15px;
+#tablealldocs_filter label {
+
+  color:  #383E42 ;
+ 
 }
+#tablealldocs_wrapper {  
+  height: 420px;
+  overflow: hidden;
+}
+
 
 #tablealldocs_wrapper label {  
     display: flex;
     align-items: center;
 }
 .dataTables_wrapper .col-md-6:first-child {
-    display: flex;
-    align-items: center;
-}
+    width: 0%!important;
+    padding: 0!important;
+} 
 #tablealldocs_wrapper .dataTables_filter {  
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start!important;
 }
 .dataTables_wrapper>.row:first-child {
     margin-bottom: 10px;
-}
-#tablealldocs_paginate .pagination{
-    justify-content: flex-end;
 }
 table.dataTable thead th,
 table.dataTable tfoot th {
@@ -74,7 +80,9 @@ table.dataTable thead .sorting_asc_disabled {
 table.dataTable thead .sorting_desc_disabled {
   background-image: url("./images/sort_desc_disabled.png"); }
 table.dataTable tbody tr {
-  background-color: white; }
+  background-color: white; 
+  max-height: 70px!important;
+}
 table.dataTable tbody tr.selected {
   background-color: #b0bed9; }
 .page-item.active .page-link{
@@ -82,6 +90,7 @@ table.dataTable tbody tr.selected {
 }
 .table#tablealldocs{
   width: 100%!important;
+  /* height: 380px; */
 }
 
 body[data-theme=dark] .table-striped > tbody > tr:nth-of-type(even) {
@@ -93,4 +102,20 @@ body[data-theme=dark] .table-striped > tbody > tr:nth-of-type(even) {
 #document_recent_id td {
     vertical-align: middle;
 }
-
+#tablealldocs_filter input{
+  width: 300px;
+}
+body[data-theme=dark] th.sorting, body[data-theme=dark] th.sorting_disabled{
+  color: #FFF!important;
+}
+.voir_tout{
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 5px;
+  background-color: #1f3889;
+  color: #FFFFFF;
+}
+/* .dataTables_scrollBody{
+  height: 380px!important;
+  max-height: 800px!important;
+} */

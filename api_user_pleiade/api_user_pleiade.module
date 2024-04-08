@@ -28,5 +28,30 @@ function api_user_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_user_pleiade']['apiKey'] = $apiKey;
   $variables['#attached']['drupalSettings']['api_user_pleiade']['bot_id'] = $bot_id;
   
-   
+  $current_user = \Drupal::currentUser();
+
+  // Get the user entity.
+  $user = \Drupal\user\Entity\User::load($current_user->id());
+  
+  // Initialize an array to store user information.
+  $user_info = array();
+  
+  // Check if the user entity exists.
+  if ($user) {
+      // Get all user fields and their values.
+      $fields = $user->getFields();
+  
+      // Iterate through each field.
+      foreach ($fields as $field_name => $field) {
+          // Get the field value.
+          $field_value = $field->getValue();
+  
+          // Store the field name and value in the user info array.
+          $user_info[$field_name] = $field_value;
+      }
+      if($user_info){
+      $variables['#attached']['drupalSettings']['api_user_pleiade']['user_info'] = $user_info;
+      }
+  }
+
 }
