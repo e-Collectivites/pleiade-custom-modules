@@ -24,29 +24,41 @@
               );
               xhr.responseType = "json";
               xhr.onload = function () {
+                
                 if (xhr.status === 200) {
                   var donnees = xhr.response;
+                  
+                  if(donnees != 'aucune donnée'){
                   var cn = donnees.cn;
-                  var mail = donnees.mail;
-                  var blocLemon;
-                  blocLemon =
-                    '\
-                  <div class="">\
-                      <img src="' +
-                    donnees.user_picture_url +
-                    '" alt="user" class="rounded-circle" width="60" height="60" style="object-fit: cover;"/>\
-                    </div>\
-                    <div class="ms-2">\
-                      <h4 class="mb-0 text-white">' +
-                    cn +
-                    '</h4>\
-                      <p class="mb-0">' +
-                    mail +
-                    "</p>\
-                    </div>";
-                  document.getElementById("user_infos_block").innerHTML =
-                    blocLemon;
-                }
+                    var mail = donnees.mail;
+                    var blocLemon;
+                    blocLemon =
+                      '\
+                    <div class="">\
+                        <img src="' +
+                      donnees.user_picture_url +
+                      '" alt="user" class="rounded-circle" width="60" height="60" style="object-fit: cover;"/>\
+                      </div>\
+                      <div class="ms-2">\
+                        <h4 class="mb-0 text-white">' +
+                      cn +
+                      '</h4>\
+                        <p class="mb-0">' +
+                      mail +
+                      "</p>\
+                      </div>";
+                    document.getElementById("user_infos_block").innerHTML =
+                      blocLemon;
+                    document.getElementById("img_user").innerHTML =
+                      '<img src="'+donnees.user_picture_url +'" alt="user" width="55" height="55" class=" object-fit-cover profile-pic rounded-circle"/>'
+                  }
+                  else
+                  {
+                    blocLemon = '<h4 class="mb-0 text-white">Erreur lors de la récupération des informations utilisateur</h4>'
+                    document.getElementById("user_infos_block").innerHTML =
+                      blocLemon;
+                  }
+                } 
               };
               xhr.onerror = function () {
                 console.log("Error making AJAX call");

@@ -2,115 +2,63 @@
     "use strict";
     Drupal.behaviors.APIparapheurEntitesBehavior = {
         attach: function (context, settings) {
-
-            // only on frontpage
-            // if (drupalSettings.path.isFront) {
-                once("APIparapheurEntitesBehavior", "#iparapheur_block_id", context).forEach(
+            setTimeout(function () {
+               
+                
+                once("APIparapheurEntitesBehavior", "body", context).forEach(
                     function () {
-                        // show spinner while ajax is loading
-                        document.getElementById("iparapheur_block_id").innerHTML = drupalSettings.api_lemon_pleiade.spinner;
-                        // check si existe + si dans le Drupal tempstore stocké par le module Lemon Pléiade
-                        var parapheurLDAPGroup = 'parapheur';
-                        var userGroupsTempstore = drupalSettings.api_lemon_pleiade.user_groups;         
-                        // console.log('Drupal tempstore groups from Lemon Pléiade module: ' + userGroupsTempstore);
+                        var url_parapheur = ''
+                        function getCookie(name) {
+                            // Récupérer tous les cookies
+                            const cookies = document.cookie.split(';');
 
-                        // Call only if parapheur group set and in private tempstore user_groups
-                        if (userGroupsTempstore.includes(parapheurLDAPGroup)) {
+                            // Parcourir chaque cookie
+                            for (let cookie of cookies) {
+                                // Diviser le nom et la valeur du cookie
+                                const [cookieName, cookieValue] = cookie.split('=');
 
-                            // make ajax call
+                                // Supprimer les espaces blancs avant et après le nom du cookie
+                                const trimmedCookieName = cookieName.trim();
+
+                                // Vérifier si le nom du cookie correspond à celui recherché
+                                if (trimmedCookieName === name) {
+                                    // Retourner la valeur du cookie
+                                    return cookieValue;
+                                }
+                            }
+
+                            // Retourner null si le cookie n'est pas trouvé
+                            return null;
+                        }
+                       
+                        
+                        
+                        const cookieGroups = decodeURIComponent(getCookie('groups'));
+                        if (cookieGroups.includes('parapheur')) {
                             var xhr = new XMLHttpRequest();
-                            xhr.open("GET", Drupal.url("sites/default/files/datasets/js/parapheur.json"));
-                            // Pastell pas en UTF8 :/
-                            // xhr.overrideMimeType('text/xml; charset=iso-8859-1');
+                            xhr.open("GET", Drupal.url("v1/api_parapheur_pleiade/parapheur_entities_query"));
                             xhr.responseType = "json";
                             xhr.onload = function () {
                                 if (xhr.status === 200) {
                                     var donnees = xhr.response;
-                                    // debug
-                                    // console.log(donnees);
-                                    if(donnees){
-                                        var linkEntitie = '<div class="col-lg-12 shadow-sm bg-white">\
-                                                            <div class="card mb-0">\
-                                                              <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                                                                <h4 class="card-title text-dark py-2">Liste des tâches</h4>\
-                                                              </div>\
-                                                                    <div class="card-body">\
-                                                                        <table class="table mb-0">\
-                                                                        <tbody>\
-                                                                        <tr class="d-flex">\
-                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;10&nbsp;</b> documents à signer.</th>\
-                                                                            <th class="d-flex align-items-center w-25">I-Parapheur</th>\
-                                                                        </tr>\
-                                                                        <tr class="d-flex">\
-                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;4&nbsp;</b> bons de commandes à valider.</th>\
-                                                                            <th class="d-flex align-items-center w-25">Comptabilité</th>\
-                                                                        </tr>\
-                                                                        <tr class="d-flex">\
-                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;4&nbsp;</b> Factures à valider.</th>\
-                                                                            <th class="d-flex align-items-center w-25">Comptabilité</th>\
-                                                                        </tr>\
-                                                                        <tr class="d-flex">\
-                                                                            <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;10&nbsp;</b> convocations à accuser récéption.</th>\
-                                                                            <th class="d-flex align-items-center w-25">Pastell</th>\
-                                                                        </tr>\
-                                                                        ';
-                                                // début table tâches 
-                        
-                                        // for (var i = 0; i < donnees.bureaux.length; i++) {
-                                           
-                                        //     var a_traiter = donnees.bureaux[i].a_traiter
-                                        //     var en_retard = donnees.bureaux[i].en_retard
-                                        //     var Shortname = donnees.bureaux[i].name
-                                        //     var dossiers_delegues = donnees.bureaux[i].dossiers_delegues
-                                            
-                                        //     if(a_traiter){
-                                        //         linkEntitie +=  '<tr class="d-flex">\
-                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ a_traiter +'&nbsp;</b> documents à signer.</th>\
-                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ a_traiter +'&nbsp;</b> documents à signer.</th>\
-                                        //         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                        //     </tr>\
-                                        //     ';
-                                        //     }
-                                        //     if(en_retard){
-                                        //         linkEntitie +=  '<tr class="d-flex">\
-                                        //         <th class="d-flex align-items-center w-75">Vous avez <b>&nbsp;'+ en_retard +'&nbsp; </b> documents en retard de signature.</th>\
-                                        //         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                        //     </tr>\
-                                        //     '; 
-                                        //     }
-                                        //     if(dossiers_delegues){
-                                        //         linkEntitie +=  '<tr class="d-flex">\
-                                        //                         <th class="d-flex align-items-center w-75"><b>&nbsp;'+ dossiers_delegues +'&nbsp;</b> documents vous ont été délégués.</th>\
-                                        //                         <th class="d-flex align-items-center w-25">'+ Shortname +'</th>\
-                                        //                     </tr>\
-                                        //                     ';
-                                        //     }
-                                            
-                                                        
-                                        // }// Fin table tâches 
-                                        linkEntitie += '</tbody></table>\
-                                                        </div>\
-                                                        </div>\
-                                                    </div>\
-                                                    </div>\
-                                                    '
-                                      }
-                                      else // affiche message si pas de tâches 
-                                      {
-                                        var linkEntitie = '<div class="col-lg-12">\
-                                                            <div class="card">\
-                                                              <div class="card-header rounded-top bg-white border-bottom rounded-top">\
-                                                                <h4 class="card-title text-dark py-2">Liste des tâches</h4>\
-                                                              </div>\
-                                                                        <div class="d-flex justify-content-center">\
-                                                                            <h3 class="my-5">Aucun document à signer</h3>\
-                                                                        </div>\
-                                                                    </div>\
-                                                                </div>\
-                                                            ';
-                                    }        
-                                    document.getElementById("iparapheur_block_id").innerHTML = linkEntitie;
-                                    
+                                    var a_signer = "0"
+
+                                    if (donnees.bureaux) {
+                                        var a_signer = 0
+                                        for (var i = 0; i < donnees.bureaux.length; i++) {
+
+                                            a_signer += donnees.bureaux[i].a_traiter
+                                        }
+                                        localStorage.setItem('docs_parapheur', a_signer)
+                                    }
+
+                                    var a_traiter = document.getElementById("a_traiter")
+                                    if(a_traiter && a_signer !== 'undefined'){
+                                        a_traiter.innerHTML = '(' + a_signer + ')';
+                                    }
+                                   
+                                   
+
                                 };
                                 xhr.onerror = function () {
                                     console.log("Error making AJAX call");
@@ -127,9 +75,51 @@
 
                             };
                             xhr.send();
-                        } // end if parapheur group & in tempstore
-                    }); // end once
-            // } // fin only on frontpage 
+                        }
+                        
+                        if ((cookieGroups.includes('parapheur85b') || 
+                        cookieGroups.includes('parapheur72')|| 
+                        cookieGroups.includes('parapheur53')|| 
+                        cookieGroups.includes('parapheur44')|| 
+                        cookieGroups.includes('parapheur49')|| 
+                        cookieGroups.includes('parapheur')) && (!cookieGroups.includes('pastell') || !cookieGroups.includes('pastell-docasigner'))) {
+                            
+                            var a_traiter = ''
+                            var menu_doc_a_signer = document.getElementById('signature_electronique')
+                            var menu_a_remplir = ""
+                            var nouvelElement = document.createElement('div');
+                            nouvelElement.classList.add('sub_menu_eadmin');
+                            nouvelElement.classList.add('collapse');
+                            nouvelElement.setAttribute('id', 'collapsesignature_electronique');
+                            if (localStorage.getItem('docs_parapheur') !== '0') {
+                                a_traiter = '(' + localStorage.getItem('docs_parapheur') + ')'
+                              }
+                              else {
+                                a_traiter = ''
+                              }
+                              var departement = decodeURIComponent(getCookie('departement'));
+                              
+                                if (departement == '85b'){
+                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '85.ecollectivites.fr'
+                                }
+                                else if(departement == '85' || departement == 'null' ){
+                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '.ecollectivites.fr'
+                                }
+                                else{
+                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + departement +'.ecollectivites.fr'
+                                }
+                                menu_a_remplir += '\
+                                    <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+url_parapheur+'" aria-expanded="false">\
+                                    <span class="hide-menu px-2">Signer/viser sur le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
+                                    console.log(url_parapheur)
+                            nouvelElement.innerHTML = menu_a_remplir
+                            if (menu_doc_a_signer) {
+                                menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
+                            }
+
+                        }
+                    });
+            }, 2900); // 1000 millisecondes = 1 seconde
         },
     };
 })(Drupal, drupalSettings, once);
