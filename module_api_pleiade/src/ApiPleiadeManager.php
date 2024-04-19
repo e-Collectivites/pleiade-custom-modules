@@ -50,8 +50,9 @@ class ApiPleiadeManager
     }
     if ($moduleHandler->moduleExists('api_humhub_pleiade')) {
       $this->settings_humhub = \Drupal::config('api_humhub_pleiade.settings');
-      //  \Drupal::logger('api_nextcloud_pleiade')->debug('module activé');
-
+    }
+    if ($moduleHandler->moduleExists('module_actu_pleiade')) {
+      $this->settings_actu = \Drupal::config('module_actu_pleiade.settings');
     }
   }
 
@@ -295,19 +296,17 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     
     elseif ($application == 'humhub') {
-      $current = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-      if ($current->get('field_humhub_password')->getValue()) {
-          $humhub_password = $current->get('field_humhub_password')->getValue()[0]['value'];
-      }
-
       try {
         $response = $this->client->request($method, $api, [
           'headers' => [
-            'Authorization' => 'Bearer ' . $humhub_password
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $inputs["token"]
           ],
-            'verify' => false 
+            'verify' => false,
+            'timeout' => 60
         ]);
     
+        
         // Récupération du contenu de la réponse
         $body = $response->getBody()->getContents();
         
@@ -316,6 +315,33 @@ class ApiPleiadeManager
     } catch (Exception $e) {
       return Json::decode($e->getMessage());
     }
+
+    // $headers = array(
+    //   'Content-Type: application/json',
+    //   'Authorization: Bearer ' . $inputs["token"]
+    // );
+    // $ch = curl_init();
+    // curl_setopt($ch, CURLOPT_URL, $api);
+    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Désactive la vérification du certificat SSL
+    
+    // $response = curl_exec($ch);
+    // $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    // curl_close($ch);
+    // if ($httpCode != 200) {
+    //   // Gérer les erreurs HTTP ici
+    //   $errorMessage = "Request failed with status code: {$httpCode}";
+    //   return Json::decode($errorMessage);
+    // } else {
+    //   // Retourner la réponse JSON
+    //   return Json::decode($response);
+    // }
+    
+    
+
     }
     ////////////////////////////////////////////////////////
     //                                                    //
@@ -517,18 +543,19 @@ class ApiPleiadeManager
   //              FONCTIONS POUR API HUMHUB                   //
   //                                                          //
   //////////////////////////////////////////////////////////////
-  // public function get_notif_humhub()
-  // {
-  //   return $this->curlGet([], [], $this->settings_humhub->get('humhub_url') . '/api/v1/notification/unseen', 'humhub');
-  // }
-  // public function get_messages_humhub()
-  // {
-  //   return $this->curlGet([], [], $this->settings_humhub->get('humhub_url') . '/api/v1/mail', 'humhub');
-  // }
-  // public function get_spaces()
-  // {
-  //   return $this->curlGet([], [], $this->settings_humhub->get('humhub_url') . '/api/v1/space', 'humhub');
-  // }
+  public function get_notif_humhub($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/notification/unseen', 'humhub');
+  }
+  public function get_messages_humhub($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/mail', 'humhub');
+  }
+  public function get_spaces($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/space', 'humhub');
+  }
+
 
   //////////////////////////////////////////////////////////////
   //                                                          //

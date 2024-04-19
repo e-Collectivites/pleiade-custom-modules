@@ -1,24 +1,240 @@
-.card-horizontal {
+
+:root {
+    --global-color: #1f3889;
+  }
+.actualites{
+    padding-top: 4em;
+}
+.actualites .card-img-top {
+    width: 100%;
+    max-width: 300px!important;
+    height: 120px;
+    max-height: 200px;
+    object-fit: cover;
+    transition: transform .2s;  
+}
+.actualites .card .card{
+    border: 1px solid #d2d2d3;
+    margin-bottom: 1rem!important;
+    overflow: hidden;
+}
+.actualites .card {
+    box-shadow: unset;
+   
+}
+.actualites .slick-track .card, .articles_lies .card{
+    border: 1px solid #d2d2d3;
+} 
+.actualites .slick-track .card:hover .card-img-top, .articles_lies .card:hover .card-img-top{
+    transform: scale(1.1);
+}
+
+.slick-prev,
+.slick-next
+{
+    font-size: 0;
+    line-height: 0;
+
+    position: absolute;
+    top: 50%;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    -webkit-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    transform: translate(0, -50%);
+
+    cursor: pointer;
+
+    color: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover,
+.slick-prev:focus,
+.slick-next:hover,
+.slick-next:focus
+{
+    color: transparent;
+    outline: none;
+    background: transparent;
+}
+.slick-prev:hover:before,
+.slick-prev:focus:before,
+.slick-next:hover:before,
+.slick-next:focus:before
+{
+    opacity: 1;
+}
+.slick-prev.slick-disabled:before,
+.slick-next.slick-disabled:before
+{
+    opacity: .25;
+}
+
+.slick-prev:before,
+.slick-next:before
+{
+    
+    font-size: 20px;
+    line-height: 1;
+
+    opacity: .75;
+    color: #1f3889;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.slick-prev
+{
+    left: -20px;
+}
+.slick-next
+{
+    right: -25px;
+}
+
+.slick-next {
+    margin-right: 0px!important;
+}
+
+/* Dots */
+.slick-dotted.slick-slider
+{
+    margin: 1em 2em 0.2em ;
+}
+.slick-dots li .slick-active {
+    opacity: 1!important;
+}
+.slick-dots .slick-active i{
+    
+    color: #1f3889;
+}
+.slick-dots li:not(.slick-active)  {
+    opacity: 0.5 ;
+}
+.slick-dots i  {
+   font-size: 10px;
+}
+
+.slick-dots
+{
+    position: absolute;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+bottom: 0em;
+    text-align: center;
+}
+.slick-dots li
+{
+    position: relative;
+
+    display: inline-block;
+
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    padding: 0;
+
+    cursor: pointer;
+}
+.slick-dots li button
+{
+    font-size: 0;
+    line-height: 0;
+
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+
+    cursor: pointer;
+
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: transparent;
+}
+.slick-dots li button:hover,
+.slick-dots li button:focus
+{
+    outline: none;
+}
+.slick-dots li button:hover:before,
+.slick-dots li button:focus:before
+{
+    opacity: 1;
+}
+.slick-dots li button:before
+{
+    font-family: 'slick';
+    font-size: 12px;
+    line-height: 20px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 20px;
+    height: 20px;
+
+    content: '•';
+    text-align: center;
+
+    opacity: .25;
+    color: black;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.slick-dots li.slick-active button:before
+{
+    opacity: .75;
+    color: black;
+}
+.tag_btn {
+    top: 0.3em; 
+    left: 0.3em;
+    font-size: 12px!important;
+    width: 33%;
+    background-color: #1f3889;
+    border-radius: 4px;
+    color: #FFF;
+}
+.created_date{
+    bottom: 92px;
+    left: 0em;
+    padding: 0.5em 0.3em 0 0.5em;
+    background-color: #FFF;
+    color: var(--bs-card-title-color);
+    font-size: 12px;
+}
+body[data-theme=dark] .created_date, 
+body[data-theme=dark] #carousel_actualites .card-title,
+body[data-theme=dark] .sub_menu_eadmin a, 
+body[data-theme=dark] .sub_menu_eadmin span{
+    color: #FFF!important;
+    background: #272b34!important ;
+}
+
+
+#carousel_actualites .slick-track{
     display: flex;
-    flex: 1 1 auto;
-	height: 100px;
-overflow: hidden;
+    justify-content: space-around;
 }
-.actualites img{
-width: 160px;
+#carousel_actualites .card-title{
+    height: 60px;
+    overflow: hidden;
 }
-.actualites .card-text{
-font-size: smaller;
-}
-.actualites .card-title{
-font-size: medium;
-    text-decoration: underline;
-}
-.actualites .card-body{
-	overflow-y: scroll;
-	padding: 0.4em 1.25rem!important; 
-}
-.actualites a {
-	text-decoration: underline;
-	font-weight: 700;
+#carousel_actualites {
+    overflow: hidden;
 }

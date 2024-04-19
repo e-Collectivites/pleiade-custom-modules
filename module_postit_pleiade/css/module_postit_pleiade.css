@@ -13,6 +13,9 @@ div#post_it_dashboard {
     background-color: #FFF;
     
 }
+#post_it_dashboad .show{
+  height: 450px;
+}
 /* #delete-button {
     width: 10% !important;
    

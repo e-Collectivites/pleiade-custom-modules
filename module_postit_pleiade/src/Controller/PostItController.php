@@ -53,9 +53,9 @@ class PostItController extends ControllerBase {
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
    
     $jsonString = $user->get('field_post_it_items')->getValue();
+    \Drupal::logger('module_postit_pleiade')->info('Post-its du user: @api', ['@api' => json_encode($jsonString)]);
     if($jsonString !== 'null'){
-    $jsonString = $jsonString[0]['value'];
-    
+    $jsonString = $jsonString[0]['value']; 
     $array = json_decode($jsonString, true);
     }
     return new JsonResponse($jsonString);

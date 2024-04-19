@@ -38,22 +38,15 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('color_theme'),
       '#description' => $this->t('Sur Firefox, pour passer du code HEXA au code RGB, cliquez sur <a href="https://www.rgbtohex.net/hex-to-rgb/" target="_blank">ce lien.</a>')
     ];
-    
-    $form['url_lien_documentation'] = [
-      '#type' => 'url',
-      '#title' => $this->t('Lien de l\'onglet "Documentation" du menu de gauche'),
-      '#default_value' => $config->get('url_lien_documentation'),
-      '#description' => $this->t('<span style="display: flex; align-items: center">Url correspondant à ce lien du menu : &nbsp;&nbsp;<img src="/themes/custom/pleiadebv/assets/images/url_documentation.png"></span>')
-    ];
-    $form['menu_ecollectivites'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Nouveau menu à 3 semaine de la mise en production ? '),
-      '#default_value' => $config->get('menu_ecollectivites'),
-    ];
     $form['numero_telephone_support'] = [
       '#type' => 'tel',
       '#title' => $this->t('Numéro de téléphone du support'),
       '#default_value' => $config->get('numero_telephone_support')
+    ];
+    $form['horaire_support'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Horaires du support'),
+      '#default_value' => $config->get('horaire_support')
     ];
     $form['adresse_mail_support'] = [
       '#type' => 'email',
@@ -86,8 +79,8 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
     $form_state->setValue('color_theme', null);
   } else {
     $config->set('color_theme', $form_state->getValue('color_theme'));
-    $config->set('url_lien_documentation', $form_state->getValue('url_lien_documentation'));
     $config->set('numero_telephone_support', $form_state->getValue('numero_telephone_support'));
+    $config->set('horaire_support', $form_state->getValue('horaire_support'));
     $config->set('adresse_mail_support', $form_state->getValue('adresse_mail_support'));
     $config->set('menu_ecollectivites', $form_state->getValue('menu_ecollectivites'));
     $config->set('sites_internets', $form_state->getValue('sites_internets'));

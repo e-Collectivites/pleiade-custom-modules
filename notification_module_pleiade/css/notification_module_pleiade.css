@@ -10,6 +10,8 @@
 #notification_alert {
     line-height: 1; 
     width: 420px;
+    height: 450px;
+  overflow-y: scroll;
   }
 
 #notification_alert p{
