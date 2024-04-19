@@ -18,3 +18,8 @@
 .pastille_collab .pastille, #echangersurlerseausocial .pastille, .fa-users .badge{
         background-color: #fbbd52!important;
 }
+#main-wrapper.mini-sidebar #menuLemon .badge{display: none;} 
+
+#humhub_block hr{
+        margin: 0.3rem 0!important;
+}

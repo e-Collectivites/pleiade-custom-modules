@@ -184,8 +184,9 @@ function ecv_sendparaph($id_e, $id_d)
 }
 
 function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sstype, $data){
-  
+ 
   $id_d = ecv_creadoc($id_e);
+  \Drupal::logger('api_pastell_pleiade')->info('Envoi en Lot, id_d dreation: @api', ['@api' => $id_d]);
   $data = array(
     'id_e' => $id_e,
     'id_d' => $id_d->id_d,

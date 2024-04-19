@@ -40,7 +40,7 @@
                       '" alt="user" class="rounded-circle" width="60" height="60" style="object-fit: cover;"/>\
                       </div>\
                       <div class="ms-2">\
-                        <h4 class="mb-0 text-white">' +
+                        <h4 id="drupal-username" class="mb-0 text-white">' +
                       cn +
                       '</h4>\
                         <p class="mb-0">' +

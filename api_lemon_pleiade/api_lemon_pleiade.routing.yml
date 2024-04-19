@@ -24,11 +24,11 @@ api_lemon_pleiade.lemon_session_query:
   requirements:
     _access: 'TRUE'
 
-api_lemon_pleiade.my_history:
-  path: '/history'
+api_lemon_pleiade.reset_password:
+  path: '/v1/api_lemon_pleiade/reset_password'
   defaults:
-    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::myHistory'
-    _title: 'Historique de connexion'
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::reset_password'
+    _title: 'Reinitialiser le mot de passe'
   requirements:
     _permission: 'access content'
 

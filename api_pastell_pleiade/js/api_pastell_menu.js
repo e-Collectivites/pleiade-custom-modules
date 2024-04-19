@@ -171,6 +171,7 @@
 
                   break;
                 case 'Document à faire signer':
+                  menu_a_remplir = ''
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
@@ -227,10 +228,10 @@
                         <a id="voir_docs" href="/node?goToDatatable=true&type=parapheur" class="waves-effect waves-dark" title=Voir les documents à faire signer" aria-expanded="false">\
                         <span class="hide-menu px-2">Voir les documents à faire signer</span></a>';
                   }
-console.log(menu_a_remplir)
-                  nouvelElement.innerHTML = menu_a_remplir
 
-                  if (menu_doc_a_signer) {
+                  nouvelElement.innerHTML = menu_a_remplir
+                  
+                  if (menu_doc_a_signer ) {
                     menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
                   }
 

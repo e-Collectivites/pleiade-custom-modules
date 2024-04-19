@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Implements hook_system_info_alter().
+ */
+function accessibility_tools_system_info_alter(&$info, $file, $type) {
+  // Ajoute une nouvelle région de mise en page pour les blocs.
+  $info['regions']['accessibility_tools'] = ('Zone pour l\'Accessibilité');
+}
+
+function accessibility_tools_preprocess_page(&$variables){
+  //Add the JS library
+  $variables['#attached']['library'][] = 'accessibility_tools/accessibility_tools_js';
+
+  //Add the CSS library
+  $variables['#attached']['library'][] = 'accessibility_tools/accessibility_tools_css';
+}

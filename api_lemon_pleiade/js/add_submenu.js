@@ -98,7 +98,7 @@
                                                                         }
                                                                         if (userGroupsTempstore.includes('admin-chatbot')) {
                                                                                 liens += '\
-                                                <a class="waves-effect waves-dark" title="Gérer l\'assistant virtuel" target="_blank" href="#" aria-expanded="false">\
+                                                <a class="waves-effect waves-dark" title="Gérer l\'assistant virtuel" target="_blank" href="https://chatbot.ecollectivites.fr/" aria-expanded="false">\
                                                 <span class="hide-menu px-2">Gérer l\'assistant virtuel</span></a>'
                                                                         }
                                                                         if (userGroupsTempstore.includes('democratie-participative')) {

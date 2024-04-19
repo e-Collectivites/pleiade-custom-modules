@@ -47,7 +47,7 @@ class PleiadeAjaxController extends ControllerBase
         if($dpt[1] != null){
 
           $return['groupes'] .= ' dpt-'.$dpt[1].',';
-          setcookie('departement', $dpt[1], time() + 3600, '/');
+          setcookie('departement', $dpt[1], time() + 36000, '/');
         }
       }
       $return['groups'] = $return['groupes'];
@@ -55,7 +55,7 @@ class PleiadeAjaxController extends ControllerBase
       // Store groups in Drupal private tempstore to serve to other modules later
       $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
       $tempstore->set('groups', $return["groupes"]);
-      setcookie('groups', $return['groups'], time() + 3600, '/');
+      setcookie('groups', $return['groups'], time() + 36000, '/');
 
       $email = $return["mail"];
       // Recherchez l'utilisateur par son adresse e-mail.
@@ -119,7 +119,7 @@ class PleiadeAjaxController extends ControllerBase
    * @return array
    *   A simple renderable array.
    */
-  public function myHistory()
+  public function reset_password()
   {
     return [
       '#markup' => '

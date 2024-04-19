@@ -13,13 +13,14 @@
               if (xhr.status === 200) {
                 var donnees = (xhr.response);
                 if (donnees) {
-
-                  if (donnees['messages'] && donnees['notifs']) {
-                    var total = donnees['notifs'].total + donnees['messages'].total
+                  console.log(donnees['messages']['results'][0]['isUnread'])
+                  if (donnees['messages'] && donnees['notifs'] && donnees['messages']['results'] != ['']) {
+                    
+                    var total = parseInt(donnees['notifs'].total) + parseInt(donnees['messages']['results'][0]['isUnread'])
+                  } else if (donnees['notifs']) {
+                    var total = parseInt(donnees['notifs'].total);
                   }
-                  else if (donnees['notifs']) {
-                    var total = donnees['notifs'].total
-                  }
+                  
                   var addBadges = document.querySelector(".fa-users");
                   var echangersurlerseausocial = document.querySelector("#echangersurlerseausocial");
                   var Notifs = createErrorBadge("all_notifs", total);
@@ -33,10 +34,6 @@
                     echangersurlerseausocial.appendChild(Notifs1);
                   }
 
-
-
-
-
                   function createErrorBadge(label, count) {
                     var errorDiv = document.createElement("div");
                     errorDiv.classList.add("pastille");
@@ -44,8 +41,6 @@
                     errorDiv.setAttribute("data-label", label);
                     return errorDiv;
                   }
-
-
 
                 }
                 else{
