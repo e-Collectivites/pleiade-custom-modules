@@ -59,12 +59,18 @@
                     case 'Collaboratif':
                       iconCategory = '<i class="fa-solid fa-users"></i>'
                       break;
-                    case 'Support et formation':
+                    case 'Support et Formation':
                       iconCategory = '<i class="fa-solid fa-circle-info"></i>'
                       break;
                     case 'Mes applications':
                       iconCategory = '<i class="fa-solid fa-star"></i>'
                       break;
+                    case 'Outils':
+                      iconCategory = '<i class="fa-solid fa-screwdriver-wrench"></i>'
+                      break;
+                    case 'Administration':
+                      iconCategory = '<i class="fa-solid fa-gear"></i>'
+                      break;  
                     default:
                       break;
                   }
@@ -113,13 +119,21 @@
                           menuHtml += '<a href="'+ temp[0].AppUri +'"target="_blank" class="sidebar-link"><span class="ps-2">'+temp[0].AppDesc+'</span></a>'
                         }
                         else {
-                        menuHtml += '<a class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        // menuHtml += '<a class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        //   temp[0].AppDesc +
+                        //   '" href="' +
+                        //   temp[0].AppUri +
+                        //   '" aria-expanded="true" target="' + target + '" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppTip + '" aria-controls="collapse' + temp[0].AppTip + '">' +
+                        //   Icon +
+                        //   '<span class="hide-menu px-2">' +
+                        //   Object.keys(donnees.myapplications[i].Applications[f]) +
+                        //   "</span></a>";
+                        menuHtml += '<a class="sidebar-link " id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
                           temp[0].AppDesc +
                           '" href="' +
                           temp[0].AppUri +
-                          '" aria-expanded="true" target="' + target + '" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppTip + '" aria-controls="collapse' + temp[0].AppTip + '">' +
-                          Icon +
-                          '<span class="hide-menu px-2">' +
+                          '" target="' + target +
+                          '"><span class="hide-menu px-2">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
                           "</span></a>";
                         }

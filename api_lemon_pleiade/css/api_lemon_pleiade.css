@@ -1,13 +1,13 @@
 :root {
     --global-color: #1f3889;
-    --text-menu-color: #1f3889;
+
 }
 
 
 .sidebar-nav ul .nav-small-cap {
     font-size: 16px;
     line-height: 40px;
-    color: var(--text-menu-color);
+    color: var( --global-color);
     opacity: 1;
     /* font-weight: 600; */
     display: flex;
@@ -21,7 +21,7 @@
 #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .left-sidebar:hover .sidebar-nav ul .nav-small-cap {
     font-size: 16px;
     line-height: 40px;
-    color: var(--text-menu-color);
+    color: var( --global-color);
     opacity: 1;
     /* font-weight: 600; */
     display: flex;
@@ -180,7 +180,7 @@ div.long-category span.hide-menu {
     line-height: 25px;
     font-size: 18px;
     opacity: 0.8;
-    color: var(--text-menu-color);
+    color: var( --global-color);
     border-left: 3px solid transparent;
 }
 
