@@ -6,3 +6,11 @@ guide_utilisateur_pleiade.get_guide:
     _format: json
   requirements:
     _access: 'TRUE'
+guide_utilisateur_pleiade.settings:
+  path: '/admin/config/guide_utilisateur_pleiade/settings'
+  defaults:
+    _form: '\Drupal\guide_utilisateur_pleiade\Form\guideUserForm'
+    _title: 'Paramètre du module Guide user'
+  requirements:
+    _permission: 'administer site configuration'
+    

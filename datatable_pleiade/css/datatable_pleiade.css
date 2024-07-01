@@ -108,6 +108,9 @@ body[data-theme=dark] .table-striped > tbody > tr:nth-of-type(even) {
 body[data-theme=dark] th.sorting, body[data-theme=dark] th.sorting_disabled{
   color: #FFF!important;
 }
+#reloadDatatable{
+  border: 0px!important;
+}
 .voir_tout{
   margin-top: 1em;
   padding: 0.5em;

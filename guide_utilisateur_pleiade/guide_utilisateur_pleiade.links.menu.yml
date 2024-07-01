@@ -1,0 +1,6 @@
+guide_utilisateur_pleiade.admin:
+  title: 'API Pléiade - Paramètres du module Guide Utilisateur'
+  description: 'Page de configuration du module'
+  parent: pleiade.group.admin
+  route_name: guide_utilisateur_pleiade.settings
+  weight: 2

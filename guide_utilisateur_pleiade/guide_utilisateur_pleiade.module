@@ -5,9 +5,13 @@
  */
 function guide_utilisateur_pleiade_preprocess_page(&$variables){
 
+
+  $config = \Drupal::config('guide_utilisateur_pleiade.settings');
+  $guide_on_desktop = $config->get('guide_on_desktop');
   //Add the JS library
   $variables['#attached']['library'][] = 'guide_utilisateur_pleiade/guide_utilisateur_pleiade_js';
   //Add the CSS library
   $variables['#attached']['library'][] = 'guide_utilisateur_pleiade/guide_utilisateur_pleiade_css';
-  
+  $variables['#attached']['drupalSettings']['guide_utilisateur_pleiade']['guide_on_desktop'] = $guide_on_desktop;
+
 }

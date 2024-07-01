@@ -31,6 +31,7 @@
                   
                   if (minutesAgo <= 1) {
                     notification = "Maintenant";
+                    localStorage.removeItem("notificationStatus");
                   } else if (minutesAgo <= 60) {
                     notification = "Il y a " + minutesAgo + " minutes";
                   } else if (minutesAgo <= 1440) { // 1440 minutes = 24 hours

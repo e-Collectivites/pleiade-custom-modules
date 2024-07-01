@@ -249,43 +249,61 @@ class ApiPleiadeManager
     //                                                    //
     ////////////////////////////////////////////////////////
     elseif ($application == 'articles_ecoll') {
-      try {
-        $response = $this->client->request('GET', 'https://ecollectivites.fr/api/v1/articles', []);
+      if($this->settings_actu->get('url_site')){
+        if($this->settings_actu->get('flux_rss') == false){
+          try {
+              $response = $this->client->request('GET', $api , []);
 
-        // Vérifier le code de statut
-        $statusCode = $response->getStatusCode();
+              // Vérifier le code de statut
+              $statusCode = $response->getStatusCode();
 
-        if ($statusCode === 200) {
-            $body = $response->getBody()->getContents();
-            
-            // Vérifier si la réponse est déjà au format JSON
-            $jsonData = json_decode($body, true);
-            if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
-                // Si la réponse n'est pas au format JSON, convertir en JSON
-                $jsonData = ['data' => $body];
-                $body = json_encode($jsonData);
-            }
-            
-            return $body;
-        } else {
-            $errorMessage = "Erreur: Code de statut $statusCode lors de la récupération des données.";
-            \Drupal::logger('fetch_articles')->error($errorMessage);
-            return $errorMessage;
+              if ($statusCode === 200) {
+                  $body = $response->getBody()->getContents();
+                  
+                  // Vérifier si la réponse est déjà au format JSON
+                  $jsonData = json_decode($body, true);
+                  if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
+                      // Si la réponse n'est pas au format JSON, convertir en JSON
+                      $jsonData = ['data' => $body];
+                      $body = json_encode($jsonData);
+                  }
+                  
+                  return $body;
+              } else {
+                  $errorMessage = "Erreur: Code de statut $statusCode lors de la récupération des données.";
+                  \Drupal::logger('fetch_articles')->error($errorMessage);
+                  return $errorMessage;
+              }
+              
+          } catch (RequestException $e) {
+              // Gérer les exceptions de requête Guzzle
+              if ($e->hasResponse()) {
+                  $statusCode = $e->getResponse()->getStatusCode();
+                  $errorMessage = "Erreur: Code de statut $statusCode lors de la requête.";
+                  \Drupal::logger('fetch_articles')->error($errorMessage);
+                  return json_encode(['error' => $errorMessage]);
+              } else {
+                  $errorMessage = "Erreur: " . $e->getMessage();
+                  \Drupal::logger('fetch_articles')->error($errorMessage);
+                  return json_encode(['error' => $errorMessage]);
+              }
+          }
         }
-        
-    } catch (RequestException $e) {
-        // Gérer les exceptions de requête Guzzle
-        if ($e->hasResponse()) {
-            $statusCode = $e->getResponse()->getStatusCode();
-            $errorMessage = "Erreur: Code de statut $statusCode lors de la requête.";
-            \Drupal::logger('fetch_articles')->error($errorMessage);
-            return json_encode(['error' => $errorMessage]);
-        } else {
-            $errorMessage = "Erreur: " . $e->getMessage();
-            \Drupal::logger('fetch_articles')->error($errorMessage);
-            return json_encode(['error' => $errorMessage]);
+        else
+        {
+          // Récupérer le contenu du flux RSS
+          $rssUrl = $this->settings_actu->get('url_site');
+          $rssContent = file_get_contents($rssUrl);
+
+          if ($rssContent === false) {
+              // Gérer les erreurs si la récupération du flux a échoué
+              return "Erreur lors de la récupération du flux RSS.";
+          } else {
+              // Retourner le contenu complet du flux RSS
+              return $rssContent;
+          }
         }
-    }
+      }
 
     }
 
@@ -312,36 +330,9 @@ class ApiPleiadeManager
         
         // Retourner une réponse JSON
         return Json::decode($body);
-    } catch (Exception $e) {
-      return Json::decode($e->getMessage());
-    }
-
-    // $headers = array(
-    //   'Content-Type: application/json',
-    //   'Authorization: Bearer ' . $inputs["token"]
-    // );
-    // $ch = curl_init();
-    // curl_setopt($ch, CURLOPT_URL, $api);
-    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-    // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Désactive la vérification du certificat SSL
-    
-    // $response = curl_exec($ch);
-    // $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    // curl_close($ch);
-    // if ($httpCode != 200) {
-    //   // Gérer les erreurs HTTP ici
-    //   $errorMessage = "Request failed with status code: {$httpCode}";
-    //   return Json::decode($errorMessage);
-    // } else {
-    //   // Retourner la réponse JSON
-    //   return Json::decode($response);
-    // }
-    
-    
-
+      } catch (Exception $e) {
+        return Json::decode($e->getMessage());
+      }
     }
     ////////////////////////////////////////////////////////
     //                                                    //
@@ -381,7 +372,6 @@ class ApiPleiadeManager
       );
 
       // Set the cURL options
-      // $url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
       $ch = curl_init();
       // Set the URL to send the request to
       curl_setopt($ch, CURLOPT_URL, $apiUrl);
@@ -438,19 +428,6 @@ class ApiPleiadeManager
     return $this->executeCurl($endpoint, "POST", $inputs, $api, $application);
   }
 
-  // //////////////////////////////////////////////////////////////
-  // //                                                          //
-  // //  FONCTIONS POUR API HUmHUB  //
-  // //                                                          //
-  // //////////////////////////////////////////////////////////////
-
-  // public function getMyNotifications()
-  // {
-  //   $endpoints = $this->settings_lemon->get('field_lemon_myapps_url'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-  //   \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
-  //   return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
-  // }
-
   //////////////////////////////////////////////////////////////
   //                                                          //
   //  FONCTIONS POUR API LEMONLDAP APPLICATION + SESSIONTIME  //
@@ -461,13 +438,13 @@ class ApiPleiadeManager
   public function searchMyApps()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_myapps_url'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-    \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+    
     return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
   }
   public function searchMySession()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_sessioninfo_url'); // Endpoint myapplications de Lemon qui renvoie les dernières connexions
-    \Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
+    
     return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
   }
 
@@ -480,36 +457,36 @@ class ApiPleiadeManager
   public function searchMyDocs($id_e)
   {
     $endpoints = $this->settings_pastell->get('field_pastell_documents_url'); // Endpoint field_pastell_documents_url de Pastell qui renvoi la liste des documents Pastell
-    \Drupal::logger('api_pastell_pleiade')->debug('function searchMyApps triggered !');
+    
     return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings_pastell->get('field_pastell_limit_documents'), 'pastell');
   }
   public function searchMyEntities()
   {
-    \Drupal::logger('api_pastell_pleiade')->debug('function searchMyentities triggered !');
+    
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function searchMyFlux()
   {
-    \Drupal::logger('api_pastell_pleiade')->debug('function searchMyFlux triggered !');
+   
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function creationDoc($id_e)
   {
-    \Drupal::logger('api_pastell_pleiade')->debug('function creationDoc triggered !');
+   
     return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . "api/create-document.php&id_e=" . $id_e . "&type=document-a-signer", 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function getSousTypeDoc($data)
   {
-    \Drupal::logger('api_pastell_pleiade')->debug('function getSousTypeDoc triggered !');
+   
     return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "api/external-data.php", 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function postModifDoc($data)
   {
-    \Drupal::logger('api_pastell_pleiade')->debug('function postModifDoc triggered !');
+   
     return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "/api/modif-document.php", 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
@@ -529,14 +506,14 @@ class ApiPleiadeManager
 
   //////////////////////////////////////////////////////////////
   //                                                          //
-  //              FONCTIONS POUR R2CUP2RER LES ARTICLES       //
-//                            E-COLLECTIVITES                 //
+  //         FONCTIONS POUR RECUPERER LES ARTICLES            //
+  //                                                          //
   //////////////////////////////////////////////////////////////
 
 
   public function getEcollArticles()
   {
-    return $this->curlGet([], [], 'https://ecollectivites.fr/api/v1/artics', 'articles_ecoll');
+    return $this->curlGet([], [], $this->settings_actu->get('url_site'), 'articles_ecoll');
   }
   //////////////////////////////////////////////////////////////
   //                                                          //
@@ -566,19 +543,13 @@ class ApiPleiadeManager
 
   public function getNextcloudNotifs()
   {
-    \Drupal::logger('api_nextcloud_pleiade')->info('function getNextcloudNotifs triggered !');
+   
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
       $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
       return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints . '?format=json', 'nextcloud');
     }
   }
-  //////////////////////////////////////////////////////////////
-  //                                                          //
-  //              FONCTIONS POUR API GLPI                     //
-  //                                                          //
-  //////////////////////////////////////////////////////////////
-
 
   /**
    * Function to return first element of the array, compatability with PHP 5, note that array_key_first is only available for PHP > 7.3.

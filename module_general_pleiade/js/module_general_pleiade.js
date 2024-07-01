@@ -56,14 +56,12 @@
                 };
                 dataObject[commune] = infos;
               });
-              console.log(dataObject)
               var userCommunes = userGroupsTempstore.split(', ');
 
               userCommunes.forEach(function (commune) {
                 var siteInternetLink = document.getElementById('url_site_internet');
                 var GruLink = document.getElementById('url_gru');
                 if (dataObject.hasOwnProperty(commune)) {
-                  console.log(siteInternetLink)
                   var communeInfos = dataObject[commune];
                  
                   if (siteInternetLink) {

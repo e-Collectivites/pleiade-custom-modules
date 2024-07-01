@@ -48,6 +48,18 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#title' => $this->t('Horaires du support'),
       '#default_value' => $config->get('horaire_support')
     ];
+    $form['linkedin'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Url du linkedin'),
+      '#default_value' => $config->get('linkedin'),
+      '#description' => $this->t('Url du linkedin')
+    ];
+    $form['twitter'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Url du twitter'),
+      '#default_value' => $config->get('twitter'),
+      '#description' => $this->t('Url du twitter')
+    ];
     $form['adresse_mail_support'] = [
       '#type' => 'email',
       '#title' => $this->t('Adresse mail du support'),
@@ -78,6 +90,8 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
   if ($form_state->getTriggeringElement()['#name'] == 'reset_color') {
     $form_state->setValue('color_theme', null);
   } else {
+    $config->set('twitter', $form_state->getValue('twitter'));
+    $config->set('linkedin', $form_state->getValue('linkedin'));
     $config->set('color_theme', $form_state->getValue('color_theme'));
     $config->set('numero_telephone_support', $form_state->getValue('numero_telephone_support'));
     $config->set('horaire_support', $form_state->getValue('horaire_support'));

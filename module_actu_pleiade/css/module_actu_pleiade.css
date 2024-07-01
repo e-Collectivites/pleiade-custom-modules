@@ -75,7 +75,9 @@
 {
     opacity: .25;
 }
-
+.slick-slide {
+    padding: 0 0.4rem;
+}
 .slick-prev:before,
 .slick-next:before
 {
@@ -237,4 +239,12 @@ body[data-theme=dark] .sub_menu_eadmin span{
 }
 #carousel_actualites {
     overflow: hidden;
+    padding: 1em 0 0 0 ;
+}
+.actualites .voir_tout{
+    margin-bottom: 30px;
+    float: right;
+}
+.actualites .card{
+    margin-bottom: 0px;
 }

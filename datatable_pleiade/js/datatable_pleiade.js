@@ -48,6 +48,9 @@
                             <button type="button" class="btn btn-secondary reload-btn" id="reloadDatatable">\
                             <i class="fa-solid fa-rotate"></i>\
                             </button>\
+                            <a href="#" id="go_to_pastell" target="_blank">\
+                            <i class="fa-solid fa-eye"></i>\
+                            </a>\
                           </div>\
                           <div class="card-body">\
                             <table class="table table-striped" id="tablealldocs">\
@@ -216,7 +219,7 @@
                         case "reception-partielle":
                           etat =
                             '<span class="badge py-2 px-4 bg-warning">Envoyé</span>';
-                          supp_yes = true
+                          supp_yes = false
                           break;
 
                         case "recu-iparapheur":
@@ -236,7 +239,12 @@
                           supp_yes = true
                           edit_yes = true
                           break;
-
+                        case "send-ged-etat":
+                          etat =
+                            '<span class="badge py-2 px-4 bg-info">Versé en GED</span>';
+                          edit_yes = false
+                          supp_yes = false
+                        break;
                         case "envoi-mail":
                           etat =
                             '<span class="badge py-2 px-4 bg-warning">En cours d\'envoi</span>';
@@ -493,7 +501,9 @@
                                   </tr>\
                               </tfoot>\
                             </table>\
-                            <div id="go_to_pastell" class="w-auto mt-3 py-2"></div>\
+                            <a class="voir_tout float-end" href="' + pastell_url +'/Document/index?id_e=' + previousValue +'" target="_blank">\
+                            <span>Voir l\'historique</span>\
+                            </a>\
                           </div>\
                         </div>\
                       </div>\
@@ -505,12 +515,15 @@
                       document_coll;
                   }
                   document.getElementById("go_to_pastell").innerHTML = "";
-                  var link = document.createElement("a");
-                  link.classList.add("voir_tout");
-                  link.setAttribute("target", "_blank");
+                  var link = document.getElementById("go_to_pastell");
+                  // link.classList.add("voir_tout");
+                  // link.setAttribute("target", "_blank");
                   link.href = pastell_url + "Document/index?id_e=" + previousValue;
-                  link.textContent = "Voir l'historique";
-                  document.getElementById("go_to_pastell").appendChild(link)
+                  // link.textContent = "Voir l'historique";
+                  // document.getElementById("go_to_pastell").appendChild(link)
+                  var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                 }
                 else {
 
@@ -590,12 +603,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=document-a-signer";
-                    link.textContent = "Voir tous les Documents à signer";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                    icon.classList.add("fa-solid", "fa-eye");
+                    link.appendChild(icon);
                   });
                 }
                 var pastille_actes = document.getElementById('pastille_actes')
@@ -606,12 +621,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=actes-ecollectivites";
-                    link.textContent = "Voir tous les actes";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
                 var pastille_flux_financier = document.getElementById('pastille_flux_financier')
@@ -623,12 +640,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=helios-ecollectivites";
-                    link.textContent = "Voir tous les Flux Hélios";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
                 var pastille_convocations = document.getElementById('pastille_convocations')
@@ -639,28 +658,18 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=convocation";
-                    link.textContent = "Voir toute les convocations";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                    icon.classList.add("fa-solid", "fa-eye");
+                    link.appendChild(icon);
 
                   });
                 }
-                var pastille_eadministration = document.querySelector('.pastille_eadministration')
-                if (pastille_eadministration) {
-                  pastille_eadministration.addEventListener("click", function () {
-                    table.search('Erreur').draw();
-                    table.column(1).search("Convocation|Helios|Facture Chorus Pro|Actes|Document à faire signer", true, false).draw();
-
-                    var offsetTop = document.querySelector("#document_recent_id").offsetTop;
-                    window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
-                  });
-                }
-
-
-
+               
 
                 var lienVoirActes = document.querySelector("#voir_actes");
 
@@ -672,12 +681,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=actes-ecollectivites";
-                    link.textContent = "Voir tous les actes";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
                 var lienVoirConvocations = document.querySelector("#voir_convocs");
@@ -689,12 +700,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=convocation";
-                    link.textContent = "Voir toutes les Convocations";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
 
@@ -706,12 +719,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=helios-ecollectivites";
-                    link.textContent = "Voir tous les Flux Hélios";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
 
@@ -724,12 +739,14 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=document-a-signer";
-                    link.textContent = "Voir tous les Documents à signer";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
                   });
                 }
                 var lienVoirDocument = document.querySelector("#voir_chorus_pro");
@@ -741,12 +758,33 @@
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
-                    var link = document.createElement("a");
-                    link.classList.add("voir_tout");
-                    link.setAttribute("target", "_blank");
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
                     link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=facture-cpp";
-                    link.textContent = "Voir tous les Flux Chorus";
-                    document.getElementById("go_to_pastell").appendChild(link)
+                    var icon = document.createElement("i");
+                  icon.classList.add("fa-solid", "fa-eye");
+                  link.appendChild(icon);
+                  });
+                }
+                var lienVoirUrba = document.querySelector("#voir_urba");
+                if (lienVoirUrba) {
+                  lienVoirUrba.addEventListener("click", function () {
+                    table.search("Document d'autorisation d'urbanisme", true, true).draw();
+                    table.column(1).search("Document d'autorisation d'urbanisme", true, true).draw();
+
+                    var offsetTop = document.querySelector("#document_recent_id").offsetTop;
+                    window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
+                    document.getElementById("go_to_pastell").innerHTML = "";
+                    var link = document.getElementById("go_to_pastell");
+                    // var link = document.createElement("a");
+                    // link.classList.add("voir_tout");
+                    // link.setAttribute("target", "_blank");
+                    link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=document-autorisation-urbanisme";
+                    var icon = document.createElement("i");
+                    icon.classList.add("fa-solid", "fa-eye");
+                    link.appendChild(icon);
                   });
                 }
                 setTimeout(function () {
@@ -758,7 +796,7 @@
                     if (inputField.value === "") {
                       table.search('', true, true).draw();
                       table.column(1).search("", true, false).draw();
-                      console.log("Le champ est vide !");
+                      //console.log("Le champ est vide !");
                     }
                   })
                 }, 300);
@@ -767,7 +805,7 @@
               errors = JSON.parse(errors);
               var addBadges = document.querySelector(".fa-people-arrows");
 
-              var eadministration = document.querySelector(".eadministration");
+              // var eadministration = document.querySelector(".eadministration");
               var actes = document.getElementById("actes");
               var convocations = document.getElementById("convocations");
               var signature_electronique = document.getElementById("signature_electronique");
@@ -788,7 +826,7 @@
               var errorDocsDiv = createErrorBadge("ErrorDocsCounts", ErrorDocsCounts, "Nombre d'erreurs sur les documents à faire signer");
 
               // Ajout des divs à la suite d'une div spécifique avec un ID
-              var eadministration = document.querySelector(".pastille_eadministration");
+              // var eadministration = document.querySelector(".pastille_eadministration");
               var actes = document.getElementById("pastille_actes");
               var convocations = document.getElementById("pastille_convocations");
               var signature_electronique = document.getElementById("pastille_signature_electronique");
@@ -806,9 +844,9 @@
               if(flux_financier){
                 flux_financier.innerHTML = '';
               }
-              if(eadministration){
-                eadministration.innerHTML = '';
-              }
+              // if(eadministration){
+              //   eadministration.innerHTML = '';
+              // }
               if(addBadges){
                 addBadges.innerHTML = '';
               }
@@ -816,7 +854,7 @@
 
               if (TotalErrors > 0) {
                 addBadges.innerHTML = '<span class="position-absolute start-75 translate-middle badge rounded-pill bg-danger error_' + TotalErrors + '">' + TotalErrors + '</span>'
-                eadministration.appendChild(totalErrorsDiv);
+                // eadministration.appendChild(totalErrorsDiv);
                 if (ErrorActeCounts > 0) {
                   actes.appendChild(errorActeDiv);
                 }
@@ -847,9 +885,9 @@
                   // Switch case pour déterminer l'URL en fonction du label
                   var url;
                   switch (label) {
-                    case "TotalErrors":
-                      url = "/node?goToDatatable=true&type=all&pastille=true";
-                      break;
+                    // case "TotalErrors":
+                    //   url = "/node?goToDatatable=true&type=all&pastille=true";
+                    //   break;
                     case "ErrorActeCounts":
                       url = "/node?goToDatatable=true&type=acte&pastille=true";
                       break;
@@ -904,7 +942,7 @@
 
               setTimeout(function () {
                 document.querySelector('#document_recent_id').addEventListener('click', function (event) {
-                  console.log(event)
+                 // console.log(event)
                   // Vérifiez que l'élément cible de l'événement correspond au bouton de rechargement
                   if (event.target.id === 'reloadDatatable' || event.target.className === 'fa-solid fa-rotate') {
                     console.log('test');
@@ -932,10 +970,10 @@
                     table.search('Document à faire signer Erreur', true, true).draw();
                     table.column(1).search("Document à faire signer", true, false).draw();
                     break;
-                  case 'all':
-                    table.search('Erreur').draw();
-                    table.column(1).search("Convocation|Helios|Facture Chorus Pro|Actes|Document à faire signer", true, false).draw();
-                    break;
+                  // case 'all':
+                  //   table.search('Erreur').draw();
+                  //   table.column(1).search("Convocation|Helios|Facture Chorus Pro|Actes|Document à faire signer", true, false).draw();
+                  //   break;
                   default:
                     break;
                 }

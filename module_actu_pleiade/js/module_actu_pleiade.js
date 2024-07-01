@@ -14,26 +14,25 @@
           xhr.onload = function () {
             if (xhr.status === 200) {
               var donnees = (xhr.response);
-              console.log(donnees)
               const div = document.querySelector('.actualites');
               var blocActu = ""
+              //<a href="/actualites" class="voir_tout mt-0">Voir toute les actualités</a></div>\
               blocActu += 
-                '<div class="col-lg-12">\
-                  <div>\
-                    <div class="card">\
-                      <div class="card-header rounded-top bg-white rounded-top">\
-                        <span class="card-title text-dark py-2">Dernières actualités</span></div>\
-                          <div class="" id="carousel_actualites">\
-                  '
+              '<div class="col-lg-12">\
+                <div>\
+                  <div class="card">\
+                    <div class="card-header d-flex align-items-center justify-content-between rounded-top bg-white rounded-top">\
+                      <h4 class="card-title text-dark py-2">Actualités à la une</h4>\
+                      </div>\
+                        <div class="" id="carousel_actualites">\
+                '
+                
               if (donnees && div) {
 
                 
                 for (var i = 0; i < donnees.length; i++) {
                  
-                  if (
-                    donnees[i].title &&
-                    donnees[i].view_node
-                ) {
+                  if ( donnees[i].title && donnees[i].view_node) {
                   var tag = '';
                   if (Array.isArray(donnees[i].field_tags)) {
                       tag = '<span class="tag_btn position-absolute w-auto p-2 text-uppercase">' + donnees[i].field_tags.join(', ') + '</span>';
@@ -43,7 +42,7 @@
             
                     // Tronquer la description à 50 caractères
                     blocActu +=
-                        '<a href="' + donnees[i].view_node + '" class="d-flex mb-2 justify-content-center" target="_blank">\
+                        '<a href="' + donnees[i].view_node + '" class="d-flex justify-content-center">\
                             <div class="card" style="height: 230px; width: 250px;">\
                                 <img src="' + donnees[i].field_image + '" class="card-img-top" alt="Course Image">\
                                 <div class="card-body d-flex flex-column" >' +
@@ -57,7 +56,7 @@
                 }
                 
                 if (div) {
-                  blocActu += "</div></div></div></div>";
+                  blocActu += '</div></div></div><div class="d-flex justify-content-end"><a href="/actualites" class="voir_tout mt-0">Voir toute les actualités</a></div></div>';
                   div.innerHTML = blocActu;
                 } else {
                   
@@ -89,12 +88,8 @@
             xhr.onloadend = function () {
               
               $('#carousel_actualites').slick({
-                slidesToShow: 4,
-                slidesToScroll: 1,
-                arrows: true,
-                dots: true,
-                autoplay: true,
-                autoplaySpeed: 4000,
+                slidesToShow: 5,
+                
                 customPaging: function (slider, i) {
                   // this example would render "tabs" with titles
                   return '<i class="fa-solid fa-circle"></i>';

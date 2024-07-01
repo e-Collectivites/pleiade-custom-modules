@@ -1,0 +1,235 @@
+<?php
+
+function guide_utilisateur_pleiade_install()
+{
+  $existing_type = \Drupal\node\Entity\NodeType::load('guide_utilisateur');
+
+  if (!$existing_type) {
+    // Le type de contenu n'existe pas, le créer.
+    $news_type = \Drupal\node\Entity\NodeType::create([
+      'type' => 'guide_utilisateur',
+      'name' => 'Guide utilisateur',
+      'description' => 'liste des guides utilisateurs.',
+      'display_submitted' => TRUE,
+      'preview_mode' => 'default',
+      'help' => '',
+    ]);
+    $news_type->save();
+
+
+    // Ajouter un champ 'description'.
+    $field_categorie_du_guide = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_categorie_du_guide',
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'settings' => [
+        'allowed_values' => [
+          'e_administration' => 'E-ADMINISTRATION',
+          'logiciels_metiers' => 'LOGICIELS METIERS',
+          'confiance_numerique' => 'CONFIANCE NUMERIQUE',
+          'ecole_numerique' => 'ECOLE NUMERIQUE',
+        ],
+      ],
+    ]);
+    $field_categorie_du_guide->save();
+
+    $field_categorie_du_guide_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_categorie_du_guide,
+      'bundle' => 'guide_utilisateur',
+      'label' => 'Catégorie du guide',
+      'required' => TRUE,
+      // Spécifier le format de texte complet HTML.
+      'settings' => [
+        'text_processing' => 0,
+      ],
+    ]);
+    $field_categorie_du_guide_instance->save();
+
+
+    $body = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'body',
+      'entity_type' => 'node',
+      'type' => 'text_with_summary', // Utiliser le type 'list_string' pour une liste de chaînes.
+    ]);
+    $body->save();
+
+    $body_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $body,
+      'bundle' => 'guide_utilisateur',
+      'label' => 'Description',
+      'required' => FALSE,
+    ]);
+    $body_instance->save();
+
+
+    $field_image_du_guide = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_image_du_guide',
+      'entity_type' => 'node',
+      'type' => 'image',
+    ]);
+    $field_image_du_guide->save();
+
+    $field_image_du_guide_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_image_du_guide,
+      'bundle' => 'guide_utilisateur',
+      'label' => 'Image du guide',
+      'required' => FALSE,
+    ]);
+    $field_image_du_guide_instance->save();
+
+    $field_nom_editeur = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_nom_editeur',
+      'entity_type' => 'node',
+      'type' => 'string',
+    ]);
+    $field_nom_editeur->save();
+
+    $field_nom_editeur_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_nom_editeur,
+      'bundle' => 'guide_utilisateur',
+      'label' => "Nom de l'éditeur",
+      'required' => FALSE,
+    ]);
+    $field_nom_editeur_instance->save();
+
+
+    $field_pdf_du_guide = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_pdf_du_guide',
+      'entity_type' => 'node',
+      'type' => 'file',
+    ]);
+    $field_pdf_du_guide->save();
+
+    $field_pdf_du_guide_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_pdf_du_guide,
+      'bundle' => 'guide_utilisateur',
+      'label' => "Pdf du guide",
+      'required' => FALSE,
+    ]);
+    $field_pdf_du_guide_instance->save();
+
+    $field_sous_categorie_du_guide = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_sous_categorie_du_guide',
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'settings' => [
+        'allowed_values' => [
+          'pastell' => 'PASTELL',
+          'parapheur' => 'PARAPHEUR',
+        ],
+      ],
+    ]);
+    $field_sous_categorie_du_guide->save();
+
+    $field_sous_categorie_du_guide_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_sous_categorie_du_guide,
+      'bundle' => 'guide_utilisateur',
+      'label' => "Sous catégorie du guide (ID LDAP)",
+      'required' => FALSE,
+    ]);
+    $field_sous_categorie_du_guide_instance->save();
+
+
+    $field_sous_titre = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_sous_titre',
+      'entity_type' => 'node',
+      'type' => 'string',
+    ]);
+    $field_sous_titre->save();
+
+    $field_sous_titre_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_sous_titre,
+      'bundle' => 'guide_utilisateur',
+      'label' => "Sous titre",
+      'required' => FALSE,
+    ]);
+    $field_sous_titre_instance->save();
+
+    $field_type_de_guide = \Drupal\field\Entity\FieldStorageConfig::create([
+      'field_name' => 'field_type_de_guide',
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'settings' => [
+        'allowed_values' => [
+          'video' => 'Vidéo',
+          'pdf' => 'PDF',
+          'texte' => 'Texte',
+        ],
+      ],
+    ]);
+    $field_type_de_guide->save();
+
+    $field_type_de_guide_instance = \Drupal\field\Entity\FieldConfig::create([
+      'field_storage' => $field_type_de_guide,
+      'bundle' => 'guide_utilisateur',
+      'label' => "Type de guide",
+      'required' => FALSE,
+    ]);
+    $field_type_de_guide_instance->save();
+
+
+    // Activer les champs sur le formulaire d'affichage du type de contenu.
+    $entity_display_repository = \Drupal::service('entity_display.repository');
+    $form_display = $entity_display_repository->getFormDisplay('node', 'guide_utilisateur', 'default');
+
+    // Activer l'affichage des champs appropriés.
+    $form_display->setComponent('field_categorie_du_guide', ['type' => 'options_select']);
+    $form_display->setComponent('body', ['type' => 'text_textarea_with_summary']);
+    $form_display->setComponent('field_image_du_guide', ['type' => 'image_image']);
+    $form_display->setComponent('field_nom_editeur', ['type' => 'string_textfield']);
+    $form_display->setComponent('field_pdf_du_guide', ['type' => 'file_generic']);
+    $form_display->setComponent('field_sous_categorie_du_guide', ['type' => 'options_select']);
+    $form_display->setComponent('field_sous_titre', ['type' => 'string_textfield']);
+    $form_display->setComponent('field_type_de_guide', ['type' => 'options_select']);
+
+    $form_display->save();
+    // Vider le cache pour appliquer les changements.
+    drupal_flush_all_caches();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function guide_utilisateur_pleiade_uninstall()
+{
+ // Supprimer tous les nœuds de type 'guide_utilisateur'.
+ $query = \Drupal::entityQuery('node')
+ ->condition('type', 'guide_utilisateur')
+ ->accessCheck(FALSE); // Désactiver les contrôles d'accès pour la désinstallation.
+$nids = $query->execute();
+
+foreach ($nids as $nid) {
+ $node = \Drupal\node\Entity\Node::load($nid);
+ if ($node) {
+   $node->delete();
+ }
+}
+
+// Vérifier si les champs existent avant de tenter de les supprimer.
+$fields = [
+ 'field_categorie_du_guide',
+ 'body',
+ 'field_image_du_guide',
+ 'field_nom_editeur',
+ 'field_pdf_du_guide',
+ 'field_sous_categorie_du_guide',
+ 'field_sous_titre',
+ 'field_type_de_guide',
+];
+
+foreach ($fields as $field_name) {
+ if ($field_storage = \Drupal\field\Entity\FieldStorageConfig::loadByName('node', $field_name)) {
+   $field_storage->delete();
+ }
+}
+
+// Supprimer le type de contenu.
+if ($node_type = \Drupal::entityTypeManager()->getStorage('node_type')->load('guide_utilisateur')) {
+ $node_type->delete();
+}
+
+// Vider le cache pour appliquer les changements.
+\Drupal::entityTypeManager()->clearCachedDefinitions();
+drupal_flush_all_caches();
+}
