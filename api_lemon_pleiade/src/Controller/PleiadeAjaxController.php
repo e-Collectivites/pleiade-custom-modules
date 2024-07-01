@@ -48,6 +48,7 @@ class PleiadeAjaxController extends ControllerBase
 
           $return['groupes'] .= ' dpt-'.$dpt[1].',';
           setcookie('departement', $dpt[1], time() + 36000, '/');
+          setcookie('collectivite', $dpt[0], time() + 3600, '/');
         }
       }
       $return['groups'] = $return['groupes'];

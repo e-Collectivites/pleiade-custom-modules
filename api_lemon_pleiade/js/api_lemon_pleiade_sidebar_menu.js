@@ -34,7 +34,6 @@
           xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"));
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.onload = function () {
-            console.log(xhr.status)
             if (xhr.status === 200) {
               var donnees = JSON.parse(xhr.responseText);
               
@@ -65,25 +64,30 @@
                     case 'Mes applications':
                       iconCategory = '<i class="fa-solid fa-star"></i>'
                       break;
+                    case 'Assistance':
+                      iconCategory = '<i class="fa-solid fa-handshake-angle"></i>'
+                      break;
+                    case 'Notre offre de services':
+                      iconCategory = '<i class="fa-solid fa-briefcase"></i>'
+                      break;
                     default:
                       break;
                   }
                   var categorie =  donnees.myapplications[i].Category
                   menuHtml +=
                     '<div id="'
-                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap has-arrow collapsed ' 
-                     + (categorie == "E-administration" ? "e_admin" : "") +
-                    '" data-bs-toggle="collapse" data-bs-target="#collapse' +
-                    i +
+                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap ' 
+                     + (categorie == "E-administration" ? "e_admin" : "") + (categorie !== "E-administration" ? "has-arrow collapsed" : "") +
+                    '"' + (categorie !== "E-administration" ? ' data-bs-toggle="collapse" data-bs-target="#collapse'+ i : "") +
                     '" aria-expanded=" false" aria-controls="collapse' +
                     i +
                     '">' + iconCategory + '<span class="hide-menu d-flex align-items-center">' +
-                    categorie +
+                    categorie + 
                     (categorie == "E-administration" ? "<span class='pastille_eadministration'></span>" : "") +
                     (categorie == "Collaboratif" ? "<span class='pastille_collab'></span>" : "") +
                     '</span></div><div id="collapse' +
                     i +
-                    '" class="accordion-collapse collapse" aria-labelledby="headingOne"><div class="accordion-body">';
+                    '"'+(categorie !== "E-administration" ? 'class="accordion-collapse collapse"' : "") +'aria-labelledby="headingOne"><div class="accordion-body">';
 
                   for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
                     // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
@@ -130,6 +134,8 @@
                           Icon +
                           '<span class="hide-menu px-2 d-flex align-items-center">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
+                          (temp[0].AppTip == "signature_electronique" ? '<span id="pastille_parapheur"></span>' : "")
+                          + 
                           "<span id='pastille_" + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + "'></span></span></span>";
                       }
                     } else {
@@ -142,6 +148,8 @@
                           Icon +
                           '<span class="hide-menu px-2">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
+                          (temp[0].AppTip == "relation_usager" ? '<span id="pastille_pluriel"></span>' : "")
+                          + 
                           " </span></a>";
                       } else {
                         menuHtml += '<span class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
@@ -181,16 +189,16 @@
       } // fin exlude admin pages
       $(document).ready(function () {
         setTimeout(function () {
-          if ($('body').hasClass('path-nos-formations') || $('body').hasClass('path-nos-solutions') 
-          || $('body').hasClass('path-nos-guides-utilisateurs')
-          || $('body').hasClass('page-node-type-formations')
-          || $('body').hasClass('page-node-type-guide-utilisateur')
-          || $('body').hasClass('page-node-type-solutions') ||
-          ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
+          if ($('body').hasClass('path-nos-guides-utilisateurs') || $('body').hasClass('page-node-type-guide-utilisateur')) {
             $('#collapse3').addClass('show');
           }
           if ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-de-visio-form')) {
             $('#collapse2').addClass('show');
+          }
+          if ($('body').hasClass('path-nos-formations') || 
+          $('body').hasClass('path-nos-solutions') || $('body').hasClass('page-node-type-formations')
+          || $('body').hasClass('page-node-type-solutions') || ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
+            $('#collapse4').addClass('show');
           }
 
         }, 1100);

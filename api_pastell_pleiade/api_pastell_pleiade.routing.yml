@@ -31,3 +31,11 @@ api_pastell_pleiade.pastell_docs_lots:
     _title: 'Pastell : Envoi de documents en lots'
   requirements:
     _access: 'TRUE'
+
+api_pastell_pleiade.pastell_change_status:
+  path: '/pastell/change_status_doc'
+  defaults:
+    _form: '\Drupal\api_pastell_pleiade\Form\PleiadePastellChangStatusDoc'
+    _title: 'Pastell : Changement du statut de doc'
+  requirements:
+    _access: 'TRUE'

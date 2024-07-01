@@ -23,8 +23,8 @@
                   
                   var addBadges = document.querySelector(".fa-users");
                   var echangersurlerseausocial = document.querySelector("#echangersurlerseausocial");
-                  var Notifs = createErrorBadge("all_notifs", total);
-                  var Notifs1 = createErrorBadge("all_notifs", total);
+                  var Notifs = createInfoBadge("all_notifs", total);
+                  var Notifs1 = createInfoBadge("all_notifs", total);
 
                   var link_humhub = document.querySelector(".pastille_collab");
 
@@ -34,9 +34,10 @@
                     echangersurlerseausocial.appendChild(Notifs1);
                   }
 
-                  function createErrorBadge(label, count) {
+                  function createInfoBadge(label, count) {
                     var errorDiv = document.createElement("div");
                     errorDiv.classList.add("pastille");
+                    errorDiv.classList.add("bg-info");
                     errorDiv.textContent = count;
                     errorDiv.setAttribute("data-label", label);
                     return errorDiv;

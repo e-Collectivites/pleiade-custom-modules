@@ -42,7 +42,7 @@ class PleiadePastellDocLotsForm extends ConfigFormBase
                                 
                                 $sstypes = ecv_getsoustype($data);
                                 
-                                
+                                \Drupal::logger('api_pastell_pleiade')->info('Sous-type parapheur: @cookie', ['@cookie' => $sstype]);
                                 if($sstypes == null || $sstypes['status'] == 'error'){
                                         $suppr = ecv_suppr($id_e, $id_d->id_d);
                                         \Drupal::messenger()->addError($this->t('Veuillez selectionner une collectivité qui possède des sous-types i-parapheur'));        

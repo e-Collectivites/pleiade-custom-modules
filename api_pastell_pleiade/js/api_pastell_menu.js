@@ -6,7 +6,7 @@
       if (drupalSettings.api_pastell_pleiade.field_pastell_flux_url) {
 
         var url_pastell = drupalSettings.api_pastell_pleiade.field_pastell_url
-        
+
         function getCookie(name) {
           // Récupérer tous les cookies
           const cookies = document.cookie.split(';');
@@ -31,8 +31,8 @@
         }
 
         const userGroupsTempstore = decodeURIComponent(getCookie('groups'));
-        
-       
+
+
         var xhr = new XMLHttpRequest();
         xhr.open("GET", Drupal.url("v1/api_pastell_pleiade/pastell_flux_query"));
         xhr.responseType = "json";
@@ -43,7 +43,8 @@
             var menu_actes = document.getElementById('actes'),
               menu_convocations = document.getElementById('convocations'),
               menu_doc_a_signer = document.getElementById('signature_electronique'),
-              menu_helios = document.getElementById('flux_financier');
+              menu_helios = document.getElementById('flux_financier'),
+              menu_urbanisme = document.getElementById('urbanisme');
             var aDelete = document.querySelectorAll('.sub_menu_eadmin');
             for (var i = 0; i < aDelete.length; i++) {
               aDelete[i].parentNode.removeChild(aDelete[i]);
@@ -53,9 +54,9 @@
               var item = response[key];
 
               var itemName = item.nom;
-              
+
               switch (itemName) {
-                
+
                 case 'Actes':
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
@@ -100,7 +101,7 @@
                   break;
 
                 case 'Convocation':
-                  
+
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
@@ -126,7 +127,7 @@
                   nouvelElement.innerHTML = menu_a_remplir
                   if (menu_convocations && !document.getElementById('collapseconvocations')) {
                     menu_convocations.insertAdjacentElement('afterend', nouvelElement);
-                    
+
                   }
 
                   break;
@@ -188,15 +189,16 @@
                                 <span class="hide-menu px-2">Envoyer en lots au parapheur</span></a>'
                     }
                   }
-                  if (userGroupsTempstore.includes('parapheur85b') || 
-                  userGroupsTempstore.includes('parapheur72')|| 
-                  userGroupsTempstore.includes('parapheur53')|| 
-                  userGroupsTempstore.includes('parapheur44')|| 
-                  userGroupsTempstore.includes('parapheur49')|| 
-                  userGroupsTempstore.includes('parapheur')) {
+
+                  if (userGroupsTempstore.includes('parapheur85b') ||
+                    userGroupsTempstore.includes('parapheur72') ||
+                    userGroupsTempstore.includes('parapheur53') ||
+                    userGroupsTempstore.includes('parapheur44') ||
+                    userGroupsTempstore.includes('parapheur49') ||
+                    userGroupsTempstore.includes('parapheur')) {
                     var a_traiter = ''
                     if (localStorage.getItem('docs_parapheur') !== '0') {
-                      
+
                       a_traiter = '(' + localStorage.getItem('docs_parapheur') + ')'
                     }
                     else {
@@ -204,18 +206,18 @@
                     }
                     var url_parapheur = ""
                     var departement = decodeURIComponent(getCookie('departement'));
-                              
-                                if (departement == '85b'){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '85.ecollectivites.fr'
-                                }
-                                else if(departement == '85' || departement == 'null'){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '.ecollectivites.fr'
-                                }
-                                else{
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + departement +'.ecollectivites.fr'
-                                }
+
+                    if (departement == '85b') {
+                      url_parapheur = drupalSettings.api_parapheur_pleiade.field_parapheur_url + '85.ecollectivites.fr'
+                    }
+                    else if (departement == '85' || departement == 'null') {
+                      url_parapheur = drupalSettings.api_parapheur_pleiade.field_parapheur_url + '.ecollectivites.fr'
+                    }
+                    else {
+                      url_parapheur = drupalSettings.api_parapheur_pleiade.field_parapheur_url + departement + '.ecollectivites.fr'
+                    }
                     menu_a_remplir += '\
-                        <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+ url_parapheur +'" aria-expanded="false">\
+                        <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+ url_parapheur + '" aria-expanded="false">\
                         <span class="hide-menu px-2">Signer/viser sur le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
                   }
                   if (userGroupsTempstore.includes('pastell-docasigner') && drupalSettings.path.isFront) {
@@ -228,11 +230,32 @@
                         <a id="voir_docs" href="/node?goToDatatable=true&type=parapheur" class="waves-effect waves-dark" title=Voir les documents à faire signer" aria-expanded="false">\
                         <span class="hide-menu px-2">Voir les documents à faire signer</span></a>';
                   }
-
+                  if (userGroupsTempstore.includes('opensign')) {
+                    menu_a_remplir += '\
+                                <a class="waves-effect waves-dark" title="Gérer les signatures à la volée" href="https://sign.ecollectivites.fr" aria-expanded="false">\
+                                <span class="hide-menu px-2">Gérer les signatures à la volée</span></a>'
+                  }
                   nouvelElement.innerHTML = menu_a_remplir
-                  
-                  if (menu_doc_a_signer ) {
+
+                  if (menu_doc_a_signer) {
                     menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
+                  }
+
+                  break;
+                case "Document d'autorisation d'urbanisme":
+                  var liens;
+                  nouvelElement = document.createElement('div');
+                  nouvelElement.classList.add('sub_menu_eadmin');
+                  nouvelElement.classList.add('collapse');
+                  nouvelElement.setAttribute('id', 'collapseurbanisme')
+                  if (userGroupsTempstore.includes('pastell-urbanisme')) {
+                          liens = '\
+                  <span class="waves-effect waves-dark" title="Voir les documents d\'urbanisme" id="voir_urba" aria-expanded="false">\
+                  <span class="hide-menu px-2">Voir les documents d\'urbanisme</span></span>';
+                  }
+                  nouvelElement.innerHTML = liens
+                  if (menu_urbanisme) {
+                    menu_urbanisme.insertAdjacentElement('afterend', nouvelElement);
                   }
 
                   break;
@@ -240,7 +263,7 @@
 
               menu_a_remplir += '</div></div>';
 
-             
+
             }
           }
         }

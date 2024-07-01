@@ -111,7 +111,6 @@
                                 menu_a_remplir += '\
                                     <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+url_parapheur+'" aria-expanded="false">\
                                     <span class="hide-menu px-2">Signer/viser sur le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
-                                    console.log(url_parapheur)
                             nouvelElement.innerHTML = menu_a_remplir
                             if (menu_doc_a_signer) {
                                 menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
