@@ -49,7 +49,7 @@
                   // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
                   var iconCategory = ''
                   switch (donnees.myapplications[i].Category) {
-                    case 'E-administration':
+			case 'E-administration':
                       iconCategory = '<i class="fa-solid fa-people-arrows"></i>'
                       break;
                     case 'Documents':
@@ -64,30 +64,48 @@
                     case 'Mes applications':
                       iconCategory = '<i class="fa-solid fa-star"></i>'
                       break;
-                    case 'Assistance':
-                      iconCategory = '<i class="fa-solid fa-handshake-angle"></i>'
+                    case 'Territoire Numérique Ouvert - Prod':
+                      iconCategory = '<i class="fa-solid fa-people-group"></i>'
                       break;
-                    case 'Notre offre de services':
-                      iconCategory = '<i class="fa-solid fa-briefcase"></i>'
+                    case 'Territoire Numérique Ouvert - Test':
+                      iconCategory = '<i class="fa-solid fa-people-group"></i>'
                       break;
+                    case 'Applications PROD':
+                      iconCategory = '<i class="fa-solid fa-list"></i>'
+                      break;
+                    case 'Applications TEST':
+                      iconCategory = '<i class="fa-solid fa-list"></i>'
+                      break;
+                    case 'Documentation':
+                      iconCategory = '<i class="fa-solid fa-file"></i>'
+                      break;
+                    case 'Sécurité':
+                      iconCategory = '<i class="fa-solid fa-shield-halved"></i>'
+                      break;
+	            case 'Nos services':
+                      iconCategory = '<i class="fa-regular fa-handshake"></i>'
+                      break;
+		case 'Administration':
+		iconCategory = '<i class="fa-regular fa-gear"></i>'
                     default:
                       break;
                   }
                   var categorie =  donnees.myapplications[i].Category
                   menuHtml +=
                     '<div id="'
-                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap ' 
-                     + (categorie == "E-administration" ? "e_admin" : "") + (categorie !== "E-administration" ? "has-arrow collapsed" : "") +
-                    '"' + (categorie !== "E-administration" ? ' data-bs-toggle="collapse" data-bs-target="#collapse'+ i : "") +
+                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap has-arrow collapsed ' 
+                     + (categorie == "E-administration" ? "e_admin" : "") +
+                    '" data-bs-toggle="collapse" data-bs-target="#collapse' +
+                    i +
                     '" aria-expanded=" false" aria-controls="collapse' +
                     i +
                     '">' + iconCategory + '<span class="hide-menu d-flex align-items-center">' +
-                    categorie + 
+                    categorie +
                     (categorie == "E-administration" ? "<span class='pastille_eadministration'></span>" : "") +
                     (categorie == "Collaboratif" ? "<span class='pastille_collab'></span>" : "") +
                     '</span></div><div id="collapse' +
                     i +
-                    '"'+(categorie !== "E-administration" ? 'class="accordion-collapse collapse"' : "") +'aria-labelledby="headingOne"><div class="accordion-body">';
+                    '" class="accordion-collapse collapse" aria-labelledby="headingOne"><div class="accordion-body">';
 
                   for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
                     // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
@@ -134,8 +152,6 @@
                           Icon +
                           '<span class="hide-menu px-2 d-flex align-items-center">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
-                          (temp[0].AppTip == "signature_electronique" ? '<span id="pastille_parapheur"></span>' : "")
-                          + 
                           "<span id='pastille_" + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + "'></span></span></span>";
                       }
                     } else {
@@ -148,8 +164,6 @@
                           Icon +
                           '<span class="hide-menu px-2">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
-                          (temp[0].AppTip == "relation_usager" ? '<span id="pastille_pluriel"></span>' : "")
-                          + 
                           " </span></a>";
                       } else {
                         menuHtml += '<span class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
@@ -189,18 +203,23 @@
       } // fin exlude admin pages
       $(document).ready(function () {
         setTimeout(function () {
-          if ($('body').hasClass('path-nos-guides-utilisateurs') || $('body').hasClass('page-node-type-guide-utilisateur')) {
+          /*if (
+          || $('body').hasClass('path-nos-guides-utilisateurs')
+          || $('body').hasClass('page-node-type-guide-utilisateur')
+          ||($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
             $('#collapse3').addClass('show');
           }
+
           if ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-de-visio-form')) {
             $('#collapse2').addClass('show');
           }
-          if ($('body').hasClass('path-nos-formations') || 
-          $('body').hasClass('path-nos-solutions') || $('body').hasClass('page-node-type-formations')
-          || $('body').hasClass('page-node-type-solutions') || ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
-            $('#collapse4').addClass('show');
-          }
-
+*/
+	if ($('body').hasClass('path-nos-formations') || $('body').hasClass('path-nos-solutions')
+	|| $('body').hasClass('page-node-type-formations')|| $('body').hasClass('page-node-type-solutions') ||
+        ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) 
+{
+$('#collapse6').addClass('show');
+}
         }, 1100);
         $('#sidebarnav').on('click', '.nav-small-cap', function () {
           var target = $(this).attr('data-bs-target');

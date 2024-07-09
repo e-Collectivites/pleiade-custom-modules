@@ -13,7 +13,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    margin: 0.5em 0;
+    margin: 1.5em 0 0.2em;
     text-transform: uppercase;
     color: var(--global-color);
 
@@ -129,7 +129,6 @@ body[data-theme=dark] .nav-small-cap, body[data-theme=dark] #menuLemon .sidebar-
     padding: 0.2em 0 !important;
     border: unset !important;
     justify-content: center;
-    display: none;
 }
 
 #main-wrapper[data-layout=vertical][data-sidebartype=full] .light-logo {
@@ -173,7 +172,7 @@ div.long-category span.hide-menu {
 }
 
 #menuLemon .sidebar-link, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link {
-    padding: 2px 0 0 5px;
+    padding: 2px 0 0 15px;
     display: flex;
     /* white-space: nowrap; */
     align-items: center;
@@ -205,8 +204,8 @@ div.long-category span.hide-menu {
 
 .path-nos-solutions a[href="/nos-solutions"], 
 .path-nos-formations a[href="/nos-formations"],
-.path-nos-formations #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse4"],
-.path-nos-solutions #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse4"]
+.path-nos-formations #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse6"],
+.path-nos-solutions #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse6"]
 {
     color: #fbbd52!important;
 }

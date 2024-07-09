@@ -32,65 +32,56 @@
               var linkEntitie =
                 '<div id="zimbra_mail" class="col-lg-12 mb-2">\
                                             <div class="card">\
-                                              <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                                              <div class="card-header rounded-top bg-white rounded-top">\
                                                 <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
                                               </div>\
                                                     <div class="card-body">\
-                                                      <div class="scroll_on_table">\
-                                                        <table class="table mb-0">\
-                                                        <tbody>';
+                                                      <div class="scroll_on_table">';
 
-//              console.log(donnees);
-              var linkEntities = "";
+              console.log(donnees);           
               if (donnees.userData.Body.SearchResponse.c) {
                 for (
                   var i = 0;
                   i < donnees.userData.Body.SearchResponse.c.length;
                   i++
                 ) {
-const eArray = donnees.userData.Body.SearchResponse.c[i].e;
+                  const eArray = donnees.userData.Body.SearchResponse.c[i].e;
                   // var mail_expediteur = donnees.userData.Body.SearchResponse.c[i].e[1].a
                   var id_expediteur =
-                    donnees.userData.Body.SearchResponse.c[i].id;
+                    donnees.userData.Body.SearchResponse.c[i].m[0].id;
                   //------------------------------------------------------
                   //  ON CONVERTIT LA DATE DEPUIS TIMESTAMP ET ON RECUPERE HEURE / MINUTES
                   //------------------------------------------------------
                   var hour_mail =
                     donnees.userData.Body.SearchResponse.c[i].d / 1000;
                   var objectDate = new Date(hour_mail * 1000);
-
-                  linkEntitie +=
-                    '<tr class="d-inline-flex mail_content w-100" mail-expe="' +
-                    donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].a +
+                  linkEntitie += '\
+                    <a alt="constulter le mail" target="_blank" href="' + donnees.domainEntry.url +
+                    "modern/email/Inbox/message/" + id_expediteur +'" class="px-4 d-inline-flex justify-content-between mail_content w-100" mail-expe="'
+                    +
+                    donnees.userData.Body.SearchResponse.c[i].e[eArray.length - 1].a
+                    +
                     '">\
-                                                <th class="col d-flex align-items-center profile-picture"></th>\
-                                                <th class="d-flex justify-content-center expediteur align-items-center">' +
-                   (donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].p ? donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].p : donnees.userData.Body.SearchResponse.c[i].e[eArray.length -1].a) +
-
-                    '</th>\
-                                                <th scope="col" class="content-mail">\
-                                                    <span class="d-block fw-bold">' +
-                    donnees.userData.Body.SearchResponse.c[i].su +
-                    '</span>\
-                                                    <span class="d-block fw-light">' +
-                    donnees.userData.Body.SearchResponse.c[i].fr.substr(0, 130) +
-                    "...  " +
-                    '</span>\
-                                                </th>\
-                                                <th class="col mailTime d-flex align-items-center" class="fw-bold">' +
-                    String(objectDate.getHours()).padStart(2, "0") +
-                    ":" +
-                    String(objectDate.getMinutes()).padStart(2, "0") +
-                    '</th>\
-                                                <th class="col readMail d-flex align-items-center">\
-                                                    <a class="hover-zoom" alt="constulter le mail" target="_blank" href="' +
-                    donnees.domainEntry +
-                    "modern/email/Inbox/conversation/" +
-                    id_expediteur +
-                    '"><i class="fa fa-xl fa-solid fa-envelope" aria-hidden="true"></i></a>\
-                                                </th>\
-                                            </tr>\
-                                            ';
+                      <div class="d-flex align-items-center profile-picture">\
+                      </div>\
+                      <div class="d-flex justify-content-center expediteur align-items-center">' +
+                    (donnees.userData.Body.SearchResponse.c[i].e[eArray.length - 1].p ? donnees.userData.Body.SearchResponse.c[i].e[eArray.length - 1].p : donnees.userData.Body.SearchResponse.c[i].e[eArray.length - 1].a) +
+                      '</div>\
+                      <div class="d-flex flex-column w-50">\
+                        <span class="d-block fw-bold">' +
+                        donnees.userData.Body.SearchResponse.c[i].su +
+                        '</span>\
+                                                        <span class="d-block fw-light">' +
+                        donnees.userData.Body.SearchResponse.c[i].fr.substr(0, 130) +
+                        "...  " +
+                        '</span>\
+                      </div>\
+                      <div class="mailTime d-flex align-items-center fw-bold">' +
+                      String(objectDate.getHours()).padStart(2, "0") +
+                      ":" +
+                      String(objectDate.getMinutes()).padStart(2, "0") +
+                      '</div>\
+                    </a><hr>';
                 }
               } else {
                 var linkEntitie =
@@ -108,7 +99,7 @@ const eArray = donnees.userData.Body.SearchResponse.c[i].e;
               }
             }
             linkEntitie +=
-              "</tbody></table></div>\
+              "</div>\
                 </div>\
                 </div>\
             </div>\

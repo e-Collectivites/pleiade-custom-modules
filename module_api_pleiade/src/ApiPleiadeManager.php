@@ -5,7 +5,7 @@ namespace Drupal\module_api_pleiade;
 use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-
+use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * Basic manager of module.
@@ -54,6 +54,12 @@ class ApiPleiadeManager
     if ($moduleHandler->moduleExists('module_actu_pleiade')) {
       $this->settings_actu = \Drupal::config('module_actu_pleiade.settings');
     }
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      $this->settings_glpi = \Drupal::config('api_glpi_pleiade.settings');
+    }
+    if ($moduleHandler->moduleExists('api_zimbra_pleiade')) {
+      $this->settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
+    }
   }
 
   /**
@@ -69,7 +75,7 @@ class ApiPleiadeManager
    * @return array
    *   An associate array with respond data.
    */
-  private function executeCurl($endpoint, $method, $inputs, $api, $application)
+  private function executeCurl($endpoint, $method, $inputs, $api, $application, $zimbra_mail, $zimbra_token, $zimbra_domain)
   {
 
     ////////////////////////////////////////////////////////
@@ -187,20 +193,9 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'parapheur') {
 
-      $departement = $_COOKIE["departement"];
-      if($departement == "85b"){
-          $nbDpt = '85';
-      }
-      elseif($departement == "85"){
-          $nbDpt = '';
-      }
-      else{
-          $nbDpt = $departement;
-      }
-
       $current_user = \Drupal::currentUser();
       if ($current_user->id() != 0) {
-        $username = $current_user->getAccountName();
+        $username = $current_user->getEmail();
       }
       $client = new Client([
         'verify' => false, // Désactiver la vérification SSL
@@ -208,7 +203,7 @@ class ApiPleiadeManager
 
       try {
         // Construire l'URL de la première requête
-        $IP_request_url = $this->settings_parapheur->get('field_parapheur_url') . $nbDpt.'.ecollectivites.fr/' . $this->settings_parapheur->get('field_parapheur_auth_url') . $username . '/forceLogin';
+$IP_request_url = 'https://parapheurv5.sitiv.fr/auth/realms/api/protocol/openid-connect/token';
         // Logger l'URL de la première requête
         \Drupal::logger('api_parapheur_pleiade')->info('Requete iParapheur API : @ReqIP', ['@ReqIP' => $IP_request_url]);
 
@@ -242,17 +237,188 @@ class ApiPleiadeManager
       }
 
     }
+    ////////////////////////////////////////////////////////
+    //   REQUETE API ZIMBRA RECUPERATION AGENDA / MAILS   //
+    ////////////////////////////////////////////////////////
+    elseif ($application == 'zimbra') {
+
+      $sessionCookieValue = $_COOKIE['lemonldap'];
+      // Get the user's email and other required data
+      $value1 = $zimbra_mail;
+      $value2 = 'name';
+      $value3 = '0';
+      $value4 = time() * 1000; // Convert to milliseconds as the original code did
+      $key = $zimbra_token;
+      $data = $value1 . "|" . $value2 . "|" . $value3 . "|" . $value4;
+      $hmac = hash_hmac('sha1', $data, $key);
+      $preauthURL = $zimbra_domain . "service/preauth?account=" . $value1 . "&timestamp=" . $value4 . "&expires=0&preauth=" . $hmac;
+ 	\Drupal::logger('api_zimbra_pleiade')->info($preauthURL);
+      ob_start();
+      try {
+        $clientRequest = $this->client->request('GET', $preauthURL, [
+          'headers' => [
+            'Content-Type' => 'application/json',
+            'Cookie' => 'lemonldap=' . $sessionCookieValue,
+          ],
+          'debug' => true,
+          'allow_redirects' => false,
+        ]);
+        $responseToken = $clientRequest->getBody()->getContents();
+        $debugInfo = ob_get_clean();
+      } catch (RequestException $e) {
+        \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      }
+      $pattern = '/Set-Cookie: ZM_AUTH_TOKEN=([^;]+)/';
+      if (preg_match($pattern, $debugInfo, $matches)) {
+        $zmAuthToken = $matches[1];
+        $apiEndpoint = $zimbra_domain . 'service/soap';
+        $requestXml =
+          '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+                    <soap:Header>
+                        <context xmlns="urn:zimbra">
+                            <format type="js"/>
+                            <authToken>' . $zmAuthToken . '</authToken>
+                        </context>
+                    </soap:Header>
+                    <soap:Body>' . $endpoint . '</soap:Body>
+                </soap:Envelope>';
+
+        try {
+          $clientRequest = $this->client->request('POST', $apiEndpoint, [
+            'headers' => [
+              'Content-Type' => 'application/soap+xml',
+              'Cookie' => 'lemonldap=' . $sessionCookieValue,
+            ],
+            'body' => $requestXml,
+          ]);
+          $responseSecond = $clientRequest->getBody()->getContents();
+        } catch (RequestException $e) {
+          \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+        }
+
+        $responseJson[] = Json::decode($responseSecond);
+
+        if (strpos($endpoint, 'types="appointment"') !== false) {
+          foreach ($responseJson[0]['Body']['SearchResponse']['appt'] as &$appointment) {
+
+            // Check if 'recur' exists in the appointment
+            if (isset($appointment['recur']) && $appointment['recur'] == 1) {
+              $id_appointment = $appointment['id'];
+
+              $ApptApiEndpoint = $zimbra_domain . 'service/soap';
+              $ApptRequestXml =
+                '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+                      <soap:Header>
+                          <context xmlns="urn:zimbra">
+                              <format type="js"/>
+                              <authToken>' . $zmAuthToken . '</authToken>
+                          </context>
+                      </soap:Header>
+                      <soap:Body><GetAppointmentRequest xmlns="urn:zimbraMail" id="' . $id_appointment . '" sync="1"/></soap:Body>
+                  </soap:Envelope>';
+
+              try {
+                $clientRequest = $this->client->request('POST', $ApptApiEndpoint, [
+                  'headers' => [
+                    'Content-Type' => 'application/soap+xml',
+                    'Cookie' => 'lemonldap=' . $sessionCookieValue,
+                  ],
+                  'body' => $ApptRequestXml,
+                ]);
+                $responseAppt = $clientRequest->getBody()->getContents();
+              } catch (RequestException $e) {
+                \Drupal::logger('api_zimbra_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+              }
+
+              $responseApptJson = Json::decode($responseAppt);
+              $recur_detail = $responseApptJson["Body"]["GetAppointmentResponse"]["appt"][0]['inv'][0]['comp'][0]['recur'];
+
+              // Replace 'recur' with $recur_detail in the appointment
+              $appointment['recur'] = $recur_detail;
+            }
+          }
+        }
+      }
+      return ($responseJson);
+
+
+      ////////////////////////////////////////////////////////
+      //       REQUETE API glpi             
+      ////////////////////////////////////////////////////////
+
+    } elseif ($application == 'glpi') {
+
+      $url_api_glpi = $api;
+      $glpi_url = $this->settings_glpi->get('glpi_url');
+      $app_token = $this->settings_glpi->get('app_token');
+
+      // Load the current user.
+      $current_user = \Drupal::currentUser();
+
+      // Load the user entity.
+      $user = User::load($current_user->id());
+      $sessionCookieValue = $_COOKIE['lemonldap'];
+      // Check if the user entity is valid.
+      if ($user) {
+        $glpi_user_token = $user->get('field_glpi_user_token')->value;
+        if (!$glpi_user_token) {
+          \Drupal::logger('api_glpi_pleiade')->alert("User token manquant");
+          return;
+        }
+      }
+      $url1 = $glpi_url . '/apirest.php/initSession?app_token=' . $app_token . '&user_token=' . $glpi_user_token;
+      try {
+        $clientRequest = $this->client->request('POST', $url1, [
+          'headers' => [
+            'Content-Type' => 'text/plain',
+            'Cookie' => 'lemonldap=' . $sessionCookieValue,
+          ],
+        ]);
+        $response1 = $clientRequest->getBody()->getContents();
+      } catch (RequestException $e) {
+        \Drupal::logger('api_glpi_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      }
+      $data = json_decode($response1);
+      $sessionToken = $data->session_token;
+      if (substr($url_api_glpi, -7) === "/Ticket") {
+        if ($inputs) {
+          $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdown=true&sort=status&' . $inputs;
+        } else {
+          $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdowns=true&sort=status';
+        }
+      } else {
+        $url = $url_api_glpi . '?app_token=' . $app_token . '&session_token=' . $sessionToken . '&expand_dropdowns=true';
+      }
+
+      try {
+        $clientRequest = $this->client->request('GET', $url, [
+          'headers' => [
+            'Content-Type' => 'text/plain',
+            'Cookie' => 'lemonldap=' . $sessionCookieValue,
+          ],
+        ]);
+        $response = $clientRequest->getBody()->getContents();
+      } catch (RequestException $e) {
+        \Drupal::logger('api_glpi_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
+      }
+      $response_data = Json::decode($response);
+      return ($response_data);
+
+    }
+
+
+
 
     ////////////////////////////////////////////////////////
     //                                                    //
-    //       REQUETE API articles ecollectivités          //
+    //       REQUETE API articles           //
     //                                                    //
     ////////////////////////////////////////////////////////
-    elseif ($application == 'articles_ecoll') {
+	elseif ($application == 'articles_ecoll') {
       if($this->settings_actu->get('url_site')){
         if($this->settings_actu->get('flux_rss') == false){
           try {
-              $response = $this->client->request('GET', $api , []);
+              $response = $this->client->request('GET', $this->settings_actu->get('url_site') , []);
 
               // Vérifier le code de statut
               $statusCode = $response->getStatusCode();
@@ -290,9 +456,10 @@ class ApiPleiadeManager
           }
         }
         else
-        {
-          // Récupérer le contenu du flux RSS
+        {     
+     // Récupérer le contenu du flux RSS
           $rssUrl = $this->settings_actu->get('url_site');
+	
           $rssContent = file_get_contents($rssUrl);
 
           if ($rssContent === false) {
@@ -330,9 +497,36 @@ class ApiPleiadeManager
         
         // Retourner une réponse JSON
         return Json::decode($body);
-      } catch (Exception $e) {
-        return Json::decode($e->getMessage());
-      }
+    } catch (Exception $e) {
+      return Json::decode($e->getMessage());
+    }
+
+    // $headers = array(
+    //   'Content-Type: application/json',
+    //   'Authorization: Bearer ' . $inputs["token"]
+    // );
+    // $ch = curl_init();
+    // curl_setopt($ch, CURLOPT_URL, $api);
+    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Désactive la vérification du certificat SSL
+    
+    // $response = curl_exec($ch);
+    // $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    // curl_close($ch);
+    // if ($httpCode != 200) {
+    //   // Gérer les erreurs HTTP ici
+    //   $errorMessage = "Request failed with status code: {$httpCode}";
+    //   return Json::decode($errorMessage);
+    // } else {
+    //   // Retourner la réponse JSON
+    //   return Json::decode($response);
+    // }
+    
+    
+
     }
     ////////////////////////////////////////////////////////
     //                                                    //
@@ -372,6 +566,7 @@ class ApiPleiadeManager
       );
 
       // Set the cURL options
+      // $url = 'https://idtest.ecollectivites.fr/ocs/v2.php/apps/notifications/api/v2/notifications?format=json';
       $ch = curl_init();
       // Set the URL to send the request to
       curl_setopt($ch, CURLOPT_URL, $apiUrl);
@@ -407,11 +602,10 @@ class ApiPleiadeManager
    * @return array
    *   A respond data.
    */
-  public function curlGet($endpoint, $inputs, $api, $application)
+public function curlGet($endpoint, $inputs, $api, $application, $email, $token, $domain)
   {
-    return $this->executeCurl($endpoint, "GET", $inputs, $api, $application);
+    return $this->executeCurl($endpoint, "GET", $inputs, $api, $application, $email, $token, $domain);
   }
-
   /**
    * Post Request of API.
    *
@@ -428,6 +622,19 @@ class ApiPleiadeManager
     return $this->executeCurl($endpoint, "POST", $inputs, $api, $application);
   }
 
+  // //////////////////////////////////////////////////////////////
+  // //                                                          //
+  // //  FONCTIONS POUR API HUmHUB  //
+  // //                                                          //
+  // //////////////////////////////////////////////////////////////
+
+  // public function getMyNotifications()
+  // {
+  //   $endpoints = $this->settings_lemon->get('field_lemon_myapps_url'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+  //   \Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+  //   return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
+  // }
+
   //////////////////////////////////////////////////////////////
   //                                                          //
   //  FONCTIONS POUR API LEMONLDAP APPLICATION + SESSIONTIME  //
@@ -438,14 +645,14 @@ class ApiPleiadeManager
   public function searchMyApps()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_myapps_url'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-    
-    return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
+    //\Drupal::logger('api_lemon_pleiade')->info('function searchMyApps triggered !');
+    return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon', '', '', '');
   }
   public function searchMySession()
   {
     $endpoints = $this->settings_lemon->get('field_lemon_sessioninfo_url'); // Endpoint myapplications de Lemon qui renvoie les dernières connexions
-    
-    return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon');
+    //\Drupal::logger('api_lemon_pleiade')->info('function searchMySession triggered !');
+    return $this->curlGet($endpoints, [], $this->settings_lemon->get('field_lemon_url'), 'lemon', '', '', '');
   }
 
   //////////////////////////////////////////////////////////////
@@ -457,36 +664,36 @@ class ApiPleiadeManager
   public function searchMyDocs($id_e)
   {
     $endpoints = $this->settings_pastell->get('field_pastell_documents_url'); // Endpoint field_pastell_documents_url de Pastell qui renvoi la liste des documents Pastell
-    
-    return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings_pastell->get('field_pastell_limit_documents'), 'pastell');
+    //\Drupal::logger('api_pastell_pleiade')->debug('function searchMyApps triggered !');
+    return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_documents_url') . $id_e . '&limit=' . $this->settings_pastell->get('field_pastell_limit_documents'), 'pastell', '', '', '');
   }
   public function searchMyEntities()
   {
-    
-    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell');
+    //\Drupal::logger('api_pastell_pleiade')->debug('function searchMyentities triggered !');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell', '', '', '');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function searchMyFlux()
   {
-   
-    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell');
+    //\Drupal::logger('api_pastell_pleiade')->debug('function searchMyFlux triggered !');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_flux_url'), 'pastell', '', '', '');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function creationDoc($id_e)
   {
-   
-    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . "api/create-document.php&id_e=" . $id_e . "&type=document-a-signer", 'pastell');
+    //\Drupal::logger('api_pastell_pleiade')->debug('function creationDoc triggered !');
+    return $this->curlGet([], [], $this->settings_pastell->get('field_pastell_url') . "api/create-document.php&id_e=" . $id_e . "&type=document-a-signer", 'pastell', '', '', '');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function getSousTypeDoc($data)
   {
-   
-    return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "api/external-data.php", 'pastell');
+    \Drupal::logger('api_pastell_pleiade')->debug('function getSousTypeDoc triggered !');
+    return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "api/external-data.php", 'pastell', '', '', '');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
   public function postModifDoc($data)
   {
-   
+    \Drupal::logger('api_pastell_pleiade')->debug('function postModifDoc triggered !');
     return $this->curlPost([], $data, $this->settings_pastell->get('field_pastell_url') . "/api/modif-document.php", 'pastell');
     // return $this->curlGet($endpoints, [], $this->settings_pastell->get('field_pastell_url') . $this->settings_pastell->get('field_pastell_entities_url'), 'pastell' );
   }
@@ -500,27 +707,49 @@ class ApiPleiadeManager
 
   public function searchMyDesktop($dpt)
   {
-// var_dump($this->settings_parapheur->get('field_parapheur_url').$dpt.".ecollectivites.fr" . $this->settings_parapheur->get('field_parapheur_bureaux_url'));
-    return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url').$dpt.".ecollectivites.fr" . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
+    return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur', '', '', '');
   }
 
   //////////////////////////////////////////////////////////////
   //                                                          //
-  //         FONCTIONS POUR RECUPERER LES ARTICLES            //
-  //                                                          //
+  //              FONCTIONS POUR R2CUP2RER LES ARTICLES       //
+  //                          E-COLLECTIVITES                 //
   //////////////////////////////////////////////////////////////
 
 
   public function getEcollArticles()
   {
-    return $this->curlGet([], [], $this->settings_actu->get('url_site'), 'articles_ecoll');
+    return $this->curlGet([], [], 'https://ecollectivites.fr/api/v1/artics', 'articles_ecoll', '', '', '');
+  }
+
+//////////////////////////////////////////////////////////////
+  //   FONCTIONS POUR API ZIMBRA MAILS / AGENDA 
+  //////////////////////////////////////////////////////////////
+
+
+  public function searchMyMails($mail_endpoint, $email, $token, $domain)
+  {
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url'); // Endpoint mail de Zimbra configuré dans l'admin du module
+    \Drupal::logger('api_zimbra_pleiade')->info('mail endpoint: ' . $mail_endpoint);
+      return $this->curlGet($mail_endpoint, [], $this->settings_zimbra->get('field_zimbra_url'), 'zimbra', $email, $token, $domain);
+  }
+
+  public function searchMyTasks($tasks_endpoint, $email, $token, $domain)
+  {
+    // $endpoints = $this->settings_zimbra->get('field_zimbra_url');  // Endpoint mail de Zimbra configuré dans l'admin du module
+    \Drupal::logger('api_zimbra_pleiade')->info('function searchMyTasks triggered !');
+    if ($this->settings_zimbra->get('field_zimbra_for_demo')) {
+      return $this->curlGet([], [], 'https://pleiadedev.ecollectivites.fr/sites/default/files/datasets/js/calendar.json', 'zimbra');
+    } else {
+      return $this->curlGet($tasks_endpoint, [], $this->settings_zimbra->get('field_zimbra_url') . $this->settings_zimbra->get('field_zimbra_tasks'), 'zimbra', $email, $token, $domain);
+    }
   }
   //////////////////////////////////////////////////////////////
   //                                                          //
   //              FONCTIONS POUR API HUMHUB                   //
   //                                                          //
   //////////////////////////////////////////////////////////////
-  public function get_notif_humhub($token)
+ /* public function get_notif_humhub($token)
   {
     return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/notification/unseen', 'humhub');
   }
@@ -531,7 +760,7 @@ class ApiPleiadeManager
   public function get_spaces($token)
   {
     return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/space', 'humhub');
-  }
+  }*/
 
 
   //////////////////////////////////////////////////////////////
@@ -543,11 +772,45 @@ class ApiPleiadeManager
 
   public function getNextcloudNotifs()
   {
-   
+    \Drupal::logger('api_nextcloud_pleiade')->info('function getNextcloudNotifs triggered !');
     $moduleHandler = \Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('api_nextcloud_pleiade')) {
       $endpoints = $this->settings_nextcloud->get('nextcloud_endpoint_notifs'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
-      return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints . '?format=json', 'nextcloud');
+      return $this->curlGet([], [], $this->settings_nextcloud->get('nextcloud_url') . $endpoints . '?format=json', 'nextcloud', '', '', '');
+    }
+  }
+  //////////////////////////////////////////////////////////////
+  //                                                          //
+  //              FONCTIONS POUR API GLPI                     //
+  //                                                          //
+  //////////////////////////////////////////////////////////////
+
+  public function getGLPITickets()
+  {
+    \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie toutes nos apps
+      return $this->curlGet([], [], $this->settings_glpi->get('glpi_url') . '/apirest.php/' . $endpoints, 'glpi', '', '', '');
+    }
+  }
+
+  public function getStatutActorGLPI($id)
+  {
+    // \Drupal::logger('api_glpi_pleiade')->info('function getGLPITickets triggered !');
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      return $this->curlGet([], [], $this->settings_glpi->get('glpi_url') . '/apirest.php/Ticket/' . $id . '/Ticket_User', 'glpi', '', '', '');
+    }
+  }
+
+  public function getLastGLPITickets()
+  {
+    \Drupal::logger('api_glpi_pleiade')->info('function getLastGLPITickets triggered !');
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('api_glpi_pleiade')) {
+      $endpoints = $this->settings_glpi->get('endpoint_ticket'); // Endpoint myapplications de Lemon qui renvoie>
+      return $this->curlGet([], 'range=0-4', $this->settings_glpi->get('glpi_url') . '/apirest.php/' . $endpoints, 'glpi', '', '', '');
     }
   }
 

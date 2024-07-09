@@ -11,6 +11,15 @@ th.d-flex.expediteur {
 .content-mail{
 width: 480px;
 }
+.mail_content:hover{
+    color: var(--global-color)!important;
+    transform: scale(1.03);
+}
+.mail_content{
+    color: initial!important;
+    transition: transform .2s;
+} 
+
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
@@ -31,7 +40,10 @@ width: 480px;
     font-size: 1.125rem !important;
 
 }
-
+.fc .fc-toolbar.fc-header-toolbar{
+border-bottom: none!important;
+padding: 0.5rem 1.25rem;
+}
 #zimbra_mail .card {
     margin-bottom: 0 !important;
 }
@@ -156,3 +168,6 @@ body[data-theme=dark] #zimbra_block_mail_id {
     background-color: #272b34 !important;
 }
 
+[data-theme="dark"] .page-wrapper a, [data-theme="dark"] aside a{
+color: #FFF !important;
+}

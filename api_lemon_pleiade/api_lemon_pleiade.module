@@ -26,7 +26,7 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_css';
 
   // Add the JS library
-  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
+  
 
   // Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
@@ -35,7 +35,7 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_totp_url'] = $field_lemon_totp_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['user_groups'] =  $groups;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_block_id'] =  $field_lemon_block_id;
-  
+  $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
   // Define spinner for our JS modules
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['spinner'] = 
    ' <div class="d-flex justify-content-center align-items-center"><div id="spinner-div-menu" class="spinner-border text-primary" role="status"></div></div>';
@@ -43,6 +43,21 @@ function api_lemon_pleiade_preprocess_page(&$variables){
 } 
 
 
+// function api_lemon_pleiade_page_attachments(array &$page) {
+
+//   if (\Drupal::service('path.matcher')->isFrontPage()) {
+//   $page['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
+//   }
+// }
+
+
+
+/**
+ * Implements hook_library_info_alter().
+ * 
+ * https://www.drupal.org/project/drupal/issues/3274688
+ * 
+ */
 function api_lemon_pleiade_library_info_alter(&$libraries, $extension) {
   foreach ($libraries as &$library) {
     if (!in_array('core/jquery.once', $library['dependencies'] ?? [])) {

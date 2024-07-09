@@ -33,13 +33,15 @@
     
             const userGroupsTempstore = decodeURIComponent(getCookie('groups'));
 
-            if (settings.module_general_pleiade.color_theme) {
+		if (settings.module_general_pleiade.color_theme) {
               var newColorCode = settings.module_general_pleiade.color_theme;
               const rootElement = document.documentElement;
               // Modify CSS properties
               rootElement.style.setProperty("--global-color", newColorCode);
+              rootElement.style.setProperty("--text-menu-color", newColorCode);
+            }
              
-              var listeofcommunes = drupalSettings.module_general_pleiade.sites_internets
+             /* var listeofcommunes = drupalSettings.module_general_pleiade.sites_internets
 
               var lines = listeofcommunes.split('\n').filter(function (line) {
                 return line.trim() !== ''; // Supprimer les lignes vides
@@ -56,12 +58,14 @@
                 };
                 dataObject[commune] = infos;
               });
+              console.log(dataObject)
               var userCommunes = userGroupsTempstore.split(', ');
 
               userCommunes.forEach(function (commune) {
                 var siteInternetLink = document.getElementById('url_site_internet');
                 var GruLink = document.getElementById('url_gru');
                 if (dataObject.hasOwnProperty(commune)) {
+                  console.log(siteInternetLink)
                   var communeInfos = dataObject[commune];
                  
                   if (siteInternetLink) {
@@ -75,11 +79,11 @@
                   console.error('Aucune commune dans les groupes lemonLdAP')
                 }
               });
+*/
 
-            }
 
           }); // end once
-        }, 5500);
+        }, 1000);
       } // fin only on frontpage
 
     },

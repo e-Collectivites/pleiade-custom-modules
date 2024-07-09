@@ -18,21 +18,19 @@ function module_general_pleiade_preprocess_page(&$variables)
   $colorTheme = $config->get('color_theme');
   $numero_telephone_support = $config->get('numero_telephone_support');
   $adresse_mail_support = $config->get('adresse_mail_support');
-  $linkedin = $config->get('linkedin');
-  $twitter = $config->get('twitter');
+ 
   $sites_internets = $config->get('sites_internets');
   $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
   $sites_internet_current_user = $user->get('field_site_internet')->getValue();
   // Add the JS library.
   $variables['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_js';
-  // Add the CSS library. 
+  // Add the CSS library.
   // $variables['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_css';
 
   $variables['#attached']['drupalSettings']['module_general_pleiade']['color_theme'] = $colorTheme;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['numero_telephone_support'] = $numero_telephone_support;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['adresse_mail_support'] = $adresse_mail_support;
-  $variables['#attached']['drupalSettings']['module_general_pleiade']['linkedin'] = $linkedin;
-  $variables['#attached']['drupalSettings']['module_general_pleiade']['twitter'] = $twitter;
+
   $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internets'] = $sites_internets;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internet_current_user'] = $sites_internet_current_user;
 }

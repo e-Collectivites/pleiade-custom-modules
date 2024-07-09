@@ -75,9 +75,7 @@
 {
     opacity: .25;
 }
-.slick-slide {
-    padding: 0 0.4rem;
-}
+
 .slick-prev:before,
 .slick-next:before
 {
@@ -86,7 +84,7 @@
     line-height: 1;
 
     opacity: .75;
-    color: #1f3889;
+    color:  var(--global-color);
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -115,7 +113,7 @@
 }
 .slick-dots .slick-active i{
     
-    color: #1f3889;
+    color:  var(--global-color);
 }
 .slick-dots li:not(.slick-active)  {
     opacity: 0.5 ;
@@ -208,7 +206,7 @@ bottom: 0em;
     left: 0.3em;
     font-size: 12px!important;
     width: 33%;
-    background-color: #1f3889;
+    background-color:  var(--global-color);
     border-radius: 4px;
     color: #FFF;
 }
@@ -239,12 +237,4 @@ body[data-theme=dark] .sub_menu_eadmin span{
 }
 #carousel_actualites {
     overflow: hidden;
-    padding: 1em 0 0 0 ;
-}
-.actualites .voir_tout{
-    margin-bottom: 30px;
-    float: right;
-}
-.actualites .card{
-    margin-bottom: 0px;
 }

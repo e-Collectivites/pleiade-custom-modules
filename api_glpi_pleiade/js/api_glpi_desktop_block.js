@@ -34,16 +34,16 @@
                 return `${day}/${month}/${year} ${hours}:${minutes}`;
               }
 
-              if (donnees) {
-	var userMail = donnees.usermail
+              if (donnees != '') {
+                var userMail = donnees.usermail
                 var blocGLPI =
                   '\
                   <div class="col-lg-12" id="glpi_desktop_block"> \
                   <div class="mb-2 shadow-sm">\
                     <div class="card mb-2">\
-                      <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                      <div class="card-header rounded-top bg-white rounded-top">\
                         <h4 class="card-title text-dark py-2">\
-                          Mes derniers tickets GLPI <span></span>\
+                          Derniers tickets GLPI <span></span>\
                         </h4>\
                       </div>\
                       <div class="card-body">\
@@ -56,62 +56,62 @@
                             <th scope="col">Dernière modification</th>\
                             <th scope="col">Urgence</th>\
                             <th scope="col">Priorité</th>\
-			   <th scope="col">Je suis</th>\
+                           <th scope="col">Je suis</th>\
                             <th></th>\
                             </tr>\
                           </thead>\
                           <tbody>';
-	for (var i = 0; i < Object.keys(donnees).length - 1 && i < 10; i++) {
-		
-	 var titre, statut, open_date, modif_date, id_demandeur, urgence, priorite, url_ticket, prioriteText, urgenceText, statutText
-var statu_actor = [];	
+                for (var i = 0; i < Object.keys(donnees).length - 1 && i < 10; i++) {
 
-var titre = donnees[i] && donnees[i].name ? donnees[i].name : "Titre manquant";
-var statut = donnees[i] && donnees[i].status ? donnees[i].status : "Statut manquant";
-var open_date = donnees[i] && donnees[i].date ? donnees[i].date : "Date d'ouverture manquante";
-var modif_date = donnees[i] && donnees[i].date_mod ? donnees[i].date_mod : "Date de modification manquante";
-var id_demandeur = donnees[i] && donnees[i].users_id_recipient ? donnees[i].users_id_recipient : "ID du demandeur manquant";
-var urgence = donnees[i] && donnees[i].urgency ? donnees[i].urgency : "Urgence manquante";
-var priorite = donnees[i] && donnees[i].priority ? donnees[i].priority : "Priorité manquante";
-var statut_actor = donnees[i] && donnees[i].newData? donnees[i].newData: "Priorité manquante";
+                  var titre, statut, open_date, modif_date, id_demandeur, urgence, priorite, url_ticket, prioriteText, urgenceText, statutText
+                  var statu_actor = [];
+
+                  var titre = donnees[i] && donnees[i].name ? donnees[i].name : "Titre manquant";
+                  var statut = donnees[i] && donnees[i].status ? donnees[i].status : "Statut manquant";
+                  var open_date = donnees[i] && donnees[i].date ? donnees[i].date : "Date d'ouverture manquante";
+                  var modif_date = donnees[i] && donnees[i].date_mod ? donnees[i].date_mod : "Date de modification manquante";
+                  var id_demandeur = donnees[i] && donnees[i].users_id_recipient ? donnees[i].users_id_recipient : "ID du demandeur manquant";
+                  var urgence = donnees[i] && donnees[i].urgency ? donnees[i].urgency : "Urgence manquante";
+                  var priorite = donnees[i] && donnees[i].priority ? donnees[i].priority : "Priorité manquante";
+                  var statut_actor = donnees[i] && donnees[i].newData ? donnees[i].newData : "Priorité manquante";
                   var url_ticket =
                     drupalSettings.api_glpi_pleiade.glpi_url +
                     "/index.php?redirect=ticket_" + donnees[i].id;
 
                   const formattedOpenDate = formatDate(open_date);
                   const formattedModifDate = formatDate(modif_date);
-	
-for (var j = 0; j < donnees[i].newData.length; j++) {
-    var newDataItem = donnees[i].newData[j];
-    
-    if (newDataItem.users_id === userMail) {
-        statu_actor.push(newDataItem.type);
-    }
-}
 
-if (statu_actor.length === 0) {
-    statu_actor = "Priorité manquante";
-}
+                  for (var j = 0; j < donnees[i].newData.length; j++) {
+                    var newDataItem = donnees[i].newData[j];
 
-for (var k = 0; k < statu_actor.length; k++) {
-    switch (statu_actor[k]) {
-        case 1:
-            statu_actor[k] = "Demandeur du ticket";
-            break;
-        case 2:
-            statu_actor[k] = "Responsable du ticket";
-            break;
-        case 3:
-            statu_actor[k] = "Observateur du ticket";
-            break;
-        default:
-            // Vous pouvez gérer d'autres valeurs ici si nécessaire
-            break;
-    }
-}
+                    if (newDataItem.users_id === userMail) {
+                      statu_actor.push(newDataItem.type);
+                    }
+                  }
 
-// Stockez le résultat dans une nouvelle variable
-var mapped_statu_actor = statu_actor;
+                  if (statu_actor.length === 0) {
+                    statu_actor = "Priorité manquante";
+                  }
+
+                  for (var k = 0; k < statu_actor.length; k++) {
+                    switch (statu_actor[k]) {
+                      case 1:
+                        statu_actor[k] = "Demandeur du ticket";
+                        break;
+                      case 2:
+                        statu_actor[k] = "Responsable du ticket";
+                        break;
+                      case 3:
+                        statu_actor[k] = "Observateur du ticket";
+                        break;
+                      default:
+                        // Vous pouvez gérer d'autres valeurs ici si nécessaire
+                        break;
+                    }
+                  }
+
+                  // Stockez le résultat dans une nouvelle variable
+                  var mapped_statu_actor = statu_actor;
 
                   switch (urgence) {
                     case 2:
@@ -163,46 +163,46 @@ var mapped_statu_actor = statu_actor;
                       statutText = "Valeur invalide";
                   }
 
-if (
+                  if (
                     statutText !== "Valeur invalide" &&
                     urgenceText !== "Valeur invalide" &&
                     prioriteText !== "Valeur invalide"
                   ) {
 
-                  blocGLPI +=
-                    "\
+                    blocGLPI +=
+                      "\
                             <tr>\
                               <td>" +
-                    titre +
-                    "</td>\
+                      titre +
+                      "</td>\
                               <td>" +
-                              statutText +
-                    "</td>\
+                      statutText +
+                      "</td>\
                               <td>" +
-                    formattedOpenDate +
-                    "</td>\
+                      formattedOpenDate +
+                      "</td>\
                               <td>" +
-                    formattedModifDate +
-                    "</td>\
+                      formattedModifDate +
+                      "</td>\
                               <td>" +
-                              urgenceText +
-                    "</td>\
+                      urgenceText +
+                      "</td>\
                           <td>" +
-                          prioriteText +
-                    "</td>\
-		<td>" +
-                          mapped_statu_actor +
-                    "</td>\
-<td><a href=" +
-                    url_ticket +
-                    " target='_blank' id'=ticketLink'>\
+                      prioriteText +
+                      "</td>\
+                      <td>" +
+                      mapped_statu_actor +
+                      "</td>\
+                      <td><a href=" +
+                      url_ticket +
+                      " target='_blank' id'=ticketLink'>\
                                           <i class='fa-solid fa-magnifying-glass'></i>\
                                     </a>\
                                   </td>\
                                   </tr>\
                             ";
+                  }
                 }
-}
                 blocGLPI +=
                   "\
                           </tbody>\
@@ -215,6 +215,27 @@ if (
 
                 document.getElementById("glpi_tickets_id").innerHTML = blocGLPI;
               }
+              else
+              {
+                var blocGLPI =
+                  '\
+                  <div class="col-lg-12" id="glpi_desktop_block"> \
+                  <div class="mb-2 shadow-sm">\
+                    <div class="card mb-2">\
+                      <div class="card-header rounded-top bg-white rounded-top">\
+                        <h4 class="card-title text-dark py-2">\
+                          Derniers tickets GLPI <span></span>\
+                        </h4>\
+                      </div>\
+                      <div class="card-body">\
+                        <h5>Aucun ticket GLPI en cours</h5>\
+                      </div>\
+                    </div>\
+                  </div>\
+                </div>\
+                ';
+               document.getElementById("glpi_tickets_id").innerHTML = blocGLPI;
+              }
             }
           };
           xhr.onerror = function () {
@@ -226,8 +247,39 @@ if (
           xhr.ontimeout = function () {
             console.log("AJAX call timed out");
           };
-          xhr.onloadend = function () {};
+          xhr.onloadend = function () { 
+new DataTable('#glpi_table', {
+paging: false,
+                scrollY: 320,
+ language: {
+                  url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json",
+                  search: "_INPUT_",
+                  searchPlaceholder: "Rechercher...",
+                  emptyTable: 'Aucun document à afficher dans les 50 derniers documents'
 
+                },
+                search: {
+                  search: ''
+                },
+order: [[3, "desc"]],
+    columnDefs: [
+        {
+            targets: [0],
+            orderData: [0, 1]
+        },
+        {
+            targets: [1],
+            orderData: [1, 0]
+        },
+        {
+            targets: [4],
+            orderData: [4, 0]
+        }
+    ]
+});
+
+
+};
           xhr.send();
         }); // fin once function
       }

@@ -40,10 +40,9 @@ $uids = \Drupal::entityQuery('user')
     foreach ($lines as $line) {
       $line = trim($line);
       if (!empty($line)) {
-        list($maildomain, $url, $token) = explode("| |", $line);
+        list($domain, $token) = explode("| |", $line);
         $domainArray[] = [
-          "maildomain" => $maildomain,
-          "url" => $url,
+          "domain" => $domain,
           "token" => $token,
         ];
       }
@@ -61,13 +60,18 @@ $uids = \Drupal::entityQuery('user')
 
     foreach ($domainArray as $domain) {
       $userDomain = substr($email, strpos($email, '@') + 1);
-      if ($userDomain === $domain['maildomain']) {
+	similar_text($userDomain, $domain['domain'], $similarity);
+
+      if ($similarity > 30) {
         $limit_mail = 500;
         $mail_endpoint = '<SearchRequest xmlns="urn:zimbraMail"  limit="' . $limit_mail . '"><query>is:unread</query></SearchRequest>';
+        //var_dump($userDomain);
+        //var_dump($domain['domain']);
+        //var_dump($domain['token']);
         
 	$return = []; // Variable to store Zimbra data
         $zimbradataApi = new ApiPleiadeManager();
-        $return = $zimbradataApi->searchMyMails($mail_endpoint, $email, $domain['token'], $domain['url']);
+        $return = $zimbradataApi->searchMyMails($mail_endpoint, $email, $domain['token'], $domain['domain']);
         if ($return) {
 	
           $userDomainData = $return[0] ?? null;
@@ -86,6 +90,11 @@ $uids = \Drupal::entityQuery('user')
           \Drupal::logger("zimbra_tasks_query")->error("Aucun retour API");
           return new JsonResponse(json_encode("0"), 200, [], true);
         }
+      }
+      else
+      {
+        \Drupal::logger("zimbra_tasks_query")->error("Aucun serveur zimbra associé");
+        return new JsonResponse(json_encode("0"), 200, [], true);
       }
     }
 
@@ -143,10 +152,9 @@ public function zimbra_tasks_query(Request $request)
       foreach ($lines as $line) {
         $line = trim($line);
         if (!empty($line)) {
-          list($maildomain, $url, $token) = explode("| |", $line);
+          list($domain, $token) = explode("| |", $line);
           $domainArray[] = [
-            "maildomain" => $maildomain,
-            "url" => $url,
+            "domain" => $domain,
             "token" => $token,
           ];
         }
@@ -156,14 +164,16 @@ public function zimbra_tasks_query(Request $request)
       foreach ($domainArray as $domain) {
         $userDomain = substr($email, strpos($email, '@') + 1);
   //var_dump($userDomain);
-        if ($userDomain === $domain['maildomain']) {
+          similar_text($userDomain, $domain['domain'], $similarity);
+//var_dump($similarity);
+        if ($similarity > 45) {
   //        var_dump($userDomain);
     //      var_dump($domain['domain']);
       //    var_dump($domain['token']);
           
           $return = []; // Variable to store Zimbra data
           $zimbradataApi = new ApiPleiadeManager();
-          $return = $zimbradataApi->searchMyTasks($tasks_endpoint, $email, $domain['token'], $domain['url']);
+          $return = $zimbradataApi->searchMyTasks($tasks_endpoint, $email, $domain['token'], $domain['domain']);
 
           if ($return) {
             $userDomainData = $return[0] ?? null;
@@ -183,6 +193,11 @@ public function zimbra_tasks_query(Request $request)
             \Drupal::logger("zimbra_tasks_query")->error("Aucun retour API");
             return new JsonResponse(json_encode("0"), 200, [], true);
           }
+        }
+        else
+        {
+          \Drupal::logger("zimbra_tasks_query")->error("Aucun serveur zimbra associé");
+          return new JsonResponse(json_encode("0"), 200, [], true);
         }
       }
     }

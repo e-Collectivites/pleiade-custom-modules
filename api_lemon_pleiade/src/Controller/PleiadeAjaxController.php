@@ -43,13 +43,6 @@ class PleiadeAjaxController extends ControllerBase
 
           $return['groupes'] .= $dpt[0].',';
         }
-
-        if($dpt[1] != null){
-
-          $return['groupes'] .= ' dpt-'.$dpt[1].',';
-          setcookie('departement', $dpt[1], time() + 36000, '/');
-          setcookie('collectivite', $dpt[0], time() + 3600, '/');
-        }
       }
       $return['groups'] = $return['groupes'];
       \Drupal::logger('api_lemon_pleiade')->info('User group: @api', ['@api' => $return['groupes']]);

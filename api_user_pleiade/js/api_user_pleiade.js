@@ -161,6 +161,7 @@
 
                     a_ajouter += '<a href="' + url + '" target="_blank" class="sidebar-link waves-effect waves-dark"><span class="hide-menu px-2">' + titre + '</span></a>'
                   }
+                  console.log(a_ajouter)
 
                   // Ajoutez le contenu de 'a_ajouter' à la fin de la div
                   mes_apps.insertAdjacentHTML('beforeend', a_ajouter);

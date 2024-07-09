@@ -20,21 +20,12 @@ class PleiadeAjaxParapheurController extends ControllerBase {
         
         $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
         $storedGroups = $tempstore->get('groups');
-        $departement = $_COOKIE["departement"];
-        if($departement == "85b"){
-            $nbDpt = '85';
-        }
-        elseif($departement == "85"){
-            $nbDpt = '';
-        }
-        else{
-            $nbDpt = $departement;
-        }
-        if (is_string($storedGroups) && strpos($storedGroups, 'parapheur') !== false) {
+        if (is_string($storedGroups) && strpos($storedGroups, 'i-parapheur') !== false) {
             $return = []; //our variable to fill with data returned by Parapheur
             $parapheurdataApi = new ApiPleiadeManager();
             
             $return = $parapheurdataApi->searchMyDesktop($nbDpt);
+	var_dump($return);
             if($return){
             return new JsonResponse(json_encode($return), 200, [], true);
             }

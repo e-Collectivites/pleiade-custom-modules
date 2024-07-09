@@ -4,9 +4,9 @@
     attach: function (context, settings) {
       // Load on front page only,
       if (
-drupalSettings.path &&
-      drupalSettings.path.currentPath &&
-      drupalSettings.path.currentPath.includes("calendar") &&
+        drupalSettings.path &&
+        drupalSettings.path.currentPath &&
+        drupalSettings.path.currentPath.includes("calendar") &&
         drupalSettings.api_zimbra_pleiade.field_zimbra_agenda
       ) {
         once(
@@ -28,7 +28,6 @@ drupalSettings.path &&
           xhr.onload = function () {
             if (xhr.status === 200) {
               var donnees = xhr.response;
-              //            console.log(donnees);
               if (donnees && donnees != "0") {
                 var event_array = [];
                 document.cookie =
@@ -40,16 +39,17 @@ drupalSettings.path &&
                   i++
                 ) {
 
-		if(donnees.userData.Body.SearchResponse.appt[i].recur){
- 			var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
+                  if (donnees.userData.Body.SearchResponse.appt[i].recur) {
+                    var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
                     var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
-			var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
+                    var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
                     var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
-
-                    var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival                   
+                    if (donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval) {
+                      var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival
+                    }
                     var frequenceAppt = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].freq
                     switch (frequenceAppt) {
-			 case 'DAI':
+                      case 'DAI':
                         var frequence = 'daily'
                         break;
                       case 'YEA':
@@ -58,9 +58,9 @@ drupalSettings.path &&
                       case 'MON':
                         var frequence = 'monthly'
                         break;
-			case 'WEE':
-                          var frequence = 'weekly'
-                          break;
+                      case 'WEE':
+                        var frequence = 'weekly'
+                        break;
                       default:
                         break;
                     }
@@ -69,7 +69,7 @@ drupalSettings.path &&
                       start: startDate.toISOString().replace(".000Z", ""),
                       end: endDate.toISOString().replace(".000Z", ""),
                       url:
-                        donnees.domainEntry +
+                        donnees.domainEntry.url +
                         "modern/calendar/event/details/" +
                         donnees.userData.Body.SearchResponse.appt[i].invId +
                         "?utcRecurrenceId=" +
@@ -79,26 +79,30 @@ drupalSettings.path &&
                         donnees.userData.Body.SearchResponse.appt[i].inst[0].s +
                         "&end=" +
                         end_task * 1000,
-		      rrule: {
+                      rrule: {
                         freq: frequence,
-                        interval: interval,
+                       // interval: interval,
                         dtstart: startDate.toISOString().replace(".000Z", ""),
                       }
                     };
-		}
-else
-{
-var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
+if (typeof interval !== 'undefined') {
+    event_array[i].rrule.interval = interval;
+  } else {
+event_array[i].rrule.interval = 1;
+    console.log('Interval is undefined for event:', event_array[i]);
+  }
+                  }
+                  else {
+                    var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
                     var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
                     var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
                     var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
-
                     event_array[i] = {
                       title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
                       start: startDate.toISOString().replace(".000Z", ""),
                       end: endDate.toISOString().replace(".000Z", ""),
-                      url: 
-                        donnees.domainEntry +
+                      url:
+                        donnees.domainEntry.url +
                         "modern/calendar/event/details/" +
                         donnees.userData.Body.SearchResponse.appt[i].invId +
                         "?utcRecurrenceId=" +
@@ -108,12 +112,13 @@ var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
                         donnees.userData.Body.SearchResponse.appt[i].inst[0].s +
                         "&end=" +
                         end_task * 1000,
-                      
-                    };
-		}
 
+                    };
                   }
+
+                }
                 console.log(event_array);
+		//return;
                 var calendarEl = document.getElementById(
                   "zimbra_full_calendar"
                 );
@@ -123,28 +128,28 @@ var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
 
                 var addMlSeconds = 60 * 60 * 1000 * 2;
                 var newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
-                //console.log(newDateObj)
+                //     console.log(newDateObj)
                 var calendar = new FullCalendar.Calendar(calendarEl, {
-		  timeZone: "UTC",
+                  timeZone: "UTC",
                   locale: "fr",
                   buttonText: {
-			today: 'Cette semaine',
-		  },
-		  headerToolbar: {
-			left: 'prev,next today',
-      			center: 'title',
-			right: false
+                    today: 'Cette semaine',
+                  },
+                  headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: false
                   },
                   nowIndicator: true,
                   now: newDateObj,
-		slotMinTime: "08:00:00",
+                  slotMinTime: "08:00:00",
                   slotMaxTime: "20:00:00",
                   initialView: "timeGridWeek",
-		weekends: false,
-		themeSystem: "bootstrap",
-        	slotDuration: "00:15:00",          
-                events: event_array,
-		eventClick: function (event) {
+                  weekends: false,
+                  themeSystem: "bootstrap",
+                  slotDuration: "00:30:00",
+                  events: event_array,
+                  eventClick: function (event) {
                     if (event.event.url) {
                       event.jsEvent.preventDefault();
                       window.open(event.event.url, "_blank");
@@ -152,7 +157,7 @@ var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
                   },
                 });
                 calendar.render();
-document.getElementById('spinner-history').style.display = 'none'; 
+                document.getElementById('spinner-history').style.display = 'none';
               } else {
                 var linkEntitie =
                   '<div id="zimbra_agenda" class="col-lg-12 ">\
@@ -180,7 +185,7 @@ document.getElementById('spinner-history').style.display = 'none';
           xhr.ontimeout = function () {
             console.log("AJAX call timed out");
           };
-          xhr.onloadend = function () {};
+          xhr.onloadend = function () { };
 
           xhr.send();
         }); // fin once function

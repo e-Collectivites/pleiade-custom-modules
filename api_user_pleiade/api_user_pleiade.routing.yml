@@ -15,4 +15,11 @@ api_user_pleiade.user_infos:
   requirements:
     _access: 'TRUE'
 
-
+api_user_pleiade.user_list_query:
+  path: '/v1/api_user_pleiade/user_list_query'
+  defaults:
+    _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::user_list_query'
+    _title: 'User Query'
+    _format: json
+  requirements:
+    _access: 'TRUE'

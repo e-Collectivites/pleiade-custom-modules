@@ -20,7 +20,7 @@ class NextCloudController extends ControllerBase
     $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
     $groupData = $tempstore->get('groups');
     if ($groupData !== NULL) {
-      $groupDataArray = explode(",", str_replace(", ", ",", $groupData));
+      $groupDataArray = explode(', ', $groupData);
     }
     if (in_array($settings_nextcloud->get('nextcloud_lemon_group'), $groupDataArray)) {
 

@@ -45,6 +45,26 @@
                                                         
                                                         switch (elementId) {
 
+                                                                case 'urbanisme':
+                                                                        if (userGroupsTempstore.includes('urbanisme')) {
+                                                                                nouvelElement = document.createElement('div');
+                                                                                nouvelElement.classList.add('sub_menu_eadmin');
+                                                                                nouvelElement.classList.add('collapse');
+                                                                                nouvelElement.setAttribute('id', 'collapseurbanisme')
+                                                                                if (userGroupsTempstore.includes('urbanisme')) {
+                                                                                        liens = '\
+                                                                                <a class="waves-effect waves-dark" title="Signer un document d\'urbanisme" target="_blank" href="" aria-expanded="false">\
+                                                                                <span class="hide-menu px-2">Signer un document d\'urbanisme</span></a>'
+                                                                                        liens += '\
+                                                                                <a class="waves-effect waves-dark" title="Voir les documents d\'urbanisme" target="_blank" href="#" aria-expanded="false">\
+                                                                                <span class="hide-menu px-2">Voir les documents d\'urbanisme</span></a>';
+                                                                                }
+                                                                                nouvelElement.innerHTML = liens
+                                                                                if (menuElement) {
+                                                                                        menuElement.insertAdjacentElement('afterend', nouvelElement);
+                                                                                }
+                                                                        }
+                                                                        break;
                                                                 case 'relation_usager':
                                                                         nouvelElement = document.createElement('div');
                                                                         nouvelElement.classList.add('sub_menu_eadmin');
@@ -138,14 +158,12 @@
                                                 nouvelElement.setAttribute('id', 'collapseconvocations');
                                                 
                                                 if (!document.getElementById('collapseconvocations')) {
-                                                    console.log('pasmenu');
                                                     if (userGroupsTempstore.includes('idelibre')) {
                                                         menu_a_remplir_idelibre += '\
                                                             <a class="waves-effect waves-dark" title="Gérer les séances" target="_blank" href="https://idelibre.ecollectivites.fr" aria-expanded="false">\
                                                             <span class="hide-menu px-2">Gérer/Voir les séances</span></a>';
                                                     }
                                                 } else {
-                                                    console.log('menu');
                                                     var collapseConvocations = document.getElementById('collapseconvocations');
                                                     if (userGroupsTempstore.includes('idelibre')) {
                                                         // menu_a_remplir_idelibre += collapseConvocations.innerHTML;
@@ -160,23 +178,6 @@
                                                 if (menu_convocations) {
                                                     menu_convocations.insertAdjacentElement('afterend', nouvelElement);
                                                 }
-						if ((!userGroupsTempstore.includes('pastell') || !userGroupsTempstore.includes('pastell-docasigner'))) {
-
-                            var a_traiter = ''
-                            var menu_doc_a_signer = document.getElementById('signature_electronique')
-                            var menu_a_remplir = ""
-                            var nouvelElement = document.createElement('div');
-                            nouvelElement.classList.add('sub_menu_eadmin');
-                            nouvelElement.classList.add('collapse');
-                            nouvelElement.setAttribute('id', 'collapsesignature_electronique');
-                                menu_a_remplir += '\
-                                    <a class="waves-effect waves-dark" title="Gérer les signatures à la volée" target="_blank" href="https://sign.ecollectivites.fr" aria-expanded="false">\
-                                    <span class="hide-menu px-2">Gérer les signatures à la volée</span></a>'
-                            nouvelElement.innerHTML = menu_a_remplir
-                            if (menu_doc_a_signer) {
-                                menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
-                            }
-}
                                         }); // fin once
                                 }, 5000);
                         }

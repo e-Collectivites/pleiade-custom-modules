@@ -15,11 +15,11 @@ class DatatableController extends ControllerBase
 
     public function documents_recents(Request $request)
     {
-        $formattedData['docs'] = [];
         $tempstoreGroup = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
         $storedGroups = $tempstoreGroup->get('groups');
         if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
 
+            $formattedData['docs'] = [];
 
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->delete('documents_pastell');

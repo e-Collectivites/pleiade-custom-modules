@@ -25,7 +25,6 @@ class NotificationModuleController extends ControllerBase {
         $query->condition('type', 'notification');
         $query->condition('status', 1); // Published content condition
         $query->accessCheck(FALSE);
-        $query->sort('created', 'DESC');
         $entityIds = $query->execute();
         $notifications = $entityTypeManager->getStorage('node')->loadMultiple($entityIds);
       
