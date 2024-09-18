@@ -1,0 +1,134 @@
+<?php 
+
+/**
+ * Implémente hook_install().
+ */
+function module_general_pleiade_install() {
+  
+  // Ajouter le champ prénom.
+  _module_general_pleiade_add_first_name_field();
+  // Ajouter le champ nom.
+  _module_general_pleiade_add_last_name_field();
+  // Ajouter le champ URL pour les applications favorites.
+  _mon_module_add_url_application_field();
+  // Ajouter le champ URL du site internet de la commune.
+  _mon_module_add_site_internet_field();
+  _mon_module_add_post_it_items_field();
+}
+
+/**
+ * Fonction pour ajouter le champ "Prénom".
+ */
+function _module_general_pleiade_add_first_name_field() {
+  // Vérifier si le champ n'existe pas déjà.
+  if (!\Drupal\field\Entity\FieldStorageConfig::loadByName('user', 'field_nom')) {
+    // Créer la configuration de stockage du champ.
+    FieldStorageConfig::create([
+      'field_name' => 'field_nom',
+      'entity_type' => 'user',
+      'type' => 'string',
+      'settings' => [
+        'max_length' => 255,
+        'is_ascii' => FALSE,
+        'case_sensitive' => FALSE,
+      ],
+    ])->save();
+
+    // Créer l'instance de champ.
+    FieldConfig::create([
+      'field_storage' => FieldStorageConfig::loadByName('user', 'field_nom'),
+      'bundle' => 'user',
+      'label' => t('Nom'),
+      'required' => TRUE,
+    ])->save();
+  }
+}
+
+/**
+ * Fonction pour ajouter le champ "Nom".
+ */
+function _module_general_pleiade_add_last_name_field() {
+  // Vérifier si le champ n'existe pas déjà.
+  if (!\Drupal\field\Entity\FieldStorageConfig::loadByName('user', 'field_prenom')) {
+    // Créer la configuration de stockage du champ.
+    FieldStorageConfig::create([
+      'field_name' => 'field_prenom',
+      'entity_type' => 'user',
+      'type' => 'string',
+      'settings' => [
+        'max_length' => 255,
+        'is_ascii' => FALSE,
+        'case_sensitive' => FALSE,
+      ],
+    ])->save();
+
+    // Créer l'instance de champ.
+    FieldConfig::create([
+      'field_storage' => FieldStorageConfig::loadByName('user', 'field_prenom'),
+      'bundle' => 'user',
+      'label' => t('Prénom'),
+      'required' => TRUE,
+    ])->save();
+  }
+}
+
+function _mon_module_add_url_application_field() {
+  if (!FieldStorageConfig::loadByName('user', 'field_url_application')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_url_application',
+      'entity_type' => 'user',
+      'type' => 'link',
+      'cardinality' => FieldStorageConfig::CARDINALITY_UNLIMITED, // Accepte plusieurs valeurs.
+      'settings' => [],
+    ])->save();
+
+    FieldConfig::create([
+      'field_storage' => FieldStorageConfig::loadByName('user', 'field_url_application'),
+      'bundle' => 'user',
+      'label' => t('Ajouter vos applications favorites'),
+      'required' => FALSE,
+    ])->save();
+  }
+}
+
+/**
+ * Fonction pour ajouter le champ "Identifiez le site internet de votre commune" (field_site_internet).
+ * Ce champ sera limité à une seule URL et l'URL doit être externe.
+ */
+function _mon_module_add_site_internet_field() {
+  if (!FieldStorageConfig::loadByName('user', 'field_site_internet')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_site_internet',
+      'entity_type' => 'user',
+      'type' => 'link',
+      'cardinality' => 1, // Limité à une seule valeur.
+      'settings' => [
+        'link_type' => 16, // Permet uniquement les URLs externes (http:// ou https://).
+      ],
+    ])->save();
+
+    FieldConfig::create([
+      'field_storage' => FieldStorageConfig::loadByName('user', 'field_site_internet'),
+      'bundle' => 'user',
+      'label' => t("Identifiez le site internet de votre commune (s'il n'est pas géré par e-Collectivités)"),
+      'required' => FALSE,
+    ])->save();
+  }
+}
+function _mon_module_add_post_it_items_field() {
+  if (!FieldStorageConfig::loadByName('user', 'field_post_it_items')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_post_it_items',
+      'entity_type' => 'user',
+      'type' => 'text_long',
+      'settings' => ['default_value' => ''],
+    ])->save();
+
+    FieldConfig::create([
+      'field_storage' => FieldStorageConfig::loadByName('user', 'field_post_it_items'),
+      'bundle' => 'user',
+      'label' => t('Post-it Items'),
+      'required' => FALSE,
+    ])->save();
+  }
+}
