@@ -388,7 +388,7 @@
                           if (donnees[i].last_type.includes("helios")) {
                             ErrorHeliosCounts++;
                           }
-                          supp_yes = true
+                          supp_yes = false
 
                           break;
 
@@ -501,9 +501,6 @@
                                   </tr>\
                               </tfoot>\
                             </table>\
-                            <a class="voir_tout float-end" href="' + pastell_url +'/Document/index?id_e=' + previousValue +'" target="_blank">\
-                            <span>Voir l\'historique</span>\
-                            </a>\
                           </div>\
                         </div>\
                       </div>\
