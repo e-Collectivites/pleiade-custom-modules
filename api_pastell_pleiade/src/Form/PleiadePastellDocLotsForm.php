@@ -143,7 +143,8 @@ class PleiadePastellDocLotsForm extends ConfigFormBase
                                 $nomfic = preg_replace('/[^A-Za-z0-9\-]/', '', $nomfic); // Removes special chars.
                                 $urlfic = ($file[0]->get('uri')->getValue()[0]['value']);
                                 list($year, $month, $day) = explode('-', $form['datelimite']['#value']);
-                                $ged = $form['ged']['#value'];                  
+                                $ged = $form['ged']['#value'];
+				\Drupal::logger('api_pastell_pleiade')->info('Sous-type pârapheur: @cookie', ['@cookie' => $sstype]);
                                 $batch['operations'][] = array('_ecv_docs_lots', array($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sstype, $data = array()));
                                 $batch['finished'] = 'ecv_batch_lot_finished';
                         } // fin if file

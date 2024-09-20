@@ -5,10 +5,3 @@ api_lemon_pleiade.admin:
   route_name: api_lemon_pleiade.settings
   weight: 1
 
-
-pleiade.group.admin:
-  title: 'Pléiade'
-  route_name: system.admin_config_pleiade
-  parent: system.admin_config
-  description: 'Pléiade Configuration'
-  weight: -999
