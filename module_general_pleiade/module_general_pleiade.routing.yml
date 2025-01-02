@@ -5,11 +5,4 @@ module_general_pleiade.settings:
     _title: 'Paramètre de thème pour Pléiade'
   requirements:
     _permission: 'administer site configuration'
-
-system.admin_config_pleiade:
-  path: '/admin/config/pleiade'
-  defaults:
-    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'Pléiade'
-  requirements:
-    _permission: 'access administration pages'
+    

@@ -69,7 +69,7 @@ class ActuPleiadeController extends ControllerBase
             $nodes = Node::loadMultiple($nids);
 
             foreach ($nodes as $node) {
-                $created_date = \Drupal::service('date.formatter')->format($node->getChangedTime(), 'custom', 'd/m/Y');
+                $created_date = \Drupal::service('date.formatter')->format($node->getCreatedTime(), 'custom', 'd/m/Y');
                 if ($node->hasField('field_image') && $node->get('field_image')->entity) {
                     $file = \Drupal::service('entity.repository')->loadEntityByUuid('file', $node->get('field_image')->entity->uuid());
                     if ($file) {
@@ -218,7 +218,7 @@ class ActuPleiadeController extends ControllerBase
             $nids = \Drupal::entityQuery('node')
                 ->condition('type', 'article')
                 ->condition('status', Node::PUBLISHED)
-                ->sort('changed', 'DESC')
+                ->sort('created', 'DESC')
                 ->accessCheck(TRUE)
                 ->execute();
 
@@ -228,7 +228,7 @@ class ActuPleiadeController extends ControllerBase
                 if (!$node->get('field_nouveaute')->value) {
                     continue; // Passer à l'article suivant si 'field_nouveaute' est à false
                 }
-                $created_date = \Drupal::service('date.formatter')->format($node->getChangedTime(), 'custom', 'd/m/Y');
+                $created_date = \Drupal::service('date.formatter')->format($node->getCreatedTime(), 'custom', 'd/m/Y');
                 if ($node->hasField('field_image') && $node->get('field_image')->entity) {
                     $file = \Drupal::service('entity.repository')->loadEntityByUuid('file', $node->get('field_image')->entity->uuid());
                     if ($file) {
