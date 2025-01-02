@@ -32,3 +32,10 @@ api_lemon_pleiade.reset_password:
   requirements:
     _permission: 'access content'
 
+system.admin_config_pleiade:
+  path: '/admin/config/pleiade'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Pléiade'
+  requirements:
+    _permission: 'access administration pages'

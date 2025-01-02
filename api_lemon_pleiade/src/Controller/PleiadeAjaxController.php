@@ -38,7 +38,6 @@ class PleiadeAjaxController extends ControllerBase
       $return['groupes'] = '';
       $groupArray = explode(";", $return["groups"]);
       foreach ($groupArray as $group) {
-        $group = str_replace(' ', '', $group);
         if (!empty($group)) {
           $dpt = explode("|", $group);
 
@@ -47,7 +46,7 @@ class PleiadeAjaxController extends ControllerBase
 
         if($dpt[1] != null){
 
-          $return['groupes'] .= 'dpt-'.$dpt[1].',';
+          $return['groupes'] .= ' dpt-'.$dpt[1].',';
           setcookie('departement', $dpt[1], time() + 36000, '/');
           setcookie('collectivite', $dpt[0], time() + 3600, '/');
         }

@@ -6,34 +6,34 @@
 
                         if (!drupalSettings.path.currentPath.includes("admin") && drupalSettings.api_lemon_pleiade.field_lemon_myapps_url && drupalSettings.api_lemon_pleiade.field_lemon_url) {
                                 setTimeout(function () {
-
+                                        
                                         once("APIlemonSubMenuBehavior", "body", context).forEach(function () {
                                                 function getCookie(name) {
                                                         // Récupérer tous les cookies
                                                         const cookies = document.cookie.split(';');
-
+                            
                                                         // Parcourir chaque cookie
                                                         for (let cookie of cookies) {
-                                                                // Diviser le nom et la valeur du cookie
-                                                                const [cookieName, cookieValue] = cookie.split('=');
-
-                                                                // Supprimer les espaces blancs avant et après le nom du cookie
-                                                                const trimmedCookieName = cookieName.trim();
-
-                                                                // Vérifier si le nom du cookie correspond à celui recherché
-                                                                if (trimmedCookieName === name) {
-                                                                        // Retourner la valeur du cookie
-                                                                        return cookieValue;
-                                                                }
+                                                            // Diviser le nom et la valeur du cookie
+                                                            const [cookieName, cookieValue] = cookie.split('=');
+                            
+                                                            // Supprimer les espaces blancs avant et après le nom du cookie
+                                                            const trimmedCookieName = cookieName.trim();
+                            
+                                                            // Vérifier si le nom du cookie correspond à celui recherché
+                                                            if (trimmedCookieName === name) {
+                                                                // Retourner la valeur du cookie
+                                                                return cookieValue;
+                                                            }
                                                         }
-
+                            
                                                         // Retourner null si le cookie n'est pas trouvé
                                                         return null;
-                                                }
+                                                    }
                                                 var elementsIds = ['urbanisme', 'relation_usager', 'profil_acheteur', 'demat_rh'];
                                                 const userGroupsTempstore = decodeURIComponent(getCookie('groups'));
                                                 var site;
-
+                                                
                                                 if (drupalSettings.api_user_pleiade.user_info.field_site_internet.length > 0) {
                                                         var site = drupalSettings.api_user_pleiade.user_info.field_site_internet[0].uri
                                                 }
@@ -42,7 +42,7 @@
                                                 elementsIds.forEach(function (elementId) {
                                                         var menuElement = document.getElementById(elementId);
                                                         var nouvelElement, liens = "";
-
+                                                        
                                                         switch (elementId) {
 
                                                                 case 'relation_usager':
@@ -89,7 +89,7 @@
                                                                         nouvelElement.innerHTML = liens
 
                                                                         if (menuElement) {
-
+                                                                                
                                                                                 menuElement.insertAdjacentElement('afterend', nouvelElement);
 
                                                                         } break;
@@ -104,8 +104,8 @@
                         <span class="hide-menu px-2">Gérer les marchés</span></a>'
                                                                         }
                                                                         nouvelElement.innerHTML = liens
-
-                                                                        if (menuElement) {
+                                                                        
+                                                                        if (menuElement) {  
                                                                                 menuElement.insertAdjacentElement('afterend', nouvelElement);
                                                                         } break;
                                                                 case 'demat_rh':
@@ -131,52 +131,52 @@
                                                 var menu_doc_a_signer = document.getElementById('signature_electronique');
                                                 var menu_a_remplir_idelibre = "";
                                                 var menu_a_remplir_idelibre_html = "";
-
+                                                
                                                 var nouvelElement = document.createElement('div');
                                                 nouvelElement.classList.add('sub_menu_eadmin');
                                                 nouvelElement.classList.add('collapse');
                                                 nouvelElement.setAttribute('id', 'collapseconvocations');
-
+                                                
                                                 if (!document.getElementById('collapseconvocations')) {
-                                                        console.log('pasmenu');
-                                                        if (userGroupsTempstore.includes('idelibre')) {
-                                                                menu_a_remplir_idelibre += '\
+                                                    console.log('pasmenu');
+                                                    if (userGroupsTempstore.includes('idelibre')) {
+                                                        menu_a_remplir_idelibre += '\
                                                             <a class="waves-effect waves-dark" title="Gérer les séances" target="_blank" href="https://idelibre.ecollectivites.fr" aria-expanded="false">\
                                                             <span class="hide-menu px-2">Gérer/Voir les séances</span></a>';
-                                                        }
+                                                    }
                                                 } else {
-                                                        console.log('menu');
-                                                        var collapseConvocations = document.getElementById('collapseconvocations');
-                                                        if (userGroupsTempstore.includes('idelibre')) {
-                                                                // menu_a_remplir_idelibre += collapseConvocations.innerHTML;
-                                                                menu_a_remplir_idelibre += '\
+                                                    console.log('menu');
+                                                    var collapseConvocations = document.getElementById('collapseconvocations');
+                                                    if (userGroupsTempstore.includes('idelibre')) {
+                                                        // menu_a_remplir_idelibre += collapseConvocations.innerHTML;
+                                                        menu_a_remplir_idelibre += '\
                                                             <a class="waves-effect waves-dark" title="Gérer les séances" target="_blank" href="https://idelibre.ecollectivites.fr" aria-expanded="false">\
                                                             <span class="hide-menu px-2">Gérer/Voir les séances</span></a>';
-                                                        }
+                                                    }
                                                 }
-
+                                                
                                                 nouvelElement.innerHTML = menu_a_remplir_idelibre;
-
+                                                
                                                 if (menu_convocations) {
-                                                        menu_convocations.insertAdjacentElement('afterend', nouvelElement);
+                                                    menu_convocations.insertAdjacentElement('afterend', nouvelElement);
                                                 }
-                                                if (((!userGroupsTempstore.includes('pastell') || !userGroupsTempstore.includes('pastell-docasigner')) && (userGroupsTempstore.includes('opensign')))) {
+						if ((!userGroupsTempstore.includes('pastell') || !userGroupsTempstore.includes('pastell-docasigner'))) {
 
-                                                        var a_traiter = ''
-                                                        var menu_doc_a_signer = document.getElementById('signature_electronique')
-                                                        var menu_a_remplir = ""
-                                                        var nouvelElement = document.createElement('div');
-                                                        nouvelElement.classList.add('sub_menu_eadmin');
-                                                        nouvelElement.classList.add('collapse');
-                                                        nouvelElement.setAttribute('id', 'collapsesignature_electronique');
-                                                        menu_a_remplir += '\
+                            var a_traiter = ''
+                            var menu_doc_a_signer = document.getElementById('signature_electronique')
+                            var menu_a_remplir = ""
+                            var nouvelElement = document.createElement('div');
+                            nouvelElement.classList.add('sub_menu_eadmin');
+                            nouvelElement.classList.add('collapse');
+                            nouvelElement.setAttribute('id', 'collapsesignature_electronique');
+                                menu_a_remplir += '\
                                     <a class="waves-effect waves-dark" title="Gérer les signatures à la volée" target="_blank" href="https://sign.ecollectivites.fr" aria-expanded="false">\
                                     <span class="hide-menu px-2">Gérer les signatures à la volée</span></a>'
-                                                        nouvelElement.innerHTML = menu_a_remplir
-                                                        if (menu_doc_a_signer) {
-                                                                menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
-                                                        }
-                                                }
+                            nouvelElement.innerHTML = menu_a_remplir
+                            if (menu_doc_a_signer) {
+                                menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
+                            }
+}
                                         }); // fin once
                                 }, 5000);
                         }
