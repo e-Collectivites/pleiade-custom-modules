@@ -31,6 +31,13 @@
                     else{
                       var type = 'AUCUN TYPE'
                     }
+                    if(donnees[i].sub_title !== null) {
+                      console.log(donnees[i].sub_title)
+                      var sub_title =  donnees[i].sub_title
+                    }
+                    else{
+                      var sub_title = 'Aucun sous-titre'
+                    }
                  
                       blocUserGuide +=
                       '<a target="_blank" href="' + donnees[i].url + '">\
@@ -39,7 +46,7 @@
                             <img src="'+ donnees[i].image +'" class="card-img-top" alt="Course Image">\
                             <div class="card-body d-flex flex-column align-items-center">\
                               <h5 class="card-title d-flex justify-content-center fs-5">'+ donnees[i].title + '</h5>\
-                              <h4>' + donnees[i].sub_title + '</h4>\
+                              <h4>' + sub_title + '</h4>\
                               <h5 class="tag_btn position-absolute w-auto p-2">' + type + '</h5>\
                             </div>\
                           </div>\

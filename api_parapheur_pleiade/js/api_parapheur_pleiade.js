@@ -76,20 +76,17 @@
                             };
                             xhr.send();
                         }
-                        
-                        if ((cookieGroups.includes('parapheur85b') || 
-                        cookieGroups.includes('parapheur72')|| 
-                        cookieGroups.includes('parapheur53')|| 
-                        cookieGroups.includes('parapheur44')|| 
-                        cookieGroups.includes('parapheur49')|| 
-                        cookieGroups.includes('parapheur')) && (!cookieGroups.includes('pastell') || !cookieGroups.includes('pastell-docasigner'))) {
+
+                        if ( 
+                        cookieGroups.includes('parapheur') && (!cookieGroups.includes('pastell') || !cookieGroups.includes('docsasigner'))) {
                             
                             var a_traiter = ''
-                            var menu_doc_a_signer = document.getElementById('signature_electronique')
+                            var menu_doc_a_signer = document.getElementById('signaturevialeparapheurlectronique')
                             var menu_a_remplir = ""
+console.log(menu_doc_a_signer);
                             var nouvelElement = document.createElement('div');
                             nouvelElement.classList.add('sub_menu_eadmin');
-                            nouvelElement.classList.add('collapse');
+                            //nouvelElement.classList.add('collapse');
                             nouvelElement.setAttribute('id', 'collapsesignature_electronique');
                             if (localStorage.getItem('docs_parapheur') !== '0') {
                                 a_traiter = '(' + localStorage.getItem('docs_parapheur') + ')'
@@ -97,21 +94,13 @@
                               else {
                                 a_traiter = ''
                               }
-                              var departement = decodeURIComponent(getCookie('departement'));
                               
-                                if (departement == '85b'){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '85.ecollectivites.fr'
-                                }
-                                else if(departement == '85' || departement == 'null' ){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '.ecollectivites.fr'
-                                }
-                                else{
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + departement +'.ecollectivites.fr'
-                                }
+                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url 
+                                
                                 menu_a_remplir += '\
                                     <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+url_parapheur+'" aria-expanded="false">\
-                                    <span class="hide-menu px-2">Signer/viser sur le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
-                                    console.log(url_parapheur)
+                                    <span class="hide-menu px-2">Signer/viser dans le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
+                                    
                             nouvelElement.innerHTML = menu_a_remplir
                             if (menu_doc_a_signer) {
                                 menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);

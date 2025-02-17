@@ -40,11 +40,12 @@
           if (xhr.status === 200) {
             var menu_a_remplir = ""
             var response = xhr.response;
-            var menu_actes = document.getElementById('actes'),
-              menu_convocations = document.getElementById('convocations'),
-              menu_doc_a_signer = document.getElementById('signature_electronique'),
-              menu_helios = document.getElementById('flux_financier');
-            var aDelete = document.querySelectorAll('.sub_menu_eadmin');
+            var menu_actes = document.getElementById('transmissiondesactesaucontrledelgalit'),
+              menu_convocations = document.getElementById('gestiondesconvocations'),
+              menu_doc_a_signer = document.getElementById('signaturevialeparapheurlectronique'),
+              menu_helios = document.getElementById('transmissiondesfluxfinancierslatrsorerie'),
+           	menu_bon_commande = document.getElementById('bonsdecommande'); 
+	   var aDelete = document.querySelectorAll('.sub_menu_eadmin');
             for (var i = 0; i < aDelete.length; i++) {
               aDelete[i].parentNode.removeChild(aDelete[i]);
             }
@@ -56,13 +57,14 @@
               
               switch (itemName) {
                 
-                case 'Actes':
+                case 'Actes automatique':
+                 
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
-                  nouvelElement.setAttribute('id', 'collapseactes');
+                  nouvelElement.setAttribute('id', 'collapsetransmissiondesactesaucontrledelgalit');
 
-                  if (userGroupsTempstore.includes('pastell-actes')) {
+                  if (userGroupsTempstore.includes('actes')) {
                     menu_a_remplir = '\
                         <a class="waves-effect waves-dark" title="Télétransmettre un acte" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
                             <span class="hide-menu px-2">Télétransmettre un acte</span>\
@@ -99,13 +101,13 @@
 
                   break;
 
-                case 'Convocation':
-                  
+                case 'Mail sécurisé avec réponse':
+                 
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
-                  nouvelElement.setAttribute('id', 'collapseconvocations');
-                  if (userGroupsTempstore.includes('pastell-convocations')) {
+                  nouvelElement.setAttribute('id', 'collapsegestiondesconvocations');
+                  if (userGroupsTempstore.includes('convocations')) {
                     menu_a_remplir = '\
                         <a class=" waves-effect waves-dark" title="Envoyer une convocation" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
                         <span class="hide-menu px-2">Envoyer une convocation</span></a>'
@@ -126,19 +128,19 @@
                   nouvelElement.innerHTML = menu_a_remplir
                   if (menu_convocations && !document.getElementById('collapseconvocations')) {
                     menu_convocations.insertAdjacentElement('afterend', nouvelElement);
-                    
+                   
                   }
 
                   break;
 
-                case 'Helios':
+                case 'Helios automatique':
 
-
+                
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
-                  nouvelElement.setAttribute('id', 'collapseflux_financier');
-                  if (userGroupsTempstore.includes('pastell-helios')) {
+                  nouvelElement.setAttribute('id', 'collapsetransmissiondesfluxfinancierslatrsorerie');
+                  if (userGroupsTempstore.includes('helios')) {
                     menu_a_remplir = '\
                         <a class="waves-effect waves-dark" title="Télétransmettre un flux Hélios" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
                         <span class="hide-menu px-2">Télétransmettre un flux Hélios</span></a>'
@@ -166,18 +168,20 @@
                   }
                   nouvelElement.innerHTML = menu_a_remplir
                   if (menu_helios && !document.getElementById('collapseflux_financier')) {
+                    console.log(menu_helios)
                     menu_helios.insertAdjacentElement('afterend', nouvelElement);
                   }
 
                   break;
-                case 'Document à faire signer':
+                case 'Document PDF':
+                 console.log(key)
                   menu_a_remplir = ''
                   var nouvelElement = document.createElement('div');
                   nouvelElement.classList.add('sub_menu_eadmin');
                   nouvelElement.classList.add('collapse');
-                  nouvelElement.setAttribute('id', 'collapsesignature_electronique');
+                  nouvelElement.setAttribute('id', 'collapsesignaturevialeparapheurlectronique');
 
-                  if (userGroupsTempstore.includes('pastell-docasigner')) {
+                  if (userGroupsTempstore.includes('docsasigner')) {
 
                     menu_a_remplir = '\
                         <a class="waves-effect waves-dark" title="Envoyer un document au parapheur" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
@@ -188,42 +192,29 @@
                                 <span class="hide-menu px-2">Envoyer en lots au parapheur</span></a>'
                     }
                   }
-                  if (userGroupsTempstore.includes('parapheur85b') || 
-                  userGroupsTempstore.includes('parapheur72')|| 
-                  userGroupsTempstore.includes('parapheur53')|| 
-                  userGroupsTempstore.includes('parapheur44')|| 
-                  userGroupsTempstore.includes('parapheur49')|| 
-                  userGroupsTempstore.includes('parapheur')) {
+		console.log(userGroupsTempstore)
+                  if (userGroupsTempstore.includes('parapheur')) {
                     var a_traiter = ''
-                    if (localStorage.getItem('docs_parapheur') !== '0') {
-                      
+                    
+                    if ((localStorage.getItem('docs_parapheur') !== '0') && (localStorage.getItem('docs_parapheur') != null)) {
                       a_traiter = '(' + localStorage.getItem('docs_parapheur') + ')'
                     }
                     else {
                       a_traiter = ''
                     }
-                    var url_parapheur = ""
-                    var departement = decodeURIComponent(getCookie('departement'));
-                              
-                                if (departement == '85b'){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '85.ecollectivites.fr'
-                                }
-                                else if(departement == '85' || departement == 'null'){
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + '.ecollectivites.fr'
-                                }
-                                else{
-                                    url_parapheur =  drupalSettings.api_parapheur_pleiade.field_parapheur_url + departement +'.ecollectivites.fr'
-                                }
+                    
+                    var url_parapheur = drupalSettings.api_parapheur_pleiade.field_parapheur_url
+                                
                     menu_a_remplir += '\
                         <a class="waves-effect waves-dark" title="Signer/viser sur le parapheur" target="_blank" href="'+ url_parapheur +'" aria-expanded="false">\
-                        <span class="hide-menu px-2">Signer/viser sur le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
+                        <span class="hide-menu px-2">Signer/viser dans le parapheur <span id="a_traiter">'+ a_traiter + '</span></span></a>'
                   }
-                  if (userGroupsTempstore.includes('pastell-docasigner') && drupalSettings.path.isFront) {
+                  if (userGroupsTempstore.includes('docsasigner') && drupalSettings.path.isFront) {
                     menu_a_remplir += '\
                         <span id="voir_docs" class="waves-effect waves-dark" title="Voir les documents à faire signer" target="_blank" aria-expanded="false">\
                         <span class="hide-menu px-2">Voir les documents à faire signer</span></span>';
                   }
-                  else if (userGroupsTempstore.includes('pastell-docasigner') && !drupalSettings.path.isFront) {
+                  else if (userGroupsTempstore.includes('docsasigner') && !drupalSettings.path.isFront) {
                     menu_a_remplir += '\
                         <a id="voir_docs" href="/node?goToDatatable=true&type=parapheur" class="waves-effect waves-dark" title=Voir les documents à faire signer" aria-expanded="false">\
                         <span class="hide-menu px-2">Voir les documents à faire signer</span></a>';
@@ -233,6 +224,28 @@
                   
                   if (menu_doc_a_signer ) {
                     menu_doc_a_signer.insertAdjacentElement('afterend', nouvelElement);
+                  }
+
+                  break;
+case "Commande (générique)":
+                  var liens;
+                  nouvelElement = document.createElement('div');
+                  nouvelElement.classList.add('sub_menu_eadmin');
+                  nouvelElement.classList.add('collapse');
+                  nouvelElement.setAttribute('id', 'collapsebonsdecommande')
+                  if (userGroupsTempstore.includes('bonsdecommande')) {
+                        liens = '\
+                        <a class="waves-effect waves-dark" title="Envoyer un bon de commande" target="_blank" href="' + url_pastell + '/Document/new?id_e=' + id_e + '&type=' + key + '" aria-expanded="false">\
+                            <span class="hide-menu px-2">Envoyer un bon de commande</span>\
+                        </a>';  
+
+			liens += '\
+                  <span class="waves-effect waves-dark" title="Voir les bons de commande" id="voir_bons" aria-expanded="false">\
+                  <span class="hide-menu px-2">Voir les bons de commande</span></span>';
+                  }
+                  nouvelElement.innerHTML = liens
+                  if (menu_bon_commande) {
+                    menu_bon_commande.insertAdjacentElement('afterend', nouvelElement);
                   }
 
                   break;

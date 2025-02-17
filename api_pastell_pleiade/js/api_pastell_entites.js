@@ -1,4 +1,4 @@
-(function (Drupal, drupalSettings, once) {
+(function ($, Drupal, drupalSettings, once) {
     "use strict";
     Drupal.behaviors.APIpastellEntitesBehavior = {
         attach: function (context, settings) {
@@ -63,7 +63,6 @@
                                 console.log("AJAX call timed out");
                             };
                             xhr.onloadend = function () {
-
                                 
                                 if(document.getElementById('collectiviteChoice')){
                                     var array_value_select = [];
@@ -130,11 +129,112 @@
 
                                 }, false);
                             }
-                            
                         };
                         xhr.send();
                     }); // end once
             } // fin only on frontpage 
         },
     };
+})(jQuery, Drupal, drupalSettings, once);
+
+/*
+(function (Drupal, drupalSettings, once) {
+    "use strict";
+    Drupal.behaviors.APIpastellEntitesBehavior = {
+        attach: function (context, settings) {
+            if (drupalSettings.api_pastell_pleiade.field_pastell_entities_url) {
+                once("APIpastellEntitesBehavior", "#collectiviteChoice", context).forEach(
+                    function () {
+                        var inputEntitie = document.getElementById("collectiviteChoice");
+                        var datalistEntitie = document.getElementById("collectiviteChoiceOptions");
+                        
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", Drupal.url("v1/api_pastell_pleiade/pastell_entities_query"));
+                        xhr.responseType = "json";
+                        xhr.onload = function () {
+                            if (xhr.status === 200) {
+                                var donnees = xhr.response;
+
+                                if (donnees && donnees != 'null') {
+                                    donnees.forEach(function(value) {
+                                        var option = document.createElement("option");
+                                        //option.value = value.id_e;
+                                        //option.text = unescape(value.denomination);
+					option.value = unescape(value.denomination)
+option.setAttribute('data-value', value.id_e);
+option.id = unescape(value.id_e)					
+datalistEntitie.appendChild(option);
+                                    })
+                                } else {
+                                    inputEntitie.disabled = true;
+                                    inputEntitie.placeholder = "Aucune entité disponible";
+                                }
+                            } else {
+                                inputEntitie.disabled = true;
+                                inputEntitie.placeholder = "Erreur lors de la récupération des entités, veuillez contacter l'administrateur système";
+                            }
+
+                            xhr.onerror = function () {
+                                console.log("Error making AJAX call");
+                            };
+                            xhr.onabort = function () {
+                                console.log("AJAX call aborted");
+                            };
+                            xhr.ontimeout = function () {
+                                console.log("AJAX call timed out");
+                            };
+                            xhr.onloadend = function () {
+                                if (inputEntitie && datalistEntitie) {
+                                    var arrayValueDatalist = [];
+                                    for (var i = 0; i < datalistEntitie.options.length; i++) {
+                                        arrayValueDatalist.push(datalistEntitie.options[i].value);
+                                    }
+					
+                                    if (!localStorage.getItem('collectivite_id') || localStorage.getItem('collectivite_id') == null || !arrayValueDatalist.includes(localStorage.getItem('collectivite_id'))) {
+                                        var optionValue = inputEntitie.id;
+					localStorage.setItem('collectivite_id', optionValue);
+                                        Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(optionValue);
+                                    } else {
+                                        inputEntitie.value = localStorage.getItem('collectivite_id');
+                                        Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(inputEntitie.value);
+                                    }
+
+                                    if (!drupalSettings.api_pastell_pleiade) {
+                                        localStorage.removeItem('collectivite_id');
+                                        inputEntitie.style.visibility = 'hidden !important';
+                                    }
+                                }
+                            }
+
+                            if (inputEntitie && datalistEntitie) {
+                                inputEntitie.addEventListener('input', function (event) {
+				var inputValue = event.target.value;
+				var selectedOption = Array.from(datalistEntitie.options).find(option => option.value === inputValue);
+        			if (selectedOption) {
+            				var dataValue = selectedOption.getAttribute('data-value');
+					localStorage.setItem('collectivite_id', dataValue);
+					console.log('Collectivité input change : ' + dataValue);
+					Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(dataValue);
+				}
+//                                    localStorage.setItem('collectivite_id', dataValue);
+                                  //  console.log('Collectivité input change : ' + dateValue);
+                                 //   Drupal.behaviors.APIpastellMenuBehavior.get_id_coll(event.target.value);
+                                }, false);
+
+                                inputEntitie.addEventListener('input', function (event) {
+                                    if (drupalSettings.path.currentPath === 'lots/docs') {
+                                        const currentUrl = new URL(window.location.href);
+                                        currentUrl.searchParams.set('id_e', event.target.value);
+                                        window.history.replaceState({}, document.title, currentUrl.toString());
+                                        window.location.reload();
+                                    }
+                                }, false);
+                            }
+                        };
+                        xhr.send();
+                    }); 
+            }
+        },
+    };
 })(Drupal, drupalSettings, once);
+*/

@@ -680,12 +680,32 @@
                     document.getElementById("go_to_pastell").appendChild(link)
                   });
                 }
+		var lienVoirBons = document.querySelector("#voir_bons");
+
+                if (lienVoirBons) {
+                  lienVoirBons.addEventListener("click", function () {
+                    table.search('Commande', true, true).draw();
+                    table.column(1).search("Commande", true, false).draw();
+
+                    var offsetTop = document.querySelector("#document_recent_id").offsetTop;
+                    window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
+                    document.getElementById("go_to_pastell").innerHTML = "";
+                    var link = document.createElement("a");
+                    link.classList.add("voir_tout");
+                    link.setAttribute("target", "_blank");
+                    link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=commande-generique";
+                    link.textContent = "Voir tous les actes";
+                    document.getElementById("go_to_pastell").appendChild(link)
+                  });
+                }
+
+
                 var lienVoirConvocations = document.querySelector("#voir_convocs");
 
                 if (lienVoirConvocations) {
                   lienVoirConvocations.addEventListener("click", function () {
-                    table.search('Convocation', true, true).draw();
-                    table.column(1).search("Convocation", true, false).draw();
+                    table.search('Mail sécurisé avec réponse', true, true).draw();
+                    table.column(1).search("Mail sécurisé avec réponse", true, false).draw();
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
@@ -718,17 +738,16 @@
                 var lienVoirDocument = document.querySelector("#voir_docs");
                 if (lienVoirDocument) {
                   lienVoirDocument.addEventListener("click", function () {
-                    table.search('Document à faire signer', true, true).draw();
-                    table.column(1).search("Document à faire signer", true, false).draw();
-
+                    table.search('Document PDF', true, true).draw();
+                    table.column(1).search("Document PDF", true, false).draw();
                     var offsetTop = document.querySelector("#document_recent_id").offsetTop;
                     window.scrollTo({ top: offsetTop - 80, behavior: 'smooth' });
                     document.getElementById("go_to_pastell").innerHTML = "";
                     var link = document.createElement("a");
                     link.classList.add("voir_tout");
                     link.setAttribute("target", "_blank");
-                    link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=document-a-signer";
-                    link.textContent = "Voir tous les Documents à signer";
+                    link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=pdf-generique";
+                    link.textContent = "Voir tous les Documents PDF";
                     document.getElementById("go_to_pastell").appendChild(link)
                   });
                 }
@@ -789,10 +808,10 @@
 
               // Ajout des divs à la suite d'une div spécifique avec un ID
               var eadministration = document.querySelector(".pastille_eadministration");
-              var actes = document.getElementById("pastille_actes");
-              var convocations = document.getElementById("pastille_convocations");
-              var signature_electronique = document.getElementById("pastille_signature_electronique");
-              var flux_financier = document.getElementById("pastille_flux_financier");
+              var actes = document.getElementById("pastille_transmissiondesactesaucontrledelgalit");
+              var convocations = document.getElementById("pastille_gestiondesconvocations");
+              var signature_electronique = document.getElementById("pastille_signaturevialeparapheurlectronique");
+              var flux_financier = document.getElementById("pastille_transmissiondesfluxfinancierslatrsorerie");
 
               if(actes){
                 actes.innerHTML = '';
@@ -920,8 +939,8 @@
                     table.column(1).search("Actes", true, false).draw();
                     break;
                   case 'convoc':
-                    table.search('Convocation Erreur').draw();
-                    table.column(1).search("Convocation", true, false).draw();
+                    table.search('Mail sécurisé Erreur').draw();
+                    table.column(1).search("Mail sécurisé", true, false).draw();
                     break;
                   case 'helios':
                     table.search("Erreur", true, true).draw();
@@ -949,17 +968,17 @@
                       var link = document.createElement("a");
                       link.classList.add("voir_tout");
                       link.setAttribute("target", "_blank");
-                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=actes-ecollectivites";
+                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=actes-automatiques";
                       link.textContent = "Voir tous les actes";
                       document.getElementById("go_to_pastell").appendChild(link)
                       break;
                     case 'convoc':
-                      table.search('Convocation').draw();
+                      table.search('Mail sécurisé avec réponse').draw();
                       var link = document.createElement("a");
                       link.classList.add("voir_tout");
                       link.setAttribute("target", "_blank");
-                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=convocation";
-                      link.textContent = "Voir toutes les Convocations";
+                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=mailsec-bidir";
+                      link.textContent = "Voir tous les Mails sécurisés avec réponse";
                       document.getElementById("go_to_pastell").appendChild(link)
                       break;
                     case 'helios':
@@ -967,7 +986,7 @@
                       var link = document.createElement("a");
                       link.classList.add("voir_tout");
                       link.setAttribute("target", "_blank");
-                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=helios-ecollectivites";
+                      link.href = pastell_url + "Document/list?id_e=" + previousValue + "&type=helios-automatique";
                       link.textContent = "Voir tous les Flux Hélios";
                       document.getElementById("go_to_pastell").appendChild(link)
                       break;
@@ -1034,7 +1053,7 @@
 
         }); // end once
 
-      }, 3100);
+      }, 3700);
 
 
     },

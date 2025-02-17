@@ -1,6 +1,7 @@
 api_pastell_pleiade_js:
   version: 1.x
   js:
+    js/selectize.js: {}
     js/api_pastell_entites.js: {}
     js/api_pastell_doclots.js: {}
     js/api_pastell_menu.js: {}
@@ -14,3 +15,4 @@ api_pastell_pleiade_css:
     theme:
       css/api_pastell_pleiade.css: {}
       css/api_pastell_doclots.css: {}
+      css/selectize.css: {}

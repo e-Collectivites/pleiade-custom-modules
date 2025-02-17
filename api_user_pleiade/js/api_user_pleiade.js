@@ -31,7 +31,7 @@
                       // if (Math.abs(createdDate.getTime() - accessedDate.getTime()) <= 60000) {
                       var steps = [
                         {
-                          intro: "Bienvenue sur le guide interactif du Bureau Virtuel Pléiade",
+                          intro: "Bienvenue sur le guide interactif du Bureau Virtuel Pacte",
                         }
 
                       ];
@@ -39,7 +39,7 @@
                       if (powerOff) {
                         steps.push({
                           element: powerOff,
-                          intro: "Se déconnecter de Pléiade.",
+                          intro: "Se déconnecter de Pacte.",
                         });
                       }
                       var userCardElement = document.querySelector(".user_card");
@@ -53,7 +53,7 @@
                       if (alertPopupElement) {
                         steps.push({
                           element: alertPopupElement,
-                          intro: "Ici apparaîtront les messages importants concernant les solutions d'e-Collectivités.",
+                          intro: "Ici apparaîtront les messages importants concernant les solutions d'Eure Normandie Numérique.",
                         });
                       }
                       var collectiviteChoiceElement = document.querySelector("#collectiviteChoice");
@@ -103,7 +103,7 @@
                       if (dataTables_wrapper) {
                         steps.push({
                           element: dataTables_wrapper,
-                          intro: "Visualiser les 50 derniers éléments ( Actes, Convocations, Documents à signer...).",
+                          intro: "Visualiser les 25 derniers éléments ( Actes, Convocations, Documents à signer...).",
                           position: 'left'
                         });
                       }
@@ -197,7 +197,7 @@
 
           var steps = [
             {
-              intro: "Bienvenue sur le guide interactif du Bureau Virtuel Pléiade",
+              intro: "Bienvenue sur le guide interactif du Bureau Virtuel Pacte",
             }
 
           ];
@@ -205,7 +205,7 @@
           if (powerOff) {
             steps.push({
               element: powerOff,
-              intro: "Se déconnecter de Pléiade.",
+              intro: "Se déconnecter de Pacte.",
             });
           }
           var userCardElement = document.querySelector(".user_card");
@@ -219,7 +219,7 @@
           if (alertPopupElement) {
             steps.push({
               element: alertPopupElement,
-              intro: "Ici apparaîtront les messages importants concernant les solutions d'e-Collectivités.",
+              intro: "Ici apparaîtront les messages importants concernant les solutions d'Eure Normandie Numérique.",
             });
           }
           var collectiviteChoiceElement = document.querySelector("#collectiviteChoice");
