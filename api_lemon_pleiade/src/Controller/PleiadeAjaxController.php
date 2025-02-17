@@ -3,7 +3,7 @@
 namespace Drupal\api_lemon_pleiade\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\module_api_pleiade\ApiPleiadeManager;
@@ -15,8 +15,8 @@ use Drupal\user\PrivateTempStoreFactory;
 class PleiadeAjaxController extends ControllerBase
 {
 
-  // function to query LemonLDAP API, myapplications endpoint
-  public function lemon_myapps_query(Request $request)
+  // function to query LemonLDAP API, myapplications endpoin
+public function lemon_myapps_query(Request $request)
   {
     $return = []; //our variable to fill with data returned by LemonLDAP   
     $lemondataApi = new ApiPleiadeManager();
@@ -35,20 +35,17 @@ class PleiadeAjaxController extends ControllerBase
     $lemondataApi = new ApiPleiadeManager();
     $return = $lemondataApi->searchMySession();
     if($return){
-      $return['groupes'] = '';
+
+$return['groupes'] = '';
       $groupArray = explode(";", $return["groups"]);
       foreach ($groupArray as $group) {
+        $group = str_replace(' ', '', $group);
         if (!empty($group)) {
           $dpt = explode("|", $group);
 
           $return['groupes'] .= $dpt[0].',';
         }
 
-        if($dpt[1] != null){
-
-          $return['groupes'] .= ' dpt-'.$dpt[1].',';
-          setcookie('departement', $dpt[1], time() + 36000, '/');
-        }
       }
       $return['groups'] = $return['groupes'];
       \Drupal::logger('api_lemon_pleiade')->info('User group: @api', ['@api' => $return['groupes']]);

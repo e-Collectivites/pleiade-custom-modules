@@ -1,12 +1,13 @@
 (function ($, Drupal, drupalSettings, once) {
   "use strict";
-  Drupal.behaviors.APIlemonMenuBehavior = {
+  Drupal.behaviors.APIlemonSidebarMenuBehavior = {
     attach: function (context, settings) {
       // All normal pages but not admin pages
       if (!drupalSettings.path.currentPath.includes("admin") && drupalSettings.api_lemon_pleiade.field_lemon_myapps_url && drupalSettings.api_lemon_pleiade.field_lemon_url) {
-        once("APIlemonMenuBehavior", "body", context).forEach(function () {
+        once("APIlemonSidebarMenuBehavior", "body", context).forEach(function () {
+	
           var xhr = new XMLHttpRequest();
-          function getCookie(name) {
+  function getCookie(name) {
             // Récupérer tous les cookies
             const cookies = document.cookie.split(';');
   
@@ -33,18 +34,17 @@
           
           xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"));
           xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.onload = function () {
-            console.log(xhr.status)
-            if (xhr.status === 200) {
+          xhr.onload = function () {            
+            if (xhr.status == '200') {
               var donnees = JSON.parse(xhr.responseText);
-              
               // Check if xhr response is not null
               if (!donnees || donnees === null) {
-                // Redirect to /user/logout URL
-                window.location.href = "/user/logout";
+               // Redirect to /user/logout URL
+               window.location.href = "/user/logout";
                 return;
               }
               var menuHtml = '';
+
               if (donnees.myapplications) {
                 for (var i = 0; i < donnees.myapplications.length; i++) {
                   // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
@@ -59,7 +59,7 @@
                     case 'Collaboratif':
                       iconCategory = '<i class="fa-solid fa-users"></i>'
                       break;
-                    case 'Support et Formation':
+                    case 'Assistance':
                       iconCategory = '<i class="fa-solid fa-circle-info"></i>'
                       break;
                     case 'Mes applications':
@@ -71,16 +71,21 @@
                     case 'Administration':
                       iconCategory = '<i class="fa-solid fa-gear"></i>'
                       break;  
+ 		    case 'Nos services':
+                      iconCategory = '<i class="fa-solid fa-briefcase"></i>'
+                      break;  
+ 		    case 'Ressources':
+                      iconCategory = '<i class="fa-solid fa-file-lines"></i>'
+                      break;  
                     default:
                       break;
                   }
                   var categorie =  donnees.myapplications[i].Category
-                  menuHtml +=
-                    '<div id="'
-                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap has-arrow collapsed ' 
-                     + (categorie == "E-administration" ? "e_admin" : "") +
-                    '" data-bs-toggle="collapse" data-bs-target="#collapse' +
-                    i +
+menuHtml +=
+		'<div id="'
+                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap has-arrow ' 
+                     + (categorie == "E-administration" ? "e_admin" : "") + (categorie !== "E-administration" ? "collapsed" : "") +
+                    '"' + (categorie !== "E-administration" ? ' data-bs-toggle="collapse" data-bs-target="#collapse'+ i : "") +
                     '" aria-expanded=" false" aria-controls="collapse' +
                     i +
                     '">' + iconCategory + '<span class="hide-menu d-flex align-items-center">' +
@@ -89,7 +94,8 @@
                     (categorie == "Collaboratif" ? "<span class='pastille_collab'></span>" : "") +
                     '</span></div><div id="collapse' +
                     i +
-                    '" class="accordion-collapse collapse" aria-labelledby="headingOne"><div class="accordion-body">';
+                    '"'+(categorie !== "E-administration" ? 'class="accordion-collapse collapse"' : "") +'aria-labelledby="headingOne"><div class="accordion-body">';
+
 
                   for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
                     // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
@@ -103,10 +109,16 @@
                     } else {
                       Icon = '';
                     }
-                    if (temp[0].AppDesc == "Consulter nos solutions" || 
-                    temp[0].AppDesc == "Consulter nos formations" || 
-                    temp[0].AppDesc == "Consulter nos guides utilisateurs" ||
-                    temp[0].AppDesc == "Demander une visio") {
+                    if (temp[0].AppDesc == "Offre de services" || 
+                    temp[0].AppDesc == "Formations" || 
+                    temp[0].AppDesc == "Guides utilisateurs" || 
+                    temp[0].AppDesc == "Veille numérique" || 
+                    temp[0].AppDesc == "Veille financière" || 
+                    temp[0].AppDesc == "Veille réglementaire" || 
+                    temp[0].AppDesc == "Cybersécurité" || 
+                    temp[0].AppDesc == "Numérique responsable"|| 
+                    temp[0].AppDesc == "Tutoriels" || 
+                    temp[0].AppDesc == "Documents") {
                       target = ''
                     }
                     else {
@@ -128,7 +140,7 @@
                         //   '<span class="hide-menu px-2">' +
                         //   Object.keys(donnees.myapplications[i].Applications[f]) +
                         //   "</span></a>";
-                        menuHtml += '<a class="sidebar-link " id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        menuHtml += '<a class="sidebar-link " id="' + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
                           temp[0].AppDesc +
                           '" href="' +
                           temp[0].AppUri +
@@ -138,17 +150,17 @@
                           "</span></a>";
                         }
                       } else {
-                        menuHtml += '<span class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        menuHtml += '<span class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
                           temp[0].AppDesc +
-                          '" aria-expanded="false" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" aria-controls="collapse' + temp[0].AppTip + '">' +
+                          '" aria-expanded="false" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + '" aria-controls="collapse' + temp[0].AppDesc + '">' +
                           Icon +
                           '<span class="hide-menu px-2 d-flex align-items-center">' +
                           Object.keys(donnees.myapplications[i].Applications[f]) +
-                          "<span id='pastille_" + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + "'></span></span></span>";
+                          "<span id='pastille_" + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + "'></span></span></span>";
                       }
                     } else {
                       if (temp[0].AppUri) {
-                        menuHtml += '<a class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        menuHtml += '<a class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
                           temp[0].AppDesc +
                           '" href="' +
                           temp[0].AppUri +
@@ -158,7 +170,7 @@
                           Object.keys(donnees.myapplications[i].Applications[f]) +
                           " </span></a>";
                       } else {
-                        menuHtml += '<span class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
+                        menuHtml += '<span class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppDesc.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
                           temp[0].AppDesc +
                           '" aria-expanded="false">' +
                           Icon +
@@ -195,16 +207,21 @@
       } // fin exlude admin pages
       $(document).ready(function () {
         setTimeout(function () {
-          if ($('body').hasClass('path-nos-formations') || $('body').hasClass('path-nos-solutions') 
-          || $('body').hasClass('path-nos-guides-utilisateurs')
-          || $('body').hasClass('page-node-type-formations')
-          || $('body').hasClass('page-node-type-guide-utilisateur')
-          || $('body').hasClass('page-node-type-solutions') ||
-          ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
+          if ($('body').hasClass('page-node-type-ressources') 
+	  || $('body').hasClass('path-ressources') 
+	) {
             $('#collapse3').addClass('show');
           }
-          if ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-de-visio-form')) {
-            $('#collapse2').addClass('show');
+          if ($('body').hasClass('path-formations') 
+	  || $('body').hasClass('page-node-type-formations')
+|| $('body').hasClass('page-node-type-solutions')
+|| $('body').hasClass('path-solutions')) {
+            $('#collapse5').addClass('show');
+          }
+	 if ($('body').hasClass('page-node-type-guide-utilisateur') 
+          || $('body').hasClass('path-guides-utilisateurs') 
+        ) {
+            $('#collapse4').addClass('show');
           }
 
         }, 1100);

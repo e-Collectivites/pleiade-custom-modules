@@ -138,15 +138,20 @@
           let filter = '';
 
           if (contrastCheckbox.checked) {
-            filter += 'contrast(200%) ';
+            filter = 'contrast(200%) ';
           }
-
           if (bwCheckbox.checked) {
-            filter += 'grayscale(100%) ';
+            filter = 'grayscale(100%) ';
           }
 
-          document.body.style.filter = filter.trim();
-        }
+        document.querySelector('.left-sidebar').style.filter = filter.trim();
+	document.querySelector('.container-fluid').style.filter = filter.trim();
+document.querySelector('.navbar').style.filter = filter.trim();
+document.querySelector('.footer').style.filter = filter.trim();
+document.querySelector('.message_avertissement').style.filter = filter.trim();
+document.querySelector('.customizer').style.filter = filter.trim();
+document.querySelector('#up_to_top').style.filter = filter.trim();
+}
 
         contrastCheckbox.addEventListener('change', updateFilter);
         bwCheckbox.addEventListener('change', updateFilter);

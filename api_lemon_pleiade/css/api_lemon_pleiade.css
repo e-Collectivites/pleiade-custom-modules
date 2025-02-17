@@ -131,10 +131,11 @@ body[data-theme=dark] .nav-small-cap, body[data-theme=dark] #menuLemon .sidebar-
     justify-content: center;
 }
 
-#main-wrapper[data-layout=vertical][data-sidebartype=full] .light-logo {
-    height: 30px !important;
+#main-wrapper[data-layout=vertical][data-sidebartype=full] .light-logo, #main-wrapper[data-layout=vertical][data-sidebartype=full] .dark-logo {
+    height: 45px !important;
     margin: unset;
 }
+
 
 #main-wrapper[data-layout=vertical][data-sidebartype=full] .logo-icon, #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] #interactive_guid {
     display: none;
@@ -202,13 +203,18 @@ div.long-category span.hide-menu {
     display: initial;
 }
 
-.path-nos-solutions a[href="/nos-solutions"], 
-.path-nos-formations a[href="/nos-formations"],
-.path-nos-formations #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse3"],
-.path-nos-solutions #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse3"]
+.path-solutions a[href="/solutions"], 
+.path-formations a[href="/formations"],
+.page-node-type-ressources #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse3"],
+.path-ressources #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse3"],
+.page-node-type-formations #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse5"],
+.path-formations #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse5"],
+.page-node-type-solutions #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse5"],
+.path-solutions #main-wrapper[data-layout=vertical][data-sidebartype=full] .sidebar-nav ul [data-bs-target="#collapse5"]
 {
     color: #fbbd52!important;
 }
+
 /* .sub_menu_eadmin {
     max-height: 0;
     overflow: hidden;
