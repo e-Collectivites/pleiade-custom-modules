@@ -28,17 +28,15 @@
             if (xhr.status === 200) {
               var linkEntitie = ""; // Initialiser la variable linkEntitie ici
               var donnees = xhr.response; // Assurez-vous que xhr.response contient un tableau d'objets "donnees"
-              //console.log(donneesArray)
               var linkEntitie =
                 '<div id="zimbra_mail" class="col-lg-12 mb-2">\
                                             <div class="card">\
-                                              <div class="card-header rounded-top bg-white rounded-top">\
-                                                <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
+                                              <div class="card-header rounded-top bg-white rounded-top d-flex">\
+                                                <h4 class="card-title text-dark py-2">Boite de Reception<span></span></h4>\
                                               </div>\
                                                     <div class="card-body">\
                                                       <div class="scroll_on_table">';
 
-              console.log(donnees);           
               if (donnees.userData.Body.SearchResponse.c) {
                 for (
                   var i = 0;
@@ -87,7 +85,7 @@
                 var linkEntitie =
                   '<div id="zimbra_mail " class="col-lg-12 mb-2">\
                     <div class="card">\
-                      <div class="card-header rounded-top bg-white border-bottom rounded-top">\
+                      <div class="card-header rounded-top bg-white border-bottom rounded-top d-flex">\
                         <h4 class="card-title text-dark py-2">Boite de réception<span></span></h4>\
                       </div>\
                       <div class="d-flex justify-content-center">\

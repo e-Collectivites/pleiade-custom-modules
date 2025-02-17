@@ -52,7 +52,40 @@ class DatatableController extends ControllerBase
             }
             $formattedData['docs'] = array_merge($formattedData['docs'], $return1);
         }
-        $nextcloudataApi = new ApiPleiadeManager();
+      
+	if (is_string($storedGroups) && strpos($storedGroups, 'i-parapheur') !== false) {
+
+		$config = \Drupal::config('api_parapheur_pleiade.settings');
+		$field_parapheur_url = $config->get('field_parapheur_url');
+                $dataApi = new ApiPleiadeManager();
+                $return1 = $dataApi->searchMyDesktop();
+                if($return1){
+
+		$return1 = array_map(function ($item) use ($field_parapheur_url) {
+            		return [
+				'type' => 'Parapheur',
+				'titre' => $item['stepList'][0]['desks'][0]['name'] ." | ". $item['name'] ,
+                		'id' => $item['id'],
+                		'status' => $item['stepList'][0]['action'],
+                		'creation' => date('d/m/y', strtotime($item['draftCreationDate'])),
+				'fileUrl' => $field_parapheur_url. "tenant/". $item['tenant_id']. '/desk/'.$item['stepList'][0]['desks'][0]['id']."/folder/".$item['id'],
+            			'type_dossier' => $item['type']['name'] ." | ". $item['subtype']['name']
+			];
+        }, $return1);
+
+//var_dump($return1);
+                } else {
+                    $return1 = [];                   
+                }
+
+        } else {
+          $return1 = [];
+                
+        }
+        $formattedData['docs'] = array_merge($formattedData['docs'], $return1);
+        
+
+	$nextcloudataApi = new ApiPleiadeManager();
         $return_nc = $nextcloudataApi->getNextcloudNotifs();
 	$tempstore = \Drupal::service('tempstore.private')->get('api_nextcloud_pleiade');
         $tempstore->set('documents_nextcloud', $return_nc);
@@ -79,7 +112,7 @@ class DatatableController extends ControllerBase
                         $formattedItem = [
                             'type' => 'Nextcloud',
                             'titre' => $fileName,
-                            'creation' => date('d/m/Y H:i', strtotime($item->datetime)),
+                            'creation' => date('d/m/y', strtotime($item->datetime)),
                             // 'subject' => $item->subject,
                             'status' => $status,
                             'fileUrl' => $fileUrl
@@ -101,7 +134,7 @@ class DatatableController extends ControllerBase
             }
         
         }
-        // $formattedData['error'] = $error_count;
+
         $jsonData = json_encode($formattedData); 
         
         if ($jsonData !== 'null' ) {

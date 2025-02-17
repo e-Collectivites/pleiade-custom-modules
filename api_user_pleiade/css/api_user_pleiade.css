@@ -546,5 +546,12 @@ body[data-theme=dark] .btn-accessibility{
 div#notifications_alert{
   padding: 0.1em 1em!important;
 }
-
+.close-button {
+  position: absolute;
+  right: 10px; /* Adjust the value as needed */
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+}
 

@@ -99,7 +99,7 @@ public function zimbra_tasks_query(Request $request)
     $email = $user->getEmail();
 
     /////////////VARIABLE GLOBALE TASKS ENDPOINT //////////////////
-    $limit_tasks = 1000;
+    $limit_tasks = 10000;
     $currentDateTime = new \DateTime();
     $limitEndTimeStamp = $currentDateTime->modify("+30 days")->getTimestamp() * 1000;
     $currentDateTime = new \DateTime();

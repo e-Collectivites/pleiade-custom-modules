@@ -482,10 +482,9 @@
                           ";
                   }
                 }
-/*                var TotalErrors = ErrorActeCounts + ErrorHeliosCounts + ErrorConvocCounts + ErrorDocsCounts
+                var TotalErrors = ErrorActeCounts + ErrorHeliosCounts + ErrorConvocCounts + ErrorDocsCounts
                 var Errors = { TotalErrors, ErrorActeCounts, ErrorHeliosCounts, ErrorConvocCounts, ErrorDocsCounts }
                 localStorage.setItem('errors', JSON.stringify(Errors))
-*/
                 document_coll +=
                   '\
                               </tbody>\
@@ -542,18 +541,17 @@
           xhr.onloadend = function () {
             // Datatables effect on doc list
             var table = $("#tablealldocs").DataTable({
-		autoWidth: false,
-		aoColumnDefs: [
-		{ width: '35%', target: 1 },
-		],
               columns: [
         	{ data: "application" },
 	        { data: "titre" },
                 { data: "type" },
-                { data: "objectDate" },
+                {
+                  data: "objectDate"
+                },
                 { data: "etat" },
                 { data: "actions" },
               ],
+		
               order: [[2, "desc"]],
               paging: false,
               scrollY: 320,
@@ -593,7 +591,7 @@
        
       }); // end once
 
-            }, 2000);
+            }, 3100);
 
 
     },

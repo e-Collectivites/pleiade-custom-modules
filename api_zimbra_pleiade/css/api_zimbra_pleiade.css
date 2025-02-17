@@ -19,7 +19,9 @@ width: 480px;
     color: initial!important;
     transition: transform .2s;
 } 
-
+#main-wrapper[data-sidebartype=full] .fc-media-screen .fc-timegrid-cols>table{
+width:85%!important;
+}
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
@@ -93,7 +95,7 @@ tbody .fc-scrollgrid-section:first-child {
     border: inherit !important;
     border-left: 3px solid var(--fc-event-bg-color);
     opacity: 0.88;
-    background-color: var(--global-color) !important;
+//    background-color: var(--global-color) !important;
 }
 
 .fc-timegrid-event, .fc-timegrid-more-link {

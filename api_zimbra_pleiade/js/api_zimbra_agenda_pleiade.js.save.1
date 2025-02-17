@@ -106,9 +106,9 @@
                     }
                     else {
                       var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
-                      var startDate = new Date(start_task * 1000 + 3600 * 1000);
+                      var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
                       var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
-                      var endDate = new Date(end_task * 1000 + 3600 * 1000 );
+                      var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
                       event_array[i] = {
                         title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
                         start: startDate.toISOString().replace(".000Z", ""),
@@ -138,7 +138,6 @@
                 var numberOfMlSeconds = currentDateObj.getTime();
                 var addMlSeconds = 60 * 60 * 1000 * 2;
                 var newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
-                //console.log(newDateObj)
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                   timeZone: "UTC",
                   locale: "fr",

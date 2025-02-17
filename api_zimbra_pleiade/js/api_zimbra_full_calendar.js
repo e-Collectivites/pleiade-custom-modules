@@ -29,6 +29,7 @@
             if (xhr.status === 200) {
               var donnees = xhr.response;
               if (donnees && donnees != "0") {
+		console.log(donnees);
                 var event_array = [];
                 document.cookie =
                   "nbOfTasks=" +
@@ -38,12 +39,30 @@
                   i < donnees.userData.Body.SearchResponse.appt.length;
                   i++
                 ) {
+var eventColor;
+let fbValue = donnees.userData.Body.SearchResponse.appt[i].fb;
+switch(fbValue) {
+    case 'F':
+eventColor = '#008020';
+        break;
+    case 'T':
+eventColor = '#32acff';
+        break;
 
+    case 'B':
+eventColor = '#ff3b31';
+          break;
+    case 'O':
+eventColor = '#ffae3e';
+          break; 
+    default:
+        break;
+}
                   if (donnees.userData.Body.SearchResponse.appt[i].recur) {
                     var start_task = donnees.userData.Body.SearchResponse.appt[i].inst[0].s / 1000;
-                    var startDate = new Date(start_task * 1000 + 3600 * 1000 * 2);
+                    var startDate = new Date(start_task * 1000 + 3600 * 1000);
                     var end_task = start_task + donnees.userData.Body.SearchResponse.appt[i].dur / 1000;
-                    var endDate = new Date(end_task * 1000 + 3600 * 1000 * 2);
+                    var endDate = new Date(end_task * 1000 + 3600 * 1000);
                     if (donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval) {
                       var interval = donnees.userData.Body.SearchResponse.appt[i].recur[0].add[0].rule[0].interval[0].ival
                     }
@@ -64,10 +83,16 @@
                       default:
                         break;
                     }
+			var date = new Date(endDate - startDate);  // Multiplier par 1000 si timestamp en secondes
+    var hours = date.getUTCHours().toString().padStart(2, '0');
+    var minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    
                     event_array[i] = {
                       title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
                       start: startDate.toISOString().replace(".000Z", ""),
                       end: endDate.toISOString().replace(".000Z", ""),
+		      duration: hours + ":" + minutes,	
+	  	      backgroundColor: eventColor,
                       url:
                         donnees.domainEntry.url +
                         "modern/calendar/event/details/" +
@@ -79,12 +104,12 @@
                         donnees.userData.Body.SearchResponse.appt[i].inst[0].s +
                         "&end=" +
                         end_task * 1000,
-                      rrule: {
-                        freq: frequence,
-                       // interval: interval,
+                      rrule: {  
+			freq: frequence,
                         dtstart: startDate.toISOString().replace(".000Z", ""),
-                      }
-                    };
+		      }
+  
+                  };
 if (typeof interval !== 'undefined') {
     event_array[i].rrule.interval = interval;
   } else {
@@ -101,7 +126,8 @@ event_array[i].rrule.interval = 1;
                       title: donnees.userData.Body.SearchResponse.appt[i].name, // titre court
                       start: startDate.toISOString().replace(".000Z", ""),
                       end: endDate.toISOString().replace(".000Z", ""),
-                      url:
+                       backgroundColor: eventColor,
+			url:
                         donnees.domainEntry.url +
                         "modern/calendar/event/details/" +
                         donnees.userData.Body.SearchResponse.appt[i].invId +
@@ -147,7 +173,7 @@ event_array[i].rrule.interval = 1;
                   initialView: "timeGridWeek",
                   weekends: false,
                   themeSystem: "bootstrap",
-                  slotDuration: "00:30:00",
+                  //slotDuration: "00:30:00",
                   events: event_array,
                   eventClick: function (event) {
                     if (event.event.url) {
