@@ -11,5 +11,3 @@ module_postit_pleiade_css:
   css:
     theme:
       css/module_postit_pleiade.css: {}
-      # css/lib/slick.css: {}
-     

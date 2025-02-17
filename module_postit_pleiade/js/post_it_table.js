@@ -137,7 +137,6 @@
               items.push(itemObject);
             }
             if (items) {
-              console.log(JSON.stringify({ items }))
               $.ajax({
                 url: '/v1/module_postit_pleiade/save_postit', // Mettez à jour avec votre route Drupal
                 type: 'POST',

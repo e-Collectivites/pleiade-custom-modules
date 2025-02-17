@@ -113,7 +113,7 @@
 }
 .slick-dots .slick-active i{
     
-    color: #1f3889;
+    color: var(--global-color);
 }
 .slick-dots li:not(.slick-active)  {
     opacity: 0.5 ;
@@ -206,7 +206,7 @@ bottom: 0em;
     left: 0.3em;
     font-size: 12px!important;
     width: 33%;
-    background-color: #1f3889;
+    background-color: var(--global-color);
     border-radius: 4px;
     color: #FFF;
 }

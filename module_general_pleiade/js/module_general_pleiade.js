@@ -81,7 +81,7 @@
             }
 
           }); // end once
-        }, 5500);
+        }, 1000);
       } // fin only on frontpage
 
     },

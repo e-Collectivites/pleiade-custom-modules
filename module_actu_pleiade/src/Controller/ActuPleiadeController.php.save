@@ -37,16 +37,17 @@ class ActuPleiadeController extends ControllerBase
             ->accessCheck(TRUE)
             ->execute();
 */
-	$nids = \Drupal::entityQuery('node')
+$nids = \Drupal::entityQuery('node')
                     ->condition('type', 'ressources')
                     ->condition('status', Node::PUBLISHED)
-                    ->sort('changed', 'DESC')
+                //    ->condition('field_categorie_ressource', $term_id) // Filtrer par l'ID de la taxonomie
+                    ->sort('created', 'DESC')
                     ->accessCheck(TRUE)
                     ->execute();
             $nodes = Node::loadMultiple($nids);
             foreach ($nodes as $node) {
-              $created_date = \Drupal::service('date.formatter')->format($node->getChangedTime(), 'custom', 'd/m/Y');
 
+              $created_date = \Drupal::service('date.formatter')->format($node->getCreatedTime(), 'custom', 'd/m/Y');
                 if ($node->hasField('field_image_ressource') && $node->get('field_image_ressource')->entity) {
                     $file = \Drupal::service('entity.repository')->loadEntityByUuid('file', $node->get('field_image_ressource')->entity->uuid());
                     if ($file) {
@@ -80,13 +81,13 @@ class ActuPleiadeController extends ControllerBase
                     }
                     $tags = implode(', ', $tags);
                 }
-		if (strpos($tags, 'Actu') === false) {
-    			continue; // Si "Article" n'est pas dans les tags, passer à l'article suivant
-		}
+if (strpos($tags, 'Actu') === false) {
+    continue; // Si "Article" n'est pas dans les tags, passer à l'article suivant
+}
 
-		$tags = str_replace('Actu, ', '', $tags); // Supprime "Article, " si c'est suivi par une autre étiquette
-		$tags = str_replace(', Actu', '', $tags); // Supprime ", Article" si c'est précédé par une autre étiquette
-		$tags = str_replace('Actu', '', $tags); // Supprime "Article" si c'est la seule étiquette restante
+$tags = str_replace('Actu, ', '', $tags); // Supprime "Article, " si c'est suivi par une autre étiquette
+$tags = str_replace(', Actu', '', $tags); // Supprime ", Article" si c'est précédé par une autre étiquette
+$tags = str_replace('Actu', '', $tags); // Supprime "Article" si c'est la seule étiquette restante
 
                 $article[] = [   
                     "title" => $node->label(),
@@ -112,11 +113,10 @@ class ActuPleiadeController extends ControllerBase
             }
             
             $result_array = json_decode($result_json, true);
-            /*
+            
             usort($result_array, function($a, $b) {
                 return strtotime($b['created']) - strtotime($a['created']);
             });
-*/
             
             $result_json_sorted = json_encode($result_array);
         }

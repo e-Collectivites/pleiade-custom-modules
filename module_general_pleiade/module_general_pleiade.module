@@ -21,7 +21,7 @@ function module_general_pleiade_preprocess_page(&$variables)
  
   $sites_internets = $config->get('sites_internets');
   $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-  $sites_internet_current_user = $user->get('field_site_internet')->getValue();
+  // $sites_internet_current_user = $user->get('field_site_internet')->getValue();
   // Add the JS library.
   $variables['#attached']['library'][] = 'module_general_pleiade/module_general_pleiade_js';
   // Add the CSS library.
@@ -34,6 +34,7 @@ function module_general_pleiade_preprocess_page(&$variables)
   $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internets'] = $sites_internets;
   $variables['#attached']['drupalSettings']['module_general_pleiade']['sites_internet_current_user'] = $sites_internet_current_user;
 }
+/*
 function module_general_pleiade_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
   if ($form_id == 'user_form') {
@@ -42,10 +43,8 @@ function module_general_pleiade_form_alter(&$form, FormStateInterface $form_stat
     $sites_internet = $config->get('sites_internets');
     $items = explode("\n", $sites_internet);
     foreach ($items as $item) {
-      // Diviser chaque élément en valeurs en utilisant ":"
       list($key, $value1, $value2) = explode(",", $item);
 
-      // Ajouter la paire clé-valeur au tableau associatif
       $array[$key] = array($value1, $value2);
     }
     $cookie_groups = explode(", ", $_COOKIE['groups']);
@@ -53,10 +52,10 @@ function module_general_pleiade_form_alter(&$form, FormStateInterface $form_stat
 
     $form['field_site_internet']['#access'] = TRUE;
     foreach ($array_keys as $commune) {
-      // Vérifier si la clé est présente dans les clés de $cookie_groups
       if (in_array($commune, $cookie_groups)) {
         $form['field_site_internet']['#access'] = FALSE;
       }
     }
   }
 }
+*/

@@ -30,6 +30,7 @@
                   var notification;
                   
                   if (minutesAgo <= 1) {
+		     localStorage.removeItem('notificationStatus', 'hidden');
                     notification = "Maintenant";
                   } else if (minutesAgo <= 60) {
                     notification = "Il y a " + minutesAgo + " minutes";

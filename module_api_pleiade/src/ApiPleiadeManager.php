@@ -108,8 +108,7 @@ class ApiPleiadeManager
       }
       try {
         $clientRequest = $this->client->request($method, $LEMON_API_URL, $options);
-        $body = $clientRequest->getBody();
-        
+        $body = $clientRequest->getBody();        
         return Json::decode($body);
         
       } catch (RequestException $e) {
@@ -148,6 +147,7 @@ class ApiPleiadeManager
           'Content-Type' => 'multipart/form-data',
           'Cookie' => 'lemonldap=' . $_COOKIE['lemonldap'],
         ],
+        // 'verify' => false,
       ];
 
       if (!empty($inputs)) {
@@ -187,17 +187,6 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'parapheur') {
 
-      $departement = $_COOKIE["departement"];
-      if($departement == "85b"){
-          $nbDpt = '85';
-      }
-      elseif($departement == "85"){
-          $nbDpt = '';
-      }
-      else{
-          $nbDpt = $departement;
-      }
-
       $current_user = \Drupal::currentUser();
       if ($current_user->id() != 0) {
         $username = $current_user->getAccountName();
@@ -205,18 +194,16 @@ class ApiPleiadeManager
       $client = new Client([
         'verify' => false, // Désactiver la vérification SSL
       ]);
-
       try {
         // Construire l'URL de la première requête
-        $IP_request_url = $this->settings_parapheur->get('field_parapheur_url') . $nbDpt.'.ecollectivites.fr/' . $this->settings_parapheur->get('field_parapheur_auth_url') . $username . '/forceLogin';
+        $IP_request_url = $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_auth_url') . $username . '/forceLogin';
         // Logger l'URL de la première requête
         \Drupal::logger('api_parapheur_pleiade')->info('Requete iParapheur API : @ReqIP', ['@ReqIP' => $IP_request_url]);
-
         // Faire la première requête POST
         $ipRequest = $client->request('POST', $IP_request_url, []);
         $response = $ipRequest->getBody()->getContents();
         $json_response = json_decode($response);
-
+//	var_dump($response);
       } catch (RequestException $e) {
         // Gérer les erreurs de requête
         \Drupal::logger('api_parapheur_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
@@ -234,7 +221,6 @@ class ApiPleiadeManager
         $ipRequest = $client->request('GET', $IP_request_url, []);
         $response = $ipRequest->getBody()->getContents();
         return Json::decode($response);
-
       } catch (RequestException $e) {
         // Gérer les erreurs de requête
         \Drupal::logger('api_parapheur_pleiade')->error('Curl error: @error', ['@error' => $e->getMessage()]);
@@ -250,7 +236,7 @@ class ApiPleiadeManager
     ////////////////////////////////////////////////////////
     elseif ($application == 'articles_ecoll') {
       try {
-        $response = $this->client->request('GET', 'https://ecollectivites.fr/api/v1/articles', []);
+        $response = $this->client->request('GET', $api, []);
 
         // Vérifier le code de statut
         $statusCode = $response->getStatusCode();
@@ -521,10 +507,10 @@ class ApiPleiadeManager
   //////////////////////////////////////////////////////////////
 
 
-  public function searchMyDesktop($dpt)
+  public function searchMyDesktop()
   {
-// var_dump($this->settings_parapheur->get('field_parapheur_url').$dpt.".ecollectivites.fr" . $this->settings_parapheur->get('field_parapheur_bureaux_url'));
-    return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url').$dpt.".ecollectivites.fr" . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
+ //var_dump($this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'));
+    return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url').$this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur');
   }
 
   //////////////////////////////////////////////////////////////
@@ -536,7 +522,7 @@ class ApiPleiadeManager
 
   public function getEcollArticles()
   {
-    return $this->curlGet([], [], 'https://ecollectivites.fr/api/v1/artics', 'articles_ecoll');
+    return $this->curlGet([], [], $this->settings_actu->get('url_site'), 'articles_ecoll');
   }
   //////////////////////////////////////////////////////////////
   //                                                          //

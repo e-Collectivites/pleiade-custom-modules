@@ -91,3 +91,6 @@ textarea#message{
 #post_it_dashboard .item{
   z-index: 999999999;
 }
+.tablealldocs_length{
+display: none;
+}

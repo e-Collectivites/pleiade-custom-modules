@@ -1,5 +1,6 @@
 (function ($, Drupal, drupalSettings, once) {
   "use strict";
+
   Drupal.behaviors.ActuBlocksBehavior = {
     attach: function (context, settings) {
       // only on frontpage (desktop)
@@ -43,7 +44,7 @@
             
                     // Tronquer la description à 50 caractères
                     blocActu +=
-                        '<a href="' + donnees[i].view_node + '" class="d-flex mb-2 justify-content-center" target="_blank">\
+                        '<a href="' + donnees[i].view_node + '" class="d-flex mb-2 justify-content-center" >\
                             <div class="card" style="height: 230px; width: 250px;">\
                                 <img src="' + donnees[i].field_image + '" class="card-img-top" alt="Course Image">\
                                 <div class="card-body d-flex flex-column" >' +
@@ -89,15 +90,17 @@
             xhr.onloadend = function () {
               
               $('#carousel_actualites').slick({
-                slidesToShow: 4,
+slidesToShow: 4,
                 slidesToScroll: 1,
                 arrows: true,
                 dots: true,
-                // variableWidth: true,
+                autoplay: true,
+                autoplaySpeed: 4000,
                 customPaging: function (slider, i) {
                   // this example would render "tabs" with titles
                   return '<i class="fa-solid fa-circle"></i>';
                 },
+
               });
             }
           };
