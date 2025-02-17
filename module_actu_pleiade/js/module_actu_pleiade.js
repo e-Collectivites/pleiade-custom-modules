@@ -22,7 +22,7 @@
                     <div class="card">\
                       <div class="card-header rounded-top bg-white rounded-top">\
                         <span class="card-title text-dark py-2">Dernières actualités</span></div>\
-                          <div class="" id="carousel_actualites">\
+                          <div class="card-body" id="carousel_actualites">\
                   '
               if (donnees && div) {
 

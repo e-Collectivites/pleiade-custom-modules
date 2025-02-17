@@ -2,9 +2,6 @@
 :root {
     --global-color: #1f3889;
   }
-.actualites{
-    padding-top: 5em;
-}
 .actualites .card-img-top {
     width: 100%;
     max-width: 300px!important;
@@ -27,6 +24,9 @@
 } 
 .actualites .slick-track .card:hover .card-img-top, .articles_lies .card:hover .card-img-top{
     transform: scale(1.1);
+}
+.actualites .card-header.rounded-top.bg-white.rounded-top {
+    padding-top: 0.3em;
 }
 
 .slick-prev,
@@ -106,7 +106,7 @@
 /* Dots */
 .slick-dotted.slick-slider
 {
-    margin: 1em 2em 0.2em ;
+    margin: 1em 0em 0.2em ;
 }
 .slick-dots li .slick-active {
     opacity: 1!important;

@@ -81,9 +81,90 @@
               });
 */
 
+const container = document.querySelector('.container-fluid');
 
+            // Get all direct child divs of the container
+            const childDivs = container.querySelectorAll(':scope > div');
+
+            childDivs.forEach(childDiv => {
+
+              // Ensure each childDiv has an ID (like 'pastell_block', 'document_recent_id', etc.)
+              if (childDiv.id) {
+                const cardHeader = childDiv.querySelector('.card-header');
+                const cardBody = childDiv.querySelector('.card-body');
+
+                if (cardHeader && cardBody) {
+                  // Create the cross element
+                  const closeButton = document.createElement('button');
+                  closeButton.innerHTML = '&times;'; // HTML entity for the × symbol
+                  closeButton.classList.add('close-button');
+
+                  // Append the cross to the card header
+                  cardHeader.appendChild(closeButton);
+                  // Retrieve the saved state from localStorage for this specific block by ID
+                  const cardBodyState = localStorage.getItem(`${childDiv.id}_cardBodyDisplay`);
+
+                  // Apply the saved state if available
+                  if (cardBodyState === "none") {
+closeButton.style.transform = 'rotate(45deg)';
+                    cardBody.style.display = "none";
+                  } else {
+closeButton.style.transform = 'rotate(0deg)'; 
+                   cardBody.style.display = "block"; // Default display is 'block'
+                  }
+
+                  // Add event listener to handle the click (e.g., to remove the card body or hide the div)
+                  closeButton.addEventListener('click', () => {
+                    if (cardBody.style.display === "none") {
+                      cardBody.style.display = "block"; // Show the card-body
+                      closeButton.style.transform = 'rotate(0deg)';
+                      closeButton.style.transition = 'transform 0.3s ease'; // Smooth transition
+                      localStorage.setItem(`${childDiv.id}_cardBodyDisplay`, 'block'); // Save state as 'block'
+                    } else {
+                      cardBody.style.display = "none"; // Hide the card-body
+                      // Add the rotation effect to the close button
+                      closeButton.style.transform = 'rotate(45deg)';
+                      closeButton.style.transition = 'transform 0.3s ease'; // Smooth transition
+                      localStorage.setItem(`${childDiv.id}_cardBodyDisplay`, 'none'); // Save state as 'none'
+
+                    }
+                  });
+                }
+              }
+            });
+	const htmlDoc = document.getElementById("areaSortable");
+              new Sortable(htmlDoc, {
+                group: 'shared', // set both lists to same group
+                animation: 150,
+                store: {
+                  // ajout de la sauvegarde des emplacements de chaque blocs au rafraichissement
+                  /**
+                   * Get the order of elements. Called once during initialization.
+                   * @param   {Sortable}  sortable
+                   * @returns {Array}
+                   */
+                  get: function (sortable) {
+                    var order = localStorage.getItem(
+                      sortable.options.group
+                    );
+                    return order ? order.split("|") : [];
+                  },
+
+                  /**
+                   * Save the order of elements. Called onEnd (when the item is dropped).
+                   * @param {Sortable}  sortable
+                   */
+                  set: function (sortable) {
+                    var order = sortable.toArray();
+                    localStorage.setItem(
+                      sortable.options.group,
+                      order.join("|")
+                    );
+                  },
+                },
+              });
           }); // end once
-        }, 1000);
+        }, 3500);
       } // fin only on frontpage
 
     },

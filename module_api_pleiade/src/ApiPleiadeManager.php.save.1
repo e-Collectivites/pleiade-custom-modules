@@ -202,9 +202,9 @@ try {
     $url = 'https://portail.sitiv.fr/oauth2/authorize';
     $params = [
         'response_type' => 'code',
-        'client_id' => 'parapheurv5-openid',
+        'client_id' => 'parapheur-openid',
         'scope' => 'openid',
-        'redirect_uri' => 'https://parapheurv5.sitiv.fr/auth/realms/api/broker/oidc/endpoint'
+        'redirect_uri' => 'https://parapheurv5-test.sitiv.fr/auth/realms/api/broker/oidc/endpoint'
     ];
 
     // Envoyer la requête GET avec le cookie
@@ -216,18 +216,26 @@ try {
         'allow_redirects' => false // Évite les redirections automatiques
     ]);
 
-    $headers = $response->getHeaders();
+	$headers = $response->getHeaders();
+    if (!isset($headers['Location'][0])) {
+        throw new Exception("L'en-tête Location est introuvable.");
+    }
+
     $location = $headers['Location'][0];
     parse_str(parse_url($location, PHP_URL_QUERY), $queryParams);
+
+    if (!isset($queryParams['code'])) {
+        throw new Exception("Le paramètre 'code' est introuvable.");
+    }
 
     $code = $queryParams['code'];
 
     // 2. Requête POST pour échanger le code contre un token
     $tokenUrl = 'https://portail.sitiv.fr/oauth2/token';
-    $redirectUri = 'https://parapheurv5.sitiv.fr/auth/realms/api/broker/oidc/endpoint';
+    $redirectUri = 'https://parapheurv5-test.sitiv.fr/auth/realms/api/broker/oidc/endpoint';
 
     $response = $client->request('POST', $tokenUrl, [
-        'auth' => ['parapheurv5-openid', 'parapheur-sitiv'], // Authentification Basic (user:password)
+        'auth' => ['parapheur-openid', 'parapheur-sitiv'], // Authentification Basic (user:password)
         'form_params' => [
             'grant_type' => 'authorization_code',
             'redirect_uri' => $redirectUri,
@@ -239,11 +247,14 @@ try {
     $body = $response->getBody();
     $data = json_decode($body, true);
 
+    if (!isset($data['access_token'])) {
+        throw new Exception("Le 'access_token' est introuvable dans la réponse.");
+    }
 
     $accessToken = $data['access_token'];
 
     // 3. Requête POST pour échanger l'access_token contre un refresh_token
-    $exchangeUrl = 'https://parapheurv5.sitiv.fr/auth/realms/api/protocol/openid-connect/token';
+    $exchangeUrl = 'https://parapheurv5-test.sitiv.fr/auth/realms/api/protocol/openid-connect/token';
 
     $response = $client->request('POST', $exchangeUrl, [
         'form_params' => [
@@ -259,11 +270,14 @@ try {
 	$body = $response->getBody();
     $data = json_decode($body, true);
 
+    if (!isset($data['access_token'])) {
+        throw new Exception("Le 'access_token' est introuvable dans la réponse.");
+    }
 
     $accessToken = $data['access_token'];
 
     // 3. Requête GET pour obtenir des informations
-    $apiUrl = 'https://parapheurv5.sitiv.fr/api/standard/v1/tenant';
+    $apiUrl = 'https://parapheurv5-test.sitiv.fr/api/standard/v1/tenant';
 
     $response = $client->request('GET', $apiUrl, [
         'headers' => [
@@ -275,7 +289,7 @@ try {
     // Récupérer la réponse
     $body = $response->getBody();
     $apiData = json_decode($body, true);
-	$apiUrldesk = 'https://parapheurv5.sitiv.fr/api/standard/v1/tenant/'.$apiData["content"][0]["id"].'/desk';
+	$apiUrldesk = 'https://parapheurv5-test.sitiv.fr/api/standard/v1/tenant/'.$apiData["content"][0]["id"].'/desk';
      	$responsedesk = $client->request('GET', $apiUrldesk, [
          'headers' => [
              'accept' => 'application/json',
@@ -284,40 +298,18 @@ try {
      ]);
      $bodydesk = $responsedesk->getBody();
      $apiDatadesk = json_decode($bodydesk, true);
-	$allDeskFolders = [];
 
-if (isset($apiDatadesk['content']) && is_array($apiDatadesk['content'])) {
-    foreach ($apiDatadesk['content'] as $item) {
-        // Gestion des deux endpoints : /pending et /delegated
-        $endpoints = ['/pending', '/delegated'];
-
-        foreach ($endpoints as $endpoint) {
-            $apiUrldeskFolder = 'https://parapheurv5.sitiv.fr/api/standard/v1/tenant/' . $apiData["content"][0]["id"] . '/desk/' . $item["id"] . $endpoint . '?size=50';
-            $responsedeskFolder = $client->request('GET', $apiUrldeskFolder, [
-                'headers' => [
-                    'accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $accessToken
-                ]
-            ]);
-
-            $bodydeskFolder = $responsedeskFolder->getBody();
-            $apiDatadeskFolder = json_decode($bodydeskFolder, true);
-
-            if (isset($apiDatadeskFolder["content"]) && is_array($apiDatadeskFolder["content"])) {
-                $apiDatadeskFolder["content"] = array_map(function ($deskFolder) use ($apiData) {
-                    $deskFolder['tenant_id'] = $apiData["content"][0]["id"];
-                    return $deskFolder;
-                }, $apiDatadeskFolder["content"]);
-
-                $allDeskFolders = array_merge($allDeskFolders, $apiDatadeskFolder["content"]);
-            }
-        }
-    }
-}
-
-return $allDeskFolders;
-
-} catch (RequestException $e) {
+	$apiUrldeskFolder = 'https://parapheurv5-test.sitiv.fr/api/standard/v1/tenant/'.$apiData["content"][0]["id"].'/desk/'.$apiDatadesk["content"][0]["id"].'/pending';
+         $responsedeskFolder = $client->request('GET', $apiUrldeskFolder, [
+          'headers' => [
+              'accept' => 'application/json',
+              'Authorization' => 'Bearer ' . $accessToken
+          ]
+      ]);  
+      $bodydeskFolder = $responsedeskFolder->getBody();
+      $apiDatadeskFolder = json_decode($bodydeskFolder, true);	
+	var_dump(json_encode($apiDatadeskFolder));
+	} catch (RequestException $e) {
     // Gérer les erreurs de requête
     echo "Erreur : " . $e->getMessage();
     if ($e->hasResponse()) {
@@ -793,7 +785,7 @@ public function curlGet($endpoint, $inputs, $api, $application, $email, $token, 
   //////////////////////////////////////////////////////////////
 
 
-  public function searchMyDesktop()
+  public function searchMyDesktop($dpt)
   {
     return $this->curlGet([], [], $this->settings_parapheur->get('field_parapheur_url') . $this->settings_parapheur->get('field_parapheur_bureaux_url'), 'parapheur', '', '', '');
   }

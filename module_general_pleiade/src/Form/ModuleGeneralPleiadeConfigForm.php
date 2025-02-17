@@ -56,9 +56,9 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
     ];
     $form['sites_internets'] = [
       '#type' => 'textarea',
-      '#title' => $this->t('Paramètrage des sites par collectivité. Entrez une collectivité par ligne sous le format "ID LDAP","URl du site internet","URL de la GRU",... '),
+      '#title' => $this->t('Paramètrage des sites par collectivité. Entrez une collectivité par ligne sous le format "ID LDAP","URl du site internet". De préférence, il faut que les urls soit accessible sous format json'),
       '#default_value' => $config->get('sites_internets'),
-      '#placeholder' => $this->t('"ID LDAP de la commune ","URL du site internet","URL de la GRU",...')
+      '#placeholder' => $this->t('"ID LDAP de la commune ","URL du site internet"')
     ];
   
     return parent::buildForm($form, $form_state);
