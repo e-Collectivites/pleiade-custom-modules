@@ -24,10 +24,9 @@ class PleiadeAjaxParapheurController extends ControllerBase {
             $return = []; //our variable to fill with data returned by Parapheur
             $parapheurdataApi = new ApiPleiadeManager();
             
-            $return = $parapheurdataApi->searchMyDesktop($nbDpt);
-	var_dump($return);
+            $return = $parapheurdataApi->searchMyDesktop();
             if($return){
-            return new JsonResponse(json_encode($return), 200, [], true);
+	            return new JsonResponse(json_encode(count($return)), 200, [], true);
             }
             else
             {

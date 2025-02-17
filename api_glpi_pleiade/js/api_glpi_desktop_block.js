@@ -41,7 +41,7 @@
                   <div class="col-lg-12" id="glpi_desktop_block"> \
                   <div class="mb-2 shadow-sm">\
                     <div class="card mb-2">\
-                      <div class="card-header rounded-top bg-white rounded-top">\
+                      <div class="card-header rounded-top bg-white rounded-top d-flex">\
                         <h4 class="card-title text-dark py-2">\
                           Derniers tickets GLPI <span></span>\
                         </h4>\

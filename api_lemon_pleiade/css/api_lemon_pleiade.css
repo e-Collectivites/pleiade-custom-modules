@@ -100,7 +100,7 @@ body[data-theme=dark] .nav-small-cap, body[data-theme=dark] #menuLemon .sidebar-
     width: 0.3em;
     height: 0.3em;
     margin-left: 10px;
-    top: 19px !important;
+/*    top: 19px !important; */
     right: 15px !important;
     border-width: 1px 0 0 1px;
     border-style: solid;
