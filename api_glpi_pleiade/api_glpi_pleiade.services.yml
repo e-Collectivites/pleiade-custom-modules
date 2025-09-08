@@ -1,0 +1,8 @@
+services:
+  api_glpi_pleiade.glpi_service:
+    class: 'Drupal\api_glpi_pleiade\Service\GlpiService'
+   
+
+  Drupal\api_glpi_pleiade\Service\GlpiServiceInterface:
+    alias: 'api_glpi_pleiade.glpi_service'
+

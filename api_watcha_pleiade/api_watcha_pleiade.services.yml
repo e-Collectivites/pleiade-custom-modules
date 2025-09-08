@@ -1,0 +1,8 @@
+services:
+  api_watcha_pleiade.watcha_service:
+    class: 'Drupal\api_watcha_pleiade\Service\WatchaService'
+   
+
+  Drupal\api_watcha_pleiade\Service\WatchaServiceInterface:
+    alias: 'api_watcha_pleiade.watcha_service'
+

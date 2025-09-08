@@ -1,0 +1,8 @@
+services:
+  api_lemon_pleiade.lemon_service:
+    class: 'Drupal\api_lemon_pleiade\Service\LemonService'
+   
+
+  Drupal\api_lemon_pleiade\Service\LemonServiceInterface:
+    alias: 'api_lemon_pleiade.lemon_service'
+

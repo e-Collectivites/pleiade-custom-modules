@@ -1,0 +1,30 @@
+.form-check-input[type=checkbox]{
+  float: inline-end;
+}
+
+
+ .inline-row2 {
+  display: grid;
+  grid-template-columns:1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  
+}
+
+
+ .inline-row2 input {
+  width: 100%;
+  
+}
+ .inline-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  
+}
+.inline-row {
+  border-top: 2px solid black;
+}

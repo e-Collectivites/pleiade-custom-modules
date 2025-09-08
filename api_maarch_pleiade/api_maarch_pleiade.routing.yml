@@ -1,0 +1,42 @@
+api_maarch_pleiade.settings:
+  path: "/admin/config/api_maarch_pleiade/settings"
+  defaults:
+    _form: '\Drupal\api_maarch_pleiade\Form\PleiadeConnectorMaarchConfig'
+    _title: "API Maarch Pléiade Settings"
+  requirements:
+    _permission: "administer site configuration"
+
+
+
+
+api_maarch_pleiade.getUserBaskets:
+  path: "/v1/api_maarch_pleiade/getUserBaskets"
+  defaults:
+    _controller: '\Drupal\api_maarch_pleiade\Controller\PleiadeAjaxMaarchController::getUserBaskets'
+    _title: "maarch API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+
+api_maarch_pleiade.getMailsForAllBaskets:
+  path: "/v1/api_maarch_pleiade/getMailsForAllBaskets"
+  defaults:
+    _controller: '\Drupal\api_maarch_pleiade\Controller\PleiadeAjaxMaarchController::getMailsForAllBaskets'
+    _title: "maarch API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+    
+
+api_maarch_pleiade.getMails:
+  path: "/v1/api_maarch_pleiade/getMails"
+  defaults:
+    _controller: '\Drupal\api_maarch_pleiade\Controller\PleiadeAjaxMaarchController::getMails'
+    _title: "maarch API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+    

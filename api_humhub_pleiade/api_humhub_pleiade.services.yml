@@ -1,0 +1,8 @@
+services:
+  api_humhub_pleiade.humhub_service:
+    class: 'Drupal\api_humhub_pleiade\Service\HumhubService'
+   
+
+  Drupal\api_humhub_pleiade\Service\HumhubServiceInterface:
+    alias: 'api_humhub_pleiade.humhub_service'
+

@@ -1,0 +1,14 @@
+datatable_pleiade_js:
+  version: 1.x
+  js:
+    js/datatable_pleiade.js: {}
+    js/libs/tabulator.js: {}
+    https://cdn.jsdelivr.net/npm/luxon@3.x/build/global/luxon.min.js: {}
+datatable_pleiade_css:
+  version: 1.x
+  css:
+    theme:
+      css/datatable_pleiade.css: {}
+      css/tabulator.css: {}
+  dependencies:
+    - core/jquery
