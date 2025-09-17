@@ -1,0 +1,42 @@
+api_ciril_pleiade.settings:
+  path: "/admin/config/api_ciril_pleiade/settings"
+  defaults:
+    _form: '\Drupal\api_ciril_pleiade\Form\PleiadeConnectorCirilConfig'
+    _title: "API Ciril Pléiade Settings"
+  requirements:
+    _permission: "administer site configuration"
+
+
+
+
+api_ciril_pleiade.getUserBaskets:
+  path: "/v1/api_ciril_pleiade/getUserBaskets"
+  defaults:
+    _controller: '\Drupal\api_ciril_pleiade\Controller\PleiadeAjaxCirilController::getUserBaskets'
+    _title: "ciril API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+
+api_ciril_pleiade.getMailsForAllBaskets:
+  path: "/v1/api_ciril_pleiade/getMailsForAllBaskets"
+  defaults:
+    _controller: '\Drupal\api_ciril_pleiade\Controller\PleiadeAjaxCirilController::getMailsForAllBaskets'
+    _title: "ciril API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+    
+
+api_ciril_pleiade.getMails:
+  path: "/v1/api_ciril_pleiade/getMails"
+  defaults:
+    _controller: '\Drupal\api_ciril_pleiade\Controller\PleiadeAjaxCirilController::getMails'
+    _title: "ciril API Notifications Query"
+    _format: json
+  requirements:
+    _role: "authenticated"
+    _access: "TRUE"
+    

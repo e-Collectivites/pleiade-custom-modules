@@ -1,236 +1,316 @@
 (function ($, Drupal, drupalSettings, once) {
   "use strict";
+
   Drupal.behaviors.APIlemonMenuBehavior = {
     attach: function (context, settings) {
-      // All normal pages but not admin pages
-      if (!drupalSettings.path.currentPath.includes("admin") && drupalSettings.api_lemon_pleiade.field_lemon_myapps_url && drupalSettings.api_lemon_pleiade.field_lemon_url) {
-        once("APIlemonMenuBehavior", "body", context).forEach(function () {
-          var xhr = new XMLHttpRequest();
-          function getCookie(name) {
-            // Récupérer tous les cookies
-            const cookies = document.cookie.split(';');
-  
-            // Parcourir chaque cookie
-            for (let cookie of cookies) {
-              // Diviser le nom et la valeur du cookie
-              const [cookieName, cookieValue] = cookie.split('=');
-  
-              // Supprimer les espaces blancs avant et après le nom du cookie
-              const trimmedCookieName = cookieName.trim();
-  
-              // Vérifier si le nom du cookie correspond à celui recherché
-              if (trimmedCookieName === name) {
-                // Retourner la valeur du cookie
-                return cookieValue;
-              }
-            }
-  
-            // Retourner null si le cookie n'est pas trouvé
-            return null;
-          }
-  
-          const userGroupsTempstore = decodeURIComponent(getCookie('groups'));
-          
-          xhr.open("POST", Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"));
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.onload = function () {
-            if (xhr.status === 200) {
-              var donnees = JSON.parse(xhr.responseText);
-              
-              // Check if xhr response is not null
-              if (!donnees || donnees === null) {
-                // Redirect to /user/logout URL
-                window.location.href = "/user/logout";
-                return;
-              }
-              var menuHtml = '';
-              if (donnees.myapplications) {
-                for (var i = 0; i < donnees.myapplications.length; i++) {
-                  // on récupère la longueur du json pour boucler sur le nombre afin de créer tout nos liens du menu
-                  var iconCategory = ''
-                  switch (donnees.myapplications[i].Category) {
-                    case 'E-administration':
-                      iconCategory = '<i class="fa-solid fa-people-arrows"></i>'
-                      break;
-                    case 'Documents':
-                      iconCategory = '<i class="fa-solid fa-folder-open"></i>'
-                      break;
-                    case 'Collaboratif':
-                      iconCategory = '<i class="fa-solid fa-users"></i>'
-                      break;
-                    case 'Support et formation':
-                      iconCategory = '<i class="fa-solid fa-circle-info"></i>'
-                      break;
-                    case 'Mes applications':
-                      iconCategory = '<i class="fa-solid fa-star"></i>'
-                      break;
-                    case 'Assistance':
-                      iconCategory = '<i class="fa-solid fa-handshake-angle"></i>'
-                      break;
-                    case 'Notre offre de services':
-                      iconCategory = '<i class="fa-solid fa-briefcase"></i>'
-                      break;
-                    default:
-                      break;
-                  }
-                  var categorie =  donnees.myapplications[i].Category
-                  menuHtml +=
-                    '<div id="'
-                    + ( categorie ? categorie.replace(/[^\w]/gi, '').toLowerCase() : "") + '" class="nav-small-cap ' 
-                     + (categorie == "E-administration" ? "e_admin" : "") + (categorie !== "E-administration" ? "has-arrow collapsed" : "") +
-                    '"' + (categorie !== "E-administration" ? ' data-bs-toggle="collapse" data-bs-target="#collapse'+ i : "") +
-                    '" aria-expanded=" false" aria-controls="collapse' +
-                    i +
-                    '">' + iconCategory + '<span class="hide-menu d-flex align-items-center">' +
-                    categorie + 
-                    (categorie == "E-administration" ? "<span class='pastille_eadministration'></span>" : "") +
-                    (categorie == "Collaboratif" ? "<span class='pastille_collab'></span>" : "") +
-                    '</span></div><div id="collapse' +
-                    i +
-                    '"'+(categorie !== "E-administration" ? 'class="accordion-collapse collapse"' : "") +'aria-labelledby="headingOne"><div class="accordion-body">';
-
-                  for (var f = 0; f < donnees.myapplications[i].Applications.length; f++) {
-                    // Pour chaque catégories, on récupère le nombre d'applications de la catégorie puis on boucle dessus
-                    const temp = Object.values(donnees.myapplications[i].Applications[f]);
-                    const appLogo = temp[0].AppIcon;
-                    const hasImageExtension = appLogo && (appLogo.endsWith(".png") || appLogo.endsWith(".jpg") || appLogo.endsWith(".jpeg") || appLogo.endsWith(".gif"));
-                    let Icon;
-                    var target;
-                    if (appLogo && !hasImageExtension) {
-                      Icon = '<i class="fa fa-solid fa-' + appLogo + '"></i>';
-                    } else {
-                      Icon = '';
-                    }
-                    if (temp[0].AppDesc == "Consulter nos solutions" || 
-                    temp[0].AppDesc == "Consulter nos formations" || 
-                    temp[0].AppDesc == "Consulter nos guides utilisateurs" ||
-                    temp[0].AppDesc == "Demander une visio") {
-                      target = ''
-                    }
-                    else {
-                      target = '_blank'
-                    }
-
-                    if (categorie == "E-administration") {
-                      if (temp[0].AppUri) {
-                        if (temp[0].AppDesc == "Gestion des users/collectivités") {
-                          menuHtml += '<a href="'+ temp[0].AppUri +'"target="_blank" class="sidebar-link"><span class="ps-2">'+temp[0].AppDesc+'</span></a>'
-                        }
-                        else {
-                        menuHtml += '<a class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
-                          temp[0].AppDesc +
-                          '" href="' +
-                          temp[0].AppUri +
-                          '" aria-expanded="true" target="' + target + '" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppTip + '" aria-controls="collapse' + temp[0].AppTip + '">' +
-                          Icon +
-                          '<span class="hide-menu px-2">' +
-                          Object.keys(donnees.myapplications[i].Applications[f]) +
-                          "</span></a>";
-                        }
-                      } else {
-                        menuHtml += '<span class="sidebar-link waves-effect waves-dark has-arrow" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
-                          temp[0].AppDesc +
-                          '" aria-expanded="false" data-bs-toggle="collapse" data-bs-target="#collapse' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" aria-controls="collapse' + temp[0].AppTip + '">' +
-                          Icon +
-                          '<span class="hide-menu px-2 d-flex align-items-center">' +
-                          Object.keys(donnees.myapplications[i].Applications[f]) +
-                          (temp[0].AppTip == "signature_electronique" ? '<span id="pastille_parapheur"></span>' : "")
-                          + 
-                          "<span id='pastille_" + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + "'></span></span></span>";
-                      }
-                    } else {
-                      if (temp[0].AppUri) {
-                        menuHtml += '<a class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
-                          temp[0].AppDesc +
-                          '" href="' +
-                          temp[0].AppUri +
-                          '" aria-expanded="false" target="' + target + '">' +
-                          Icon +
-                          '<span class="hide-menu px-2">' +
-                          Object.keys(donnees.myapplications[i].Applications[f]) +
-                          (temp[0].AppTip == "relation_usager" ? '<span id="pastille_pluriel"></span>' : "")
-                          + 
-                          " </span></a>";
-                      } else {
-                        menuHtml += '<span class="sidebar-link waves-effect waves-dark" id="' + temp[0].AppTip.replace(/[^\w]/gi, '').toLowerCase() + '" title="' +
-                          temp[0].AppDesc +
-                          '" aria-expanded="false">' +
-                          Icon +
-                          '<span class="hide-menu px-2">' +
-                          Object.keys(donnees.myapplications[i].Applications[f]) +
-                          " </span></span>";
-                      }
-                    }
-
-                  }
-
-                  menuHtml += "</div></div>";
-                }
-              }
-
-              menuHtml += "";
-
-              document.getElementById("menuLemon").innerHTML += menuHtml; // on récupère l'entièreté du menu créé puis on le stocke dans la div contenant l'id menuLemon
-              
-
-            }
-            else {
-              window.location.href = "/user/logout";
-              return;
-            }
-           
-          };
-
-          xhr.onloadend = function () {
-          };
-          xhr.send(JSON.stringify({}));
-
-        }); // fin once
-      } // fin exlude admin pages
-      $(document).ready(function () {
-        setTimeout(function () {
-          if ($('body').hasClass('path-nos-guides-utilisateurs') || $('body').hasClass('page-node-type-guide-utilisateur')) {
-            $('#collapse3').addClass('show');
-          }
-          if ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-de-visio-form')) {
-            $('#collapse2').addClass('show');
-          }
-          if ($('body').hasClass('path-nos-formations') || 
-          $('body').hasClass('path-nos-solutions') || $('body').hasClass('page-node-type-formations')
-          || $('body').hasClass('page-node-type-solutions') || ($('body').hasClass('path-webform') && $('form').hasClass('webform-submission-demande-d-information-sur-une-so-form'))) {
-            $('#collapse4').addClass('show');
-          }
-
-        }, 1100);
-        $('#sidebarnav').on('click', '.nav-small-cap', function () {
-          var target = $(this).attr('data-bs-target');
-          var collapses = $('#sidebarnav').find('.collapse');
-
-          collapses.each(function () {
-            var collapse = $(this);
-            var collapseId = collapse.attr('id');
-
-            if ('#' + collapseId !== target) {
-              collapse.collapse('hide');
-            }
-          });
-        });
-        $('#sidebarnav').on('click', '.sidebar-link.has-arrow', function () {
-          var target = $(this).attr('data-bs-target');
-          var collapses = $('#sidebarnav').find('.sub_menu_eadmin');
-
-          collapses.each(function () {
-            var collapse = $(this);
-            var collapseId = collapse.attr('id');
-
-            if ('#' + collapseId !== target) {
-              collapse.collapse('hide');
-            }
-          });
-        });
-
+      once("APIlemonMenuBehavior", "body", context).forEach((body) => {
+        if (
+          !drupalSettings.path.currentPath.includes("admin") &&
+          drupalSettings.api_lemon_pleiade?.field_lemon_myapps_url &&
+          drupalSettings.api_lemon_pleiade?.field_lemon_url
+        ) {
+          this.initializeMenu();
+        }
       });
-
     },
+
+    /**
+     * Main function to fetch data, sort it, and build the menu.
+     */
+    async initializeMenu() {
+      try {
+        const [menuData, savedOrder] = await Promise.all([
+          this.fetchMenuData(),
+          this.fetchMenuOrder(),
+        ]);
+
+        if (!menuData || !menuData.myapplications) {
+          console.error("Invalid data received from menu API.");
+          window.location.href = "/user/logout";
+          return;
+        }
+
+        const defaultSortOrder = [
+          "Applications PROD",
+          "Territoire Numérique Ouvert - Prod",
+          "Sécurité",
+          "Suite Territoriale Nationale",
+          "Documentation",
+          "Applications TEST",
+          "Territoire Numérique Ouvert - Test",
+        ];
+
+        const finalSortOrder = savedOrder || defaultSortOrder;
+      
+        menuData.myapplications.sort((a, b) => {
+          const indexA = finalSortOrder.indexOf(a.Category);
+          const indexB = finalSortOrder.indexOf(b.Category);
+          const finalIndexA = indexA === -1 ? Infinity : indexA;
+          const finalIndexB = indexB === -1 ? Infinity : indexB;
+          return finalIndexA - finalIndexB;
+        });
+
+        const menuContainer = document.getElementById("menuLemon");
+        if (!menuContainer) {
+          console.error("Menu container #menuLemon not found.");
+          return;
+        }
+
+        const storedState = localStorage.getItem("menuOpen_");
+        const shouldStartOpen = storedState === "true" || storedState === "1";
+
+        const menuHtml = menuData.myapplications
+          .map((categoryData, index) =>
+            this.renderCategory(categoryData, index, shouldStartOpen)
+          )
+          .join("");
+
+        menuContainer.innerHTML = menuHtml;
+        this.attachEventListeners();
+
+      } catch (error) {
+        console.error("Failed to initialize the lemon menu:", error);
+        window.location.href = "/user/logout";
+      }
+    },
+
+    /**
+     * Fetches the saved menu order from the backend.
+     * Correctly handles an empty object `{}` as a "not found" response.
+     * @returns {Promise<string[]|null>} A promise that resolves to the order array or null.
+     */
+    async fetchMenuOrder() {
+      try {
+        const formData = new FormData();
+        formData.append('var', 'field_menu_order');
+
+        const response = await fetch('/v1/api_user_pleiade/getVariablesValue', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          console.warn(`Could not fetch saved menu order (status: ${response.status}). Using default order.`);
+          return null;
+        }
+
+        const data = await response.json();
+        if (!data || Object.keys(data).length === 0 || !data) {
+            return null;
+        }
+
+        try {
+           const parsedOrder = JSON.parse(data);
+           if (Array.isArray(parsedOrder) && parsedOrder.length > 0) {
+             return parsedOrder;
+           }
+        } catch (e) {
+            console.error("Could not parse saved menu order string from server:", data, e);
+            return null; 
+        }
+        
+        return null; 
+
+      } catch (error) {
+        console.error('Error fetching or parsing saved menu order:', error);
+        return null; 
+      }
+    },
+
+    /**
+     * Fetches menu content from the API endpoint.
+     */
+    async fetchMenuData() {
+      const response = await fetch(
+        Drupal.url("v1/api_lemon_pleiade/lemon_myapps_query"), {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({}),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      return response.json();
+    },
+
+    /**
+     * Renders the HTML for a single category, wrapped in a sortable container.
+     */
+    renderCategory(categoryData, index, shouldStartOpen) {
+      const category = categoryData.Category || "";
+      const cleanId = `menu-category-${category.replace(/[^\w]/gi, "").toLowerCase()}`;
+      
+      const categoryIcons = {
+        "E-administration": "fa-people-arrows",
+        "Documents": "fa-folder-open",
+        "Collaboratif": "fa-users",
+        "Support et formation": "fa-circle-info",
+        "Mes applications": "fa-star",
+        "Territoire Numérique Ouvert - Prod": "fa-people-group",
+        "Territoire Numérique Ouvert - Test": "fa-people-group",
+        "Applications PROD": "fa-list",
+        "Applications TEST": "fa-list",
+        "Documentation": "fa-file",
+        "Sécurité": "fa-shield-halved",
+        "Nos services": "fa-handshake",
+        "Suite Territoriale Nationale": "fa-boxes-packing",
+      };
+
+      const icon = categoryIcons[category] ? `<i class="fa-solid ${categoryIcons[category]}"></i>` : "";
+      const pastilleHtml = {
+        "Applications PROD": "<span class='pastille_apps_prod'></span>",
+        "Collaboratif": "<span class='pastille_collab'></span>",
+      }[category] || '';
+
+      const applicationsHtml = categoryData.Applications
+        .map((appData) => this.renderApplication(appData, category))
+        .join("");
+
+      return `
+        <div class="sortable-item" id="${cleanId}" data-category-name="${category}">
+          <div class="nav-small-cap has-arrow ${shouldStartOpen ? "" : "collapsed"} ${category === "E-Administration" ? "e_admin" : ""}" 
+              data-bs-toggle="collapse" data-bs-target="#collapse${index}" 
+              aria-expanded="${shouldStartOpen}" aria-controls="collapse${index}">
+            ${icon}
+            <span class="hide-menu d-flex align-items-center">${category}${pastilleHtml}</span>
+          </div>
+          <div id="collapse${index}" class="accordion-collapse collapse ${shouldStartOpen ? "show" : ""}" aria-labelledby="headingOne">
+            <div class="accordion-body">${applicationsHtml}</div>
+          </div>
+        </div>
+      `;
+    },
+
+    /**
+     * Renders a single application.
+     */
+    renderApplication(appData, categoryName) {
+      const appName = Object.keys(appData)[0];
+      const app = appData[appName];
+      const appId = app.AppTip?.replace(/[^\w]/gi, "").toLowerCase() || "";
+      const iconApp = app.AppIcon ? `<i class="fa fa-solid fa-${app.AppIcon}"></i>` : `<img src="${app.AppLogo}"  style="width:25px;height:25px" />`;
+      
+      let targetAttr = "_blank";
+      if (['Consulter nos solutions', 'Consulter nos formations', 'Consulter nos guides utilisateurs', 'Demander une visio'].includes(app.AppDesc)) {
+        targetAttr = app.AppTip;
+      }
+      if (app.AppTip === "Watcha") {
+        targetAttr = "watcha";
+      }
+
+      if (categoryName === "E-administration") {
+        if (app.AppUri) {
+          if (app.AppDesc === "Gestion des users/collectivités") {
+            return `<a href="${app.AppUri}" target="_blank" class="sidebar-link"><span class="ps-2">${app.AppDesc}</span></a>`;
+          } else {
+            return `
+              <a class="sidebar-link waves-effect waves-dark has-arrow" id="${appId}" data-text="${appName}" title="${app.AppDesc}" href="${app.AppUri}" aria-expanded="true" target="${targetAttr}" data-bs-toggle="collapse" data-bs-target="#collapse${app.AppTip}" aria-controls="collapse${app.AppTip}">
+                ${iconApp}
+                <span class="hide-menu px-2">${appName}</span>
+              </a>`;
+          }
+        } else {
+          return `
+            <span class="sidebar-link waves-effect waves-dark has-arrow" id="${appId}" data-text="${appName}" title="${app.AppDesc}" aria-expanded="false" data-bs-toggle="collapse" data-bs-target="#collapse${appId}" aria-controls="collapse${app.AppTip}">
+              ${iconApp}
+              <span class="hide-menu px-2 d-flex align-items-center">${appName}<span id='pastille_${appId}'></span></span>
+            </span>`;
+        }
+      } 
+      else {
+        const pastilleParapheur = app.AppTip === "i-Parapheur" ? '<span id="pastille_parapheur"></span>' : '';
+        const innerHtml = `<span class="hide-menu px-2">${appName}${pastilleParapheur}</span>`;
+        if (app.AppUri) {
+          const isContextMenuItem = app.AppUri !== "https://parapheurv5.sitiv.fr/";
+          const linkClass = `sidebar-link context-menu-item waves-effect waves-dark ${isContextMenuItem ? 'side-menu-item' : ''}`;
+          return `
+            <a class="${linkClass}" ${isContextMenuItem ? 'data-value1="0" data-value2="none"' : ''}  data-text="${appName}" id="${appId}" title="${app.AppDesc}" href="${app.AppUri}" target="${targetAttr}">
+              ${iconApp}
+              ${innerHtml}
+            </a>`;
+        } else {
+          return `
+            <span class="sidebar-link waves-effect waves-dark" id="${appId}" title="${app.AppDesc}"  data-text="${appName}">
+              ${iconApp}
+              ${innerHtml}
+            </span>`;
+        }
+      }
+    },
+    
+    /**
+     * Attaches event listeners and initializes the sortable functionality.
+     */
+    attachEventListeners() {
+      const modal = document.getElementById("addAppModal");
+      if (modal) {
+        const urlInput = modal.querySelector("#uriInputFavoris");
+        const titleInput = modal.querySelector("#titleInputFavoris");
+        document.querySelectorAll(".context-menu-item").forEach((el) => {
+          el.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
+            const addAppModal = new bootstrap.Modal(modal);
+            urlInput.value = el.href;
+            titleInput.value = el.dataset.text;
+          
+            addAppModal.show();
+          });
+        });
+      }
+
+      const menuContainer = document.getElementById("menuLemon");
+      if (menuContainer && typeof Sortable !== 'undefined') {
+        new Sortable(menuContainer, {
+          animation: 150,
+          draggable: ".sortable-item",
+          onEnd: (evt) => {
+            const newOrder = Array.from(menuContainer.querySelectorAll(".sortable-item"))
+              .map(el => el.dataset.categoryName);
+         
+            this.saveOrderToBackend(newOrder);
+          },
+        });
+      }
+
+       const logoutConfirmationModal = document.getElementById("logoutConfirmationModal");
+      if (logoutConfirmationModal) {
+     
+          document.getElementById("logout").addEventListener("click", (event) => {
+            event.preventDefault();
+            const logoutModal = new bootstrap.Modal(logoutConfirmationModal);
+         
+          
+            logoutModal.show();
+          });
+       
+    
+      }
+    },
+
+    /**
+     * Helper function to save the order to the backend API.
+     */
+    async saveOrderToBackend(orderArray) {
+      const orderString = JSON.stringify(orderArray);
+      const formData = new FormData();
+      formData.append('var', 'field_menu_order');
+      formData.append('value', orderString);
+
+      try {
+        const response = await fetch('/v1/api_user_pleiade/setVariablesValue', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok: ' + response.statusText);
+        }
+
+        const data = await response.json();
+      } catch (error) {
+        console.error('Error saving menu order to backend:', error);
+      }
+    }
   };
 })(jQuery, Drupal, drupalSettings, once);

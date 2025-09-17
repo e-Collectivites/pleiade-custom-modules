@@ -2,19 +2,28 @@
 
 namespace Drupal\api_pastell_pleiade\Controller;
 
+use Drupal\api_pastell_pleiade\Service\PastellServiceInterface;
 use Drupal\Core\Controller\ControllerBase;
-
-use Drupal\Component\Serialization\JSON;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\module_api_pleiade\ApiPleiadeManager;
-
-use Drupal\user\PrivateTempStoreFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PleiadeAjaxPastellController extends ControllerBase
 {
 
+    protected $service;
+  
+  public function __construct(PastellServiceInterface $service)
+  {
+    $this->service = $service;
+  }
+
+  public static function create(ContainerInterface $container)
+  {
+    return new static(
+      $container->get(PastellServiceInterface::class)
+    );
+  }
     public function pastell_entities_query(Request $request)
     {
         $return = []; //our variable to fill with data returned by Pastell
@@ -23,8 +32,8 @@ class PleiadeAjaxPastellController extends ControllerBase
         
         if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
            
-            $pastelldataApi = new ApiPleiadeManager();
-            $return = $pastelldataApi->searchMyEntities();
+        
+            $return = $this->service->searchMyEntities();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('entites', $return);
             if($return != null){
@@ -49,8 +58,7 @@ class PleiadeAjaxPastellController extends ControllerBase
         $storedGroups = $tempstoreGroup->get('groups');
         
         if (is_string($storedGroups) && strpos($storedGroups, 'pastell') !== false) {
-            $pastelldataApi = new ApiPleiadeManager();
-            $return = $pastelldataApi->searchMyFlux();
+            $return = $this->service->searchMyFlux();
             $tempstore = \Drupal::service('tempstore.private')->get('api_pastell_pleiade');
             $tempstore->set('flux', $return);
             if($return != null){

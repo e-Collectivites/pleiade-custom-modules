@@ -1,0 +1,8 @@
+services:
+  api_nextcloud_pleiade.nextcloud_service:
+    class: 'Drupal\api_nextcloud_pleiade\Service\NextCloudService'
+   
+
+  Drupal\api_nextcloud_pleiade\Service\NextCloudServiceInterface:
+    alias: 'api_nextcloud_pleiade.nextcloud_service'
+

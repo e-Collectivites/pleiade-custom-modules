@@ -13,6 +13,7 @@ api_lemon_pleiade.lemon_myapps_query:
     _title: 'LemonLDAP API Myapplications Query'
     _format: json
   requirements:
+    _role: 'authenticated'
     _access: 'TRUE'
 
 api_lemon_pleiade.lemon_session_query:
@@ -22,6 +23,7 @@ api_lemon_pleiade.lemon_session_query:
     _title: 'LemonLDAP API Session Query'
     _format: json
   requirements:
+    _role: 'authenticated'
     _access: 'TRUE'
 
 api_lemon_pleiade.reset_password:
@@ -30,6 +32,7 @@ api_lemon_pleiade.reset_password:
     _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::reset_password'
     _title: 'Reinitialiser le mot de passe'
   requirements:
+    _role: 'authenticated'
     _permission: 'access content'
 
 system.admin_config_pleiade:
@@ -39,3 +42,23 @@ system.admin_config_pleiade:
     _title: 'Pléiade'
   requirements:
     _permission: 'access administration pages'
+
+  
+api_lemon_pleiade.history_page:
+  path: '/history'
+  defaults:
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::content'
+    _title: 'History'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'access content'
+
+api_lemon_pleiade.refresh_session:
+  path: '/v1/api_lemon_pleiade/refresh_session'
+  defaults:
+    _controller: '\Drupal\api_lemon_pleiade\Controller\PleiadeAjaxController::refresh_session'
+    _title: 'LemonLDAP API Session Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'

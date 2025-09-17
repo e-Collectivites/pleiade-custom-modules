@@ -23,3 +23,5 @@ $nextcloud_lemon_group = $config->get('nextcloud_lemon_group');
  $variables['#attached']['drupalSettings']['api_nextcloud_pleiade']['nextcloud_lemon_group'] = $nextcloud_lemon_group;  
 $variables['#attached']['drupalSettings']['api_nextcloud_pleiade']['nextcloud_endpoint_notifs'] = $nextcloud_endpoint_notifs;
 }
+
+

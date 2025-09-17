@@ -1,16 +1,34 @@
 :root {
     --global-color: #1f3889;
-  }
+}
 
-.fc-scrollgrid-sync-table, .fc-scrollgrid-section-header {
+.fc-scrollgrid-sync-table,
+.fc-scrollgrid-section-header {
     display: none;
 }
+
 th.d-flex.expediteur {
     width: 20%;
 }
-.content-mail{
-width: 480px;
+
+.content-mail {
+    width: 480px;
 }
+
+.mail_content:hover {
+    color: var(--global-color) !important;
+    transform: scale(1.03);
+}
+
+.mail_content {
+    color: initial !important;
+    transition: transform .2s;
+}
+
+#main-wrapper[data-sidebartype=full] .fc-media-screen .fc-timegrid-cols>table {
+    width: 85% !important;
+}
+
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important;
@@ -18,7 +36,7 @@ width: 480px;
     border-top-left-radius: 4px !important;
     border-top-right-radius: 4px !important;
     padding: 1rem 1.25rem;
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
     border-bottom: 1px solid #e9ecef !important;
     display: flex;
 }
@@ -32,73 +50,41 @@ width: 480px;
 
 }
 
+.fc .fc-toolbar.fc-header-toolbar {
+    border-bottom: none !important;
+    padding: 0.5rem 1.25rem;
+}
+
 #zimbra_mail .card {
     margin-bottom: 0 !important;
-}
-
-.fc .fc-timegrid-slot {
-    background-color: white;
-}
-
-.fc-timegrid-slots colgroup col {
-    width: 75px !important;
-
-}
-
-.fc-timegrid-cols colgroup col {
-    width: 74px !important;
-}
-
-.fc-theme-standard .fc-scrollgrid {
-    border: 0px !important;
-}
-
-.fc-timegrid-divider {
-    display: none;
-}
-
-tbody .fc-scrollgrid-section:first-child {
-    display: none;
-}
-
-.fc-timegrid-slots tbody tr:nth-child(2n) {
-    border-bottom: 1px solid #e9ecef33 !important;
-}
-
-.fc-timegrid-slots tbody tr:nth-child(2n+1) {
-    border: 0 !important;
-}
-
-.fc-theme-standard td, .fc-theme-standard th {
-    border: 0px !important;
-}
-
-.fc-timegrid-event .fc-event-main {
-    padding: 10px 1px 0;
 }
 
 .fc-v-event {
     border: inherit !important;
     border-left: 3px solid var(--fc-event-bg-color);
     opacity: 0.88;
-    background-color: var(--global-color) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 100%;
 }
 
-.fc-timegrid-event, .fc-timegrid-more-link {
-    border-radius: inherit !important;
+.fc-event-content {
+    height: 100%;
 }
 
-div#zimbra_block_agenda_id {
-    width: 32% !important;
-    margin: 0 0.5em 0 0;
-}
+
+
+
 
 img.profile-pic.rounded-circle {
     object-fit: cover;
 }
 
 .scroll_on_table {
-    max-height: 300px;
+    max-height: 450px;
     overflow: hidden;
     overflow-y: auto;
 }
@@ -112,7 +98,9 @@ body[data-theme=dark] .fc-toolbar-title {
     color: #e9ecef !important;
 }
 
-body[data-theme=dark] #pastell_block .feather, body[data-theme=dark] #zimbra_mail .feather, body[data-theme=dark] .page-link {
+body[data-theme=dark] #pastell_block .feather,
+body[data-theme=dark] #zimbra_mail .feather,
+body[data-theme=dark] .page-link {
     color: #e9ecef !important;
 }
 
@@ -136,23 +124,58 @@ body[data-theme=dark] .fc td.fc-timegrid-slot {
 /* Track */
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 1px grey;
-    
+
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: grey;
-   
+
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #272b34;
 }
-#zimbra_block_mail_id{
+
+#zimbra_block_mail_id {
     background-color: #FFF;
 }
+
 body[data-theme=dark] #zimbra_block_mail_id {
     background-color: #272b34 !important;
 }
 
+[data-theme="dark"] .page-wrapper a,
+[data-theme="dark"] aside a {
+    color: #FFF !important;
+}
+
+
+.scroll_on_table {
+    height: 400px;
+
+}
+
+
+
+
+@media (max-width: 768px) {
+
+    .scroll_on_table {
+        height: 350px;
+
+    }
+
+  
+   
+}
+
+
+#zimbra_block_agenda_id {
+    margin-bottom: 5px;
+}
+
+.fc .fc-scroller-harness-liquid {
+    height: 370px;
+}

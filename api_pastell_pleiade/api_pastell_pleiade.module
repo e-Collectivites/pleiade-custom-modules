@@ -1,9 +1,8 @@
 <?php
 
 
-use Drupal\module_api_pleiade\ApiPleiadeManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use GuzzleHttp\Client;
+
+
 global $headers;
 $headers = array();
 $headers[] = "Accept-Encoding: gzip, deflate, sdch, br";
@@ -17,10 +16,14 @@ $headers[] = "Cache-Control: max-age=0";
  * @param $variables
  */
 
-function api_pastell_pleiade_preprocess_page(&$variables){
+
+ 
+
+function api_pastell_pleiade_preprocess_page(&$variables)
+{
 
   $config = \Drupal::config('api_pastell_pleiade.settings');
-  
+
   $field_pastell_url = $config->get('field_pastell_url');
   $field_pastell_documents_url = $config->get('field_pastell_documents_url');
   $field_pastell_entitites_url = $config->get('field_pastell_entities_url');
@@ -30,10 +33,10 @@ function api_pastell_pleiade_preprocess_page(&$variables){
   $field_pastell_username_doc_lots = $config->get('field_pastell_username_doc_lots');
   $field_pastell_password_doc_lots = $config->get('field_pastell_password_doc_lots');
 
-// Get groups in Drupal private tempstore to serve to other modules later
-   $tempstore = \Drupal::service('tempstore.private'); 
-   $store = $tempstore->get('api_pastell_pleiade');
-   $documents_pastell = $store->get('documents_pastell');
+  // Get groups in Drupal private tempstore to serve to other modules later
+  $tempstore = \Drupal::service('tempstore.private');
+  $store = $tempstore->get('api_pastell_pleiade');
+  $documents_pastell = $store->get('documents_pastell');
 
   //Add the JS library
   $variables['#attached']['library'][] = 'api_pastell_pleiade/api_pastell_pleiade_js';
@@ -53,7 +56,8 @@ function api_pastell_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_username_doc_lots'] =  $field_pastell_username_doc_lots;
   $variables['#attached']['drupalSettings']['api_pastell_pleiade']['field_pastell_password_doc_lots'] =  $field_pastell_password_doc_lots;
 }
-function ecv_creadoc($id_e){
+function ecv_creadoc($id_e)
+{
   $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
   $ch = curl_init();
 
@@ -63,7 +67,7 @@ function ecv_creadoc($id_e){
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
   // curl_setopt($ch, CURLOPT_POST, true);
@@ -77,7 +81,8 @@ function ecv_creadoc($id_e){
 
   print_r($result);
 }
-function ecv_getsoustype($data){
+function ecv_getsoustype($data)
+{
   $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
   $ch = curl_init();
 
@@ -87,7 +92,7 @@ function ecv_getsoustype($data){
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
 
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -96,15 +101,15 @@ function ecv_getsoustype($data){
   $result = curl_exec($ch);
   if (curl_errno($ch)) {
     echo 'Error:' . curl_error($ch);
-
   }
   $result = json_decode($result);
-  
   return $result;
   curl_close($ch);
 
+  print_r($result);
 }
-function ecv_modifdoc($data){
+function ecv_modifdoc($data)
+{
   $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
   $ch = curl_init();
 
@@ -114,7 +119,7 @@ function ecv_modifdoc($data){
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
 
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -143,7 +148,7 @@ function ecv_suppr($id_e, $id_d)
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
 
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -168,7 +173,7 @@ function ecv_sendparaph($id_e, $id_d)
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
 
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -182,9 +187,11 @@ function ecv_sendparaph($id_e, $id_d)
   return $result;
 }
 
-function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sstype, $data){
-  
+function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sstype, $data)
+{
+
   $id_d = ecv_creadoc($id_e);
+  \Drupal::logger('api_pastell_pleiade')->info('Envoi en Lot, id_d dreation: @api', ['@api' => $id_d]);
   $data = array(
     'id_e' => $id_e,
     'id_d' => $id_d->id_d,
@@ -193,36 +200,33 @@ function _ecv_docs_lots($id_e, $nomfic, $urlfic, $year, $month, $day, $ged, $sst
     'date_limite' => $year . '-' . $month . '-' . $day,
     'document' => new \CurlFile($urlfic),
     'envoi_ged' => $ged,
-    'envoi_auto' => $ged,
     'envoi_iparapheur' => true,
-    'iparapheur_sous_type' => utf8_decode($sstype),
-    'iparapheur_type' => ( $id_e == "1334" ? "CONVENTION" : "DOCUMENT"),
+    'iparapheur_sous_type' => $sstype,
+    'iparapheur_type' => 'DOCUMENT',
   );
-  
+
   ecv_modifdoc($data);
 
   // // puis on envoie au parapheur
   ecv_sendparaph($id_e, $id_d->id_d);
- 
 }
 function ecv_batch_lot_finished($success, $results, $operations)
-  {
-    if ($success) {
-      $messenger = \Drupal::service('messenger');
-      $messenger->addMessage(t('Les documents ont été créés et envoyés au parapheur sans erreur.'));
-      \Drupal::logger('ecv')->notice('Documents en lots créés avec succès.');
+{
+  if ($success) {
+    $messenger = \Drupal::service('messenger');
+    $messenger->addMessage(t('Les documents ont été créés et envoyés au parapheur sans erreur.'));
+    \Drupal::logger('ecv')->notice('Documents en lots créés avec succès.');
   } else {
-      $error_operation = reset($operations);
-      $message = t('Une erreur est survenue : %error_operation avec les paramètres : @arguments', array(
-          '%error_operation' => $error_operation[0],
-          '@arguments' => print_r($error_operation[1], TRUE)
-      ));
-  
-      $messenger = \Drupal::service('messenger');
-      $messenger->addError($message);
-  }
+    $error_operation = reset($operations);
+    $message = t('Une erreur est survenue : %error_operation avec les paramètres : @arguments', array(
+      '%error_operation' => $error_operation[0],
+      '@arguments' => print_r($error_operation[1], TRUE)
+    ));
 
+    $messenger = \Drupal::service('messenger');
+    $messenger->addError($message);
   }
+}
 function get_all_id($id_e, $id_d)
 {
   $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
@@ -234,7 +238,7 @@ function get_all_id($id_e, $id_d)
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
+  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') . ':' . $settings_pastell->get('field_pastell_password_doc_lots'));
 
   global $headers;
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -247,126 +251,3 @@ function get_all_id($id_e, $id_d)
   $result = json_decode($result);
   return $result;
 }
-
-function get_all_coll()
-{
-  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . "/api/list-entite.php");
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
-
-  global $headers;
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $result = curl_exec($ch);
-  if (curl_errno($ch)) {
-    drupal_set_message('Error:' . curl_error($ch));
-  }
-  curl_close($ch);
-  $result = json_decode($result);
-  return $result;
-}
-function get_all_docs($id_e)
-{
-  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . "/api/list-document.php?id_e=" . $id_e."&limit=100000000");
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
-
-  global $headers;
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $result = curl_exec($ch);
-  if (curl_errno($ch)) {
-    drupal_set_message('Error:' . curl_error($ch));
-  }
-  curl_close($ch);
-  $result = json_decode($result);
-  return $result;
-}
-function get_all_users()
-{
-  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . "/api/list-utilisateur.php");
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
-
-  global $headers;
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $result = curl_exec($ch);
-  if (curl_errno($ch)) {
-    drupal_set_message('Error:' . curl_error($ch));
-  }
-  curl_close($ch);
-  $result = json_decode($result);
-  return $result;
-}
-function get_roles_user($id_u)
-{
-  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . "/api/list-role-utilisateur.php?id_u=" .$id_u);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
-
-  global $headers;
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $result = curl_exec($ch);
-  if (curl_errno($ch)) {
-    drupal_set_message('Error:' . curl_error($ch));
-  }
-  curl_close($ch);
-  $result = json_decode($result);
-  return $result;
-}
-function get_connecteur_entite($id_e)
-{
-  $settings_pastell = \Drupal::config('api_pastell_pleiade.settings');
-  $ch = curl_init();
-
-  curl_setopt($ch, CURLOPT_URL, $settings_pastell->get('field_pastell_url') . "/api/list-connecteur-entite.php?id_e=" .$id_e);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-  curl_setopt($ch, CURLOPT_USERPWD, $settings_pastell->get('field_pastell_username_doc_lots') .':'. $settings_pastell->get('field_pastell_password_doc_lots'));
-
-  global $headers;
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-  $result = curl_exec($ch);
-  if (curl_errno($ch)) {
-    drupal_set_message('Error:' . curl_error($ch));
-  }
-  curl_close($ch);
-  $result = json_decode($result);
-  return $result;
-}
-
-

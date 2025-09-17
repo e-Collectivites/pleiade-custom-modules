@@ -1,0 +1,8 @@
+services:
+  api_pastell_pleiade.pastell_service:
+    class: 'Drupal\api_pastell_pleiade\Service\PastellService'
+   
+
+  Drupal\api_pastell_pleiade\Service\PastellServiceInterface:
+    alias: 'api_pastell_pleiade.pastell_service'
+

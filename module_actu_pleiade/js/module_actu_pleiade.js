@@ -1,105 +1,114 @@
+
 (function ($, Drupal, drupalSettings, once) {
   "use strict";
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+  }
+
   Drupal.behaviors.ActuBlocksBehavior = {
     attach: function (context, settings) {
-      // only on frontpage (desktop)
       setTimeout(function () {
-      once("ActuBlocksBehavior", ".actualites", context).forEach(
-        function () {
-          // make ajax call
+        once("ActuBlocksBehavior", ".actualites", context).forEach(function () {
+           if (!localStorage.getItem("actu")) {
+        localStorage.setItem("actu", "block");
+      }
+          const div = document.querySelector('.actualites');
+          if (!div) return;
+
           var xhr = new XMLHttpRequest();
           xhr.open("GET", Drupal.url("v1/module_actu_pleiade/actu_list"));
-          
           xhr.responseType = "json";
+
           xhr.onload = function () {
-            if (xhr.status === 200) {
-              var donnees = (xhr.response);
-              const div = document.querySelector('.actualites');
-              var blocActu = ""
-              //<a href="/actualites" class="voir_tout mt-0">Voir toute les actualités</a></div>\
-              blocActu += 
-              '<div class="col-lg-12">\
-                <div>\
-                  <div class="card">\
-                    <div class="card-header d-flex align-items-center justify-content-between rounded-top bg-white rounded-top">\
-                      <h4 class="card-title text-dark py-2">Actualités à la une</h4>\
-                      </div>\
-                        <div class="" id="carousel_actualites">\
-                '
-                
-              if (donnees && div) {
+            var blocActu = `<div id="carousel_actualites"></div>`;
+            let itemsHTML = '';
 
-                
-                for (var i = 0; i < donnees.length; i++) {
-                 
-                  if ( donnees[i].title && donnees[i].view_node) {
-                  var tag = '';
-                  if (Array.isArray(donnees[i].field_tags)) {
-                      tag = '<span class="tag_btn position-absolute w-auto p-2 text-uppercase">' + donnees[i].field_tags.join(', ') + '</span>';
-                  } else {
-                      tag = '<span class="tag_btn position-absolute w-auto p-2 text-uppercase">' + donnees[i].field_tags + '</span>';
-                  }
-            
-                    // Tronquer la description à 50 caractères
-                    blocActu +=
-                        '<a href="' + donnees[i].view_node + '" class="d-flex justify-content-center">\
-                            <div class="card" style="height: 230px; width: 250px;">\
-                                <img src="' + donnees[i].field_image + '" class="card-img-top" alt="Course Image">\
-                                <div class="card-body d-flex flex-column" >' +
-                                    tag + '\
-                                    <h5 class="created_date position-absolute w-auto">le ' + donnees[i].created + '</h5>\
-                                    <h5 class="card-title d-flex justify-content-start text-black">' + donnees[i].title + '</h5>\
-                                </div>\
-                            </div>\
-                        </a>';
-                }
-                }
-                
-                if (div) {
-                  blocActu += '</div></div></div><div class="d-flex justify-content-end"><a href="/actualites" class="voir_tout mt-0">Voir toute les actualités</a></div></div>';
-                  div.innerHTML = blocActu;
-                } else {
+            if (xhr.status === 200 && xhr.response && Array.isArray(xhr.response)) {
+              const donnees = xhr.response;
+              for (let actu of donnees) {
+                if (!actu.title || !actu.view_node) continue;
+                let photo = actu.default_image ? 
+                `
+                   <div class="card-img-top" style="display: flex; justify-content: center; align-items: center; margin: 0;">
+                        <img src="${actu.field_image}"  alt="${escapeHtml(actu.title)}">
+                        </div>
+                ` : 
+                `
+                        <img src="${actu.field_image}" class="card-img-top"  alt="${escapeHtml(actu.title)}">
+                      
+                `;
+                let collectivite = `<span class="tag_btn position-absolute w-auto p-2 text-uppercase">${escapeHtml(actu.collectivite)}</span>`;
+                itemsHTML += `
+                  <div>
+                    <a href="${actu.view_node}" class="d-flex justify-content-center" target="_blank">
+                      <div class="card" style="height: 250px; width: 250px;">
+                      ${photo}
+                        <div class="card-body d-flex flex-column" style="height:125px;padding:0.5rem;">
+                          ${collectivite}
+                          <h5 class="created_date w-auto">le ${escapeHtml(actu.created)}</h5>
+                          <p class="card-title d-flex justify-content-start text-black" style="font-size:14px;overflow:hidden;margin-bottom:0;">${escapeHtml(actu.title)}</p>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                `;
+              }
+
+              div.innerHTML = blocActu;
+              const carouselContainer = document.getElementById('carousel_actualites');
+              if (carouselContainer) {
+                carouselContainer.innerHTML = itemsHTML;
+              }
+
+              if ($.fn.slick) {
+                const $carousel = $('#carousel_actualites');
+
+                // 1. Initialiser le carrousel normalement.
+                $carousel.slick({
+                  slidesToShow: window.innerWidth < 768 ? 2 : 4,
+                  slidesToScroll: 2,
+                  arrows: true,
+                  dots: true,
+                  autoplay: false,
+                  autoplaySpeed: 4000,
+                  customPaging: (slider, i) => '<i class="fa-solid fa-circle"></i>',
+                });
+              
+                let etatPrecedent = localStorage.getItem('actu');
+
+                setInterval(() => {
+                  const etatActuel = localStorage.getItem('actu');
                   
-                  console.error("Element with class 'actualites' not found.");
-                }
+                  if (etatActuel === 'block' && etatPrecedent !== 'block') {
+                    $carousel.slick('slickNext');
+                  }
 
-              }
-              else 
-              {
-                blocActu += "<h5>Erreur lors de la récupération des actus... Veuillez contacter l'administrateur</h5>"
-                blocActu += "</div></div></div></div>";
-                div.innerHTML = blocActu
-                console.error("Erreur lors de la récupération des actus..");
-              }
-              
-              
+                  etatPrecedent = etatActuel;
 
-              
-            };
-            xhr.onerror = function () {
-              console.log("Error making AJAX call");
-            };
-            xhr.onabort = function () {
-              console.log("AJAX call aborted");
-            };
-            xhr.ontimeout = function () {
-              console.log("AJAX call timed out");
-            };
-            xhr.onloadend = function () {
-              
-              $('#carousel_actualites').slick({
-                slidesToShow: 5,
-                
-                customPaging: function (slider, i) {
-                  // this example would render "tabs" with titles
-                  return '<i class="fa-solid fa-circle"></i>';
-                },
-              });
+                }, 200);
+
+              } else {
+                console.warn("Le carrousel Slick n'est pas chargé.");
+              }
+            } else {
+              div.innerHTML = `...`;
+              console.error("Réponse invalide pour les actualités.");
             }
           };
+
+          xhr.onerror = () => console.error("Erreur AJAX");
           xhr.send();
-        }); // end once
-      }, 2000); // 1000 millisecondes = 1 seconde
-    },
+        });
+      }, 0);
+    }
   };
 })(jQuery, Drupal, drupalSettings, once);

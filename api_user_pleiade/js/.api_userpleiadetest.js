@@ -199,7 +199,7 @@
               }
               else // if no notification
               {
-                div.innerHTML += '<div class="dropdown-item">\
+                div.innerHTML += '<div class="dropdown-item" >\
                 <div class="d-flex justify-content-center">Aucune nouvelle notification</div>';
               }
             }

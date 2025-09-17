@@ -13,4 +13,26 @@ api_nextcloud_pleiade.notifs_query:
     _title: 'NC Query'
     _format: json
   requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'
+
+
+api_nextcloud_pleiade.generateToken:
+  path: '/v1/api_nextcloud_pleiade/generateToken'
+  defaults:
+    _controller: '\Drupal\api_nextcloud_pleiade\Controller\NextcloudController::generateToken'
+    _title: 'NC Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'
+
+api_nextcloud_pleiade.pollToken:
+  path: '/v1/api_nextcloud_pleiade/pollToken'
+  defaults:
+    _controller: '\Drupal\api_nextcloud_pleiade\Controller\NextcloudController::pollToken'
+    _title: 'NC Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
     _access: 'TRUE'

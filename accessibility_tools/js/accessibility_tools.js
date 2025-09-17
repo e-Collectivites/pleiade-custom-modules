@@ -1,238 +1,166 @@
-(function ($, Drupal, drupalSettings) {
-  "use strict";
-  Drupal.behaviors.AccessibilityBehavior = {
-    attach: function (context, settings) {
-      setTimeout(function () {
-        function increaseFontSize() {
-          var elements = $('#menuLemon .sidebar-link, .sidebar-nav ul .nav-small-cap, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link', context);
-          elements.each(function () {
-            var computedFontSize = window.getComputedStyle(this).fontSize;
-            var currentFontSize = parseInt(computedFontSize) || 16;
-            var newFontSize = currentFontSize + 2;
-            this.style.fontSize = newFontSize + 'px';
+/**
+ * @file
+ * Handles accessibility tool interactions like theme toggling, font size, etc.
+ *
+ * This file uses the Drupal behaviors system and the drupal/once library to
+ * ensure that event handlers are attached only once, even with AJAX content.
+ */
+(function ($, Drupal, once) {
+  'use strict';
+
+  // Define a single behavior for all accessibility tools.
+  Drupal.behaviors.AccessibilityTools = {
+    attach: function (context) {
+
+      /*
+       * =======================================================================
+       *   1. Dark/Light Theme Toggler
+       * =======================================================================
+       */
+      once('theme-view-toggle', '#theme-view', context).forEach(function (checkbox) {
+        const $checkbox = $(checkbox);
+        const body = $('body');
+
+        // Function to set the theme based on the checkbox state
+        const applyTheme = () => {
+          const newTheme = $checkbox.is(':checked') ? 'dark' : 'light';
+          body.attr('data-theme', newTheme);
+        };
+
+        // Attach the event handler
+        $checkbox.on('change', function () {
+          localStorage.setItem('themeViewChecked', this.checked);
+          applyTheme();
+        });
+
+        // Initialize theme on page load
+        if (localStorage.getItem('themeViewChecked') === 'true') {
+          $checkbox.prop('checked', true);
+        }
+        applyTheme(); // Apply theme based on initial state
+      });
+
+
+      /*
+       * =======================================================================
+       *   2. Font Size Controls
+       * =======================================================================
+       */
+      once('font-size-controls', '.btn-group[data-control="font-size"]', context).forEach(function (controlGroup) {
+        const $controlGroup = $(controlGroup);
+        const fontElements = $('#menuLemon .sidebar-link, .sidebar-nav ul .nav-small-cap, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link');
+
+        const updateFontSize = (delta) => {
+          fontElements.each(function () {
+            const currentSize = parseInt(window.getComputedStyle(this).fontSize, 10) || 16;
+            this.style.fontSize = (currentSize + delta) + 'px';
           });
-          var currentBodyFontSize = parseInt(document.body.style.fontSize) || 16;
-          var newBodyFontSize = currentBodyFontSize + 2;
-          document.body.style.fontSize = newBodyFontSize + 'px';
-        }
+          const bodySize = parseInt(window.getComputedStyle(document.body).fontSize, 10) || 16;
+          document.body.style.fontSize = (bodySize + delta) + 'px';
+        };
 
-        function decreaseFontSize() {
-          var elements = $('#menuLemon .sidebar-link, .sidebar-nav ul .nav-small-cap, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link', context);
-          elements.each(function () {
-            var computedFontSize = window.getComputedStyle(this).fontSize;
-            var currentFontSize = parseInt(computedFontSize) || 16;
-            var newFontSize = currentFontSize - 2;
-            this.style.fontSize = newFontSize + 'px';
-          });
-          var currentBodyFontSize = parseInt(document.body.style.fontSize) || 16;
-          var newBodyFontSize = currentBodyFontSize - 2;
-          document.body.style.fontSize = newBodyFontSize + 'px';
-        }
+        const resetFontSize = () => {
+          fontElements.css('font-size', ''); // Reset to CSS default
+          document.body.style.fontSize = ''; // Reset to CSS default
+        };
 
-        function resetFontSize() {
-          var elements = $('#menuLemon .sidebar-link, .sidebar-nav ul .nav-small-cap, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link', context);
-          elements.each(function () {
-            this.style.fontSize = '18px'; // Réinitialiser à la taille par défaut
-          });
-          document.body.style.fontSize = '16px';
-        }
+        $controlGroup.on('click', 'button', function () {
+          const action = this.id;
+          if (action === 'increaseFontSize') updateFontSize(2);
+          else if (action === 'decreaseFontSize') updateFontSize(-2);
+          else if (action === 'resetFontSize') resetFontSize();
+        });
+      });
 
-        // Variable pour stocker l'espacement courant
-        let currentSpacing = 0;
 
-        function increaseSpaces() {
-          currentSpacing += 1;
-          document.body.style.letterSpacing = `${currentSpacing}px`;
-        }
+      /*
+       * =======================================================================
+       *   3. Letter Spacing Controls
+       * =======================================================================
+       */
+      once('letter-spacing-controls', '.btn-group[data-control="letter-spacing"]', context).forEach(function (controlGroup) {
+        let currentSpacing = 0; // This state is now local to this control
+        const $controlGroup = $(controlGroup);
 
-        function decreaseSpaces() {
-          currentSpacing -= 1;
-          if (currentSpacing < 0) {
-            currentSpacing = 0;
+        const updateLetterSpacing = (delta) => {
+          currentSpacing = Math.max(0, currentSpacing + delta);
+          document.body.style.letterSpacing = currentSpacing > 0 ? `${currentSpacing}px` : 'normal';
+        };
+
+        $controlGroup.on('click', 'button', function () {
+          const action = this.id;
+          if (action === 'increaseSpaces') updateLetterSpacing(1);
+          else if (action === 'decreaseSpaces') updateLetterSpacing(-1);
+          else if (action === 'resetSpaces') {
+            currentSpacing = 0; // Reset state
+            document.body.style.letterSpacing = 'normal';
           }
-          document.body.style.letterSpacing = `${currentSpacing}px`;
+        });
+      });
+
+
+      /*
+       * =======================================================================
+       *   4. Contrast and B&W Filter Controls
+       * =======================================================================
+       */
+      once('filter-controls', '#contraste, #black_and_white', context).forEach(function (checkbox) {
+        const $checkbox = $(checkbox);
+        const updateFilter = () => {
+          let filterValue = '';
+          if ($('#contraste').is(':checked')) filterValue += 'contrast(2)';
+          if ($('#black_and_white').is(':checked')) filterValue += ' grayscale(1)';
+          document.body.style.filter = filterValue.trim();
+        };
+
+        $checkbox.on('change', function () {
+          localStorage.setItem(this.id + 'Checked', this.checked);
+          updateFilter();
+        });
+
+        // Initialize state on page load
+        if (localStorage.getItem(checkbox.id + 'Checked') === 'true') {
+          $checkbox.prop('checked', true);
         }
+        updateFilter();
+      });
 
-        function resetSpaces() {
-          currentSpacing = 0;
-          document.body.style.letterSpacing = 'normal';
-        }
 
-        // Gestionnaire d'événements pour le bouton d'augmentation de l'espacement
-        $('#increaseSpaces', context).on('click', increaseSpaces);
+      /*
+       * =======================================================================
+       *   5. Zoom Mode (Magnifying Glass)
+       * =======================================================================
+       */
+      once('zoom-mode-control', '#mode-loupe', context).forEach(function (checkbox) {
+        // Create the info div only once and append to body
+        const mouseInfoDiv = $('<div>').css({
+          // ... your CSS styles ...
+          position: 'fixed', padding: '5px 10px', fontSize: '2rem', borderRadius: '5px', backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,0,0,0.8)', color: '#fff', display: 'none', zIndex: '9999999999999', lineHeight: '1.2', pointerEvents: 'none', userSelect: 'none'
+        }).appendTo('body')[0];
 
-        // Gestionnaire d'événements pour le bouton de diminution de l'espacement
-        $('#decreaseSpaces', context).on('click', decreaseSpaces);
-
-        // Gestionnaire d'événements pour le bouton de réinitialisation de l'espacement
-        $('#resetSpaces', context).on('click', resetSpaces);
-
-        var checkbox = document.getElementById('mode-loupe');
-        // Fonction pour gérer le changement d'état de la case à cocher
-
-        // Fonction pour créer la div d'info sur la souris
-        function createMouseInfoDiv() {
-          // Crée une nouvelle div
-          var mouseInfoDiv = document.createElement('div');
-
-          // Applique les styles CSS
-          mouseInfoDiv.style.position = 'fixed';
-          mouseInfoDiv.style.padding = '5px 10px';
-          mouseInfoDiv.style.fontSize = '2rem';
-          mouseInfoDiv.style.borderRadius = '5px';
-          mouseInfoDiv.style.backgroundColor = 'rgba(0,0,0,.8)';
-          mouseInfoDiv.style.border = '1px solid rgba(0,0,0,.8)';
-          mouseInfoDiv.style.color = '#fff';
-          mouseInfoDiv.style.display = 'none';
-          mouseInfoDiv.style.zIndex = '9999999999999';
-          mouseInfoDiv.style.lineHeight = '1.2';
-          mouseInfoDiv.style.pointerEvents = 'none';
-          mouseInfoDiv.style.userSelect = 'none';
-
-          // Ajoute la div au document
-          document.body.appendChild(mouseInfoDiv);
-
-          return mouseInfoDiv;
-        }
-
-        // Crée la div pour les informations sur la souris
-        var mouseInfoDiv = createMouseInfoDiv();
-        function handleCheckboxChange() {
-          if (checkbox.checked) {
-            console.log("La case à cocher est cochée :", checkbox.checked);
-            var body = document.body;
-            body.addEventListener('mousemove', handleMouseMove);
+        const handleMouseMove = (event) => {
+          const el = event.target;
+          if (['SPAN', 'A', 'TD', 'TH', 'BUTTON', 'P'].includes(el.tagName) || el.tagName.match(/^H[1-6]$/)) {
+            mouseInfoDiv.style.left = `${event.clientX + 20}px`;
+            mouseInfoDiv.style.top = `${event.clientY + 20}px`;
+            mouseInfoDiv.textContent = el.textContent.trim();
+            mouseInfoDiv.style.display = el.textContent.trim() ? 'block' : 'none';
           } else {
-            // Cache la div lorsque la case à cocher est désactivée
             mouseInfoDiv.style.display = 'none';
-            // Supprime l'écouteur d'événements 'mousemove'
-            var body = document.body;
-            body.removeEventListener('mousemove', handleMouseMove);
           }
-        }
-        function handleMouseMove(event) {
-          const element = event.target;
-          if (element.tagName === 'SPAN' || element.tagName === 'A' || element.tagName === 'TD' || element.tagName === 'TH' || element.tagName === 'BUTTON' || element.tagName === 'P' || (element.tagName >= 'H1' && element.tagName <= 'H6')) {
-            const posX = event.clientX + 50;
-            const posY = event.clientY + 50;
+        };
 
-            // Met à jour la position de la div
-            mouseInfoDiv.style.left = posX + 'px';
-            mouseInfoDiv.style.top = posY + 'px';
-
-            // Met à jour le contenu de la div avec les coordonnées de la souris
-            mouseInfoDiv.textContent = element.textContent;
-
-            // Affiche la div
-            mouseInfoDiv.style.display = 'block';
-          }
-        }
-        // Ajouter un écouteur d'événement sur le changement de la case à cocher
-        checkbox.addEventListener('change', handleCheckboxChange);
-
-
-        const contrastCheckbox = document.getElementById('contraste');
-        const bwCheckbox = document.getElementById('black_and_white');
-
-        function updateFilter() {
-          let filter = '';
-
-          if (contrastCheckbox.checked) {
-            filter += 'contrast(200%) ';
-          }
-
-          if (bwCheckbox.checked) {
-            filter += 'grayscale(100%) ';
-          }
-
-          document.body.style.filter = filter.trim();
-        }
-
-        contrastCheckbox.addEventListener('change', updateFilter);
-        bwCheckbox.addEventListener('change', updateFilter);
-
-
-        // Assurez-vous que les gestionnaires d'événements sont attachés aux éléments corrects.
-        $('.btn-group button', context).on('click', function () {
-          if ($(this).is('#increaseFontSize')) {
-            increaseFontSize();
-          } else if ($(this).is('#decreaseFontSize')) {
-            decreaseFontSize();
-          } else if ($(this).is('#resetFontSize')) {
-            resetFontSize();
-          }
-          // Ajoutez d'autres conditions pour d'autres boutons si nécessaire.
-        });
-
-        // Gestionnaire d'événements pour le bouton du thème sombre
-        $('#theme-view', context).on('change', function () {
-          if ($(this).is(':checked')) {
-            // Logique pour activer le thème sombre
-
-            // Sauvegardez l'état de la case à cocher dans le stockage local
-            localStorage.setItem('themeViewChecked', 'true');
+        $(checkbox).on('change', function () {
+          if (this.checked) {
+            document.body.addEventListener('mousemove', handleMouseMove);
           } else {
-            // Logique pour désactiver le thème sombre
-
-            // Supprimez l'état de la case à cocher du stockage local
-            localStorage.removeItem('themeViewChecked');
+            document.body.removeEventListener('mousemove', handleMouseMove);
+            mouseInfoDiv.style.display = 'none';
           }
         });
+      });
 
-        // Vérifiez si l'état de la case à cocher est sauvegardé dans le stockage local
-        var themeViewChecked = localStorage.getItem('themeViewChecked');
-        if (themeViewChecked === 'true') {
-          // Si oui, cochez la case à cocher et déclenchez le gestionnaire d'événements 'change'
-          $('#theme-view', context).prop('checked', true).trigger('change');
-        }
-
-
-        $('#contraste', context).on('change', function () {
-          if ($(this).is(':checked')) {
-            // Logique pour activer le thème sombre
-
-            // Sauvegardez l'état de la case à cocher dans le stockage local
-            localStorage.setItem('contrasteChange', 'true');
-          } else {
-            // Logique pour désactiver le thème sombre
-
-            // Supprimez l'état de la case à cocher du stockage local
-            localStorage.removeItem('contrasteChange');
-          }
-        });
-
-        // Vérifiez si l'état de la case à cocher est sauvegardé dans le stockage local
-        var themeViewChecked = localStorage.getItem('contrasteChange');
-        if (themeViewChecked === 'true') {
-          // Si oui, cochez la case à cocher et déclenchez le gestionnaire d'événements 'change'
-          $('#contraste', context).prop('checked', true);
-          updateFilter();
-        }
-        $('#black_and_white', context).on('change', function () {
-          if ($(this).is(':checked')) {
-            // Logique pour activer le thème sombre
-
-            // Sauvegardez l'état de la case à cocher dans le stockage local
-            localStorage.setItem('black_and_whiteChange', 'true');
-          } else {
-            // Logique pour désactiver le thème sombre
-
-            // Supprimez l'état de la case à cocher du stockage local
-            localStorage.removeItem('black_and_whiteChange');
-          }
-        });
-
-        // Vérifiez si l'état de la case à cocher est sauvegardé dans le stockage local
-        var themeViewChecked = localStorage.getItem('black_and_whiteChange');
-        if (themeViewChecked === 'true') {
-          // Si oui, cochez la case à cocher et déclenchez le gestionnaire d'événements 'change'
-          $('#black_and_white', context).prop('checked', true);
-          updateFilter();
-        }
-        
-
-      }, 2000); // 1000 millisecondes = 1 seconde
     }
-
   };
-})(jQuery, Drupal, drupalSettings);
+
+})(jQuery, Drupal, once);

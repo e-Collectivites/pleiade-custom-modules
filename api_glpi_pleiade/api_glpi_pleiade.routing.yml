@@ -13,11 +13,27 @@ api_glpi_pleiade.glpi_list_tickets:
     _title: 'Tickets Query'
     _format: json
   requirements:
+    _role: 'authenticated'
     _access: 'TRUE'
+
+api_glpi_pleiade.getGLPITicketsCount:
+  path: '/v1/api_glpi_pleiade/getGLPITicketsCount'
+  defaults:
+    _controller: '\Drupal\api_glpi_pleiade\Controller\GlpiController::getGLPITicketsCount'
+    _title: 'Tickets Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'
+
+
 api_glpi_pleiade.glpi_tickets:
   path: '/glpi_tickets'
   defaults:
     _controller: '\Drupal\api_glpi_pleiade\Controller\GlpiController::glpi_tickets'
     _title: 'Liste des tickets GLPI'
   requirements:
+    _role: 'authenticated'
     _permission: 'access content'
+
+

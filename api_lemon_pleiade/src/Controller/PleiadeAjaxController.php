@@ -2,29 +2,38 @@
 
 namespace Drupal\api_lemon_pleiade\Controller;
 
+use Drupal\api_lemon_pleiade\Service\LemonServiceInterface;
 use Drupal\Core\Controller\ControllerBase;
-
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\module_api_pleiade\ApiPleiadeManager;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\user\Entity\User;
-use Drupal\user\PrivateTempStoreFactory;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PleiadeAjaxController extends ControllerBase
 {
 
+  protected $lemonService;
+
+  public function __construct(LemonServiceInterface $LemonService)
+  {
+    $this->lemonService = $LemonService;
+  }
+
+  public static function create(ContainerInterface $container)
+  {
+    return new static(
+      $container->get(LemonServiceInterface::class)
+    );
+  }
   // function to query LemonLDAP API, myapplications endpoint
   public function lemon_myapps_query(Request $request)
   {
     $return = []; //our variable to fill with data returned by LemonLDAP   
-    $lemondataApi = new ApiPleiadeManager();
-    $return = $lemondataApi->searchMyApps();
-    if($return){
+
+    $return = $this->lemonService->searchMyApps();
+    if ($return) {
       return new JsonResponse(json_encode($return), 200, [], true);
     }
-
   }
 
   // function to query LemonLDAP API, session/my/global endpoint
@@ -32,23 +41,17 @@ class PleiadeAjaxController extends ControllerBase
   {
     unset($_COOKIE["groups"]);
     $return = []; //our variable to fill with data returned by LemonLDAP
-    $lemondataApi = new ApiPleiadeManager();
-    $return = $lemondataApi->searchMySession();
-    if($return){
+
+    $return = $this->lemonService->searchMySession();
+
+    if ($return) {
       $return['groupes'] = '';
       $groupArray = explode(";", $return["groups"]);
       foreach ($groupArray as $group) {
         if (!empty($group)) {
           $dpt = explode("|", $group);
 
-          $return['groupes'] .= $dpt[0].',';
-        }
-
-        if($dpt[1] != null){
-
-          $return['groupes'] .= ' dpt-'.$dpt[1].',';
-          setcookie('departement', $dpt[1], time() + 36000, '/');
-          setcookie('collectivite', $dpt[0], time() + 3600, '/');
+          $return['groupes'] .= $dpt[0] . ',';
         }
       }
       $return['groups'] = $return['groupes'];
@@ -107,10 +110,8 @@ class PleiadeAjaxController extends ControllerBase
       }
 
       return new JsonResponse(json_encode($return), 200, [], true);
-    }
-    else
-    {
-      return new JsonResponse(json_encode('aucune donnée'), 200, [], true); 
+    } else {
+      return new JsonResponse(json_encode('aucune donnée'), 200, [], true);
     }
   }
 
@@ -132,4 +133,82 @@ class PleiadeAjaxController extends ControllerBase
     ];
   }
 
+  private function getErrorMeaning(string $code): string
+  {
+    // Source: Documentation de LemonLDAP::NG. [1]
+    $meanings = [
+      '-4' => 'Authentification réussie',
+      '1'  => 'Rechargement de la page',
+      '2'  => 'Déconnexion',
+      '3'  => 'Changement d\'utilisateur',
+      '4'  => 'Nouvel en-tête d\'authentification',
+      '5'  => 'Mauvais identifiants (login/mot de passe incorrect)',
+      '6'  => 'L\'utilisateur n\'a pas les droits pour ouvrir une session',
+      '7'  => 'Session expirée ou invalide',
+      '8'  => 'L\'utilisateur a annulé le processus',
+      '9'  => 'Attaque XSS détectée',
+      '10' => 'Mauvais code de confirmation (Captcha)',
+      '11' => 'L\'adresse IP a changé pendant la session',
+      '12' => 'Le navigateur a changé pendant la session',
+      // Ajoutez d'autres codes si nécessaire.
+    ];
+    return $meanings[$code] ?? "Code d'erreur inconnu ($code)";
+  }
+
+
+  public function content(Request $request)
+  {
+
+
+    $return = $this->lemonService->searchMySession();
+
+    if (empty($return) || !isset($return['_loginHistory'])) {
+      return [
+        '#type' => 'markup',
+        '#markup' => $this->t("Impossible de récupérer l'historique des connexions."),
+      ];
+    }
+
+    $success = $return['_loginHistory']['successLogin'] ?? [];
+    $failed = $return['_loginHistory']['failedLogin'] ?? [];
+
+    if ($request->get('type') == "success") {
+      $all = $success;
+    } else if ($request->get('type') == "failed") {
+      $all = $failed;
+    } else {
+      $all = array_merge($success, $failed);
+    }
+
+
+    // Trier les entrées par date, de la plus récente à la plus ancienne
+    usort($all, function ($a, $b) {
+      return $b['_utime'] <=> $a['_utime'];
+    });
+
+    // Préparer les données pour le template
+    $processed_logs = [];
+    foreach ($all as $item) {
+      $processed_logs[] = [
+        'status' => $item['error'] ? ((int)$item['error']) < 0 ? 'success' : 'failed' : 'success',
+        'timestamp' => $item['_utime'],
+        'ip' => $item['ipAddr'],
+        'message' => $item['error'] ?  $this->getErrorMeaning($item['error']) :  "",
+      ];
+    }
+
+    // Renvoyer les données au template Twig
+    return [
+      '#theme' => 'api_lemon_pleiade_history',
+      '#success_count' => count($success),
+      '#failed_count' => count($failed),
+      '#all_logs' => $processed_logs,
+    ];
+  }
+
+  public function refresh_session(Request $request)
+  {
+      $this->lemonService->refresh_session();
+      return new TrustedRedirectResponse("/");
+  }
 }

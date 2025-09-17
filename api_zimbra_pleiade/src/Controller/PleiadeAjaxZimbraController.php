@@ -2,165 +2,138 @@
 
 namespace Drupal\api_zimbra_pleiade\Controller;
 
+use Drupal\api_zimbra_pleiade\Service\ZimbraServiceInterface;
 use Drupal\Core\Controller\ControllerBase;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\module_api_pleiade\ApiPleiadeManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class PleiadeAjaxZimbraController extends ControllerBase {
+class PleiadeAjaxZimbraController extends ControllerBase
+{
+  private $token;
+  private $url;
+  private $email;
 
-public function zimbra_mails_query(Request $request) {
+  private $service;
+  public function __construct(ZimbraServiceInterface $service)
+  {
+    $this->service = $service;
+    $user = \Drupal\user\Entity\User::load(
+      \Drupal::currentUser()->id()
+    );
+    $this->email = $user->getEmail();
+    $collectivite = \Drupal::request()->getSession()->get('cas_attributes')["partner"][0];
+    $array = \Drupal::keyValue("collectivities_store")->get('global', "does not exist");
+    $this->token = $array[$collectivite]['token_zimbra'];
+    $this->url = $array[$collectivite]['url_zimbra'];
+  }
 
-$settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
-    // // API endpoint URL
-    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-    $groupData = $tempstore->get('groups');
-    if ($groupData !== NULL) {
-      $groupDataArray = explode('; ', $groupData);
+  public static function create(ContainerInterface $container)
+  {
+    return new static(
+      $container->get(ZimbraServiceInterface::class),
+      $container->get('current_user')
+    );
+  }
+  public function zimbra_mails_query(Request $request)
+  {
+
+    if ($this->url != "") {
+      $limit_mail = 500;
+      $query = sprintf('is:unread inid:2 -from:%s', $this->email);
+
+      $mail_endpoint = sprintf(
+        '<SearchRequest xmlns="urn:zimbraMail" groupBy="message" limit="%d"><query>%s</query></SearchRequest>',
+        $limit_mail,
+        htmlspecialchars($query, ENT_XML1, 'UTF-8')
+      );
+
+      $return = []; 
+
+      $return = $this->service->searchMyMails($mail_endpoint, $this->email, $this->token, $this->url);
+      if ($return) {
+
+        $userDomainData = $return[0] ?? null;
+        return new JsonResponse(
+          json_encode([
+            "domainEntry" => $this->url,
+            "userData" => $userDomainData,
+          ]),
+          200,
+          [],
+          true
+        );
+      } else {
+        \Drupal::logger("zimbra_tasks_query")->error("Aucun retour API");
+        return new JsonResponse(json_encode("0"), 200, [], true);
+      }
     }
-    if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
-    $return = []; // Variable to store Zimbra data
-    $zimbradataApi = new ApiPleiadeManager();
-    $return = $zimbradataApi->searchMyMails();
-    $returnEmailUser = $zimbradataApi->searchMySession();
+  }
 
-    if ($return) {
-        // Retrieve user's email
-        $userEmail = $returnEmailUser['mail'];
+  public function zimbra_tasks_query(Request $request)
+  {
 
-        // Extract domain from user's email
-        $userDomain = substr(strrchr($userEmail, "@"), 1);
+    $limit_tasks = 10000;
+    $currentDateTime = new \DateTime();
+    $limitEndTimeStamp = $currentDateTime->modify("+30 days")->getTimestamp() * 1000;
+    $currentDateTime = new \DateTime();
+    $limitStartTimeStamp = $currentDateTime->modify("-30 days")->getTimestamp() * 1000;
+    $tasks_endpoint =
+      '<SearchRequest xmlns="urn:zimbraMail" types="appointment" calExpandInstStart="' .
+      $limitStartTimeStamp .
+      '" calExpandInstEnd="' .
+      $limitEndTimeStamp .
+      '" limit="' .
+      $limit_tasks .
+      '" sortBy="idDesc"><query>inid:10</query></SearchRequest>';
 
-       // \Drupal::logger('zimbra_mails_query')->info('User Email: @email, User Domain: @domain', [
-       //     '@email' => $userEmail,
-       //     '@domain' => $userDomain
-       // ]);
 
-        // Retrieve configuration value
-        $domainPlusToken = $this->config('api_zimbra_pleiade.settings')->get('token_plus_domain');
+    $settings_zimbra = \Drupal::config("api_zimbra_pleiade.settings");
+    $tempstore = \Drupal::service("tempstore.private")->get("api_lemon_pleiade");
+    $groupData = $tempstore->get("groups");
 
-        // Split configuration value into lines
-        $lines = explode("\n", $domainPlusToken);
+    if ($groupData !== null) {
+      $groupDataArray = explode(",", str_replace(", ", ",", $groupData));
+    }
+    if (in_array($settings_zimbra->get("lemon_group"), $groupDataArray)) {
 
-        // Initialize an array to store domains
-        $domainArray = array();
+      $return = [];
 
-        // Iterate through each line
-        foreach ($lines as $line) {
-            // Remove leading and trailing spaces
-            $line = trim($line);
-            if (!empty($line)) {
-                // Split the line into domain and token using "| |" as separator
-                list($domain, $token) = explode("| |", $line);
+      $return = $this->service->searchMyTasks($tasks_endpoint, $this->email, $this->token, $this->url);
 
-                // Add the domain to the array
-                $domainArray[] = $domain;
-            }
-        }
+      if ($return) {
+        $userDomainData = $return[0] ?? null;
 
-	$userDomainKey = false;
-
-	foreach ($domainArray as $key => $domainEntry) {
-    		// Check if the user's domain matches the current domain or is part of the value
-    		if ($userDomain === $domainEntry || strpos($domainEntry, $userDomain) !== false) {
-        		$userDomainKey = $key;
-        		break; // Exit the loop once a match is found
-    		}
-	}
-        // If the user's domain is found, return the corresponding data from $return
-        if ($userDomainKey !== false) {
-            $userDomainData = $return[$userDomainKey];
-	    //var_dump($domainEntry);
-            //return new JsonResponse(json_encode($userDomainData), 200, [], true);
-		return new JsonResponse(json_encode([
-        'domainEntry' => $domainEntry, // Add domainEntry to the JSON response
-        'userData' => $userDomainData
-    	]), 200, [], true);        
-	}
+        return new JsonResponse(
+          json_encode([
+            "domainEntry" => $this->url,
+            "userData" => $userDomainData,
+          ]),
+          200,
+          [],
+          true
+        );
+      } else {
+        \Drupal::logger("zimbra_tasks_query")->error("Aucun retour API");
+        return new JsonResponse(json_encode("0"), 200, [], true);
+      }
     } else {
-        \Drupal::logger('zimbra_mails_query')->info('No API response');
+      \Drupal::logger("zimbra_tasks_query")->error("Pas dans le groupe zimbra");
+      return new JsonResponse(json_encode("0"), 200, [], true);
     }
-	return new JsonResponse(json_encode('null'), 200, [], true);
-	}
-}
+  }
 
-
-public function zimbra_tasks_query(Request $request){
- 
-$settings_zimbra = \Drupal::config('api_zimbra_pleiade.settings');
-    // // API endpoint URL
-    $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
-    $groupData = $tempstore->get('groups');
-    if ($groupData !== NULL) {
-      $groupDataArray = explode('; ', $groupData);
-    }
-    if (in_array($settings_zimbra->get('lemon_group'), $groupDataArray)) {
-
-       $return = []; //our variable to fill with data returned by Zimbra
-        
-        // Debug what's in request 
-        $zimbradataApi = new ApiPleiadeManager();
-        $returnEmailUser = $zimbradataApi->searchMySession();
-        
-        $return = $zimbradataApi->searchMyTasks();
-        if($return){
-
-            $userEmail = $returnEmailUser['mail'];
-            $userDomain = substr(strrchr($userEmail, "@"), 1);
-
-           // \Drupal::logger('zimbra_tasks_query')->info('Return $return: @return', ['@return' => $return ]);
-            \Drupal::logger('zimbra_mails_query')->info('User Email: @email, User Domain: @domain', [
-                '@email' => $userEmail,
-                '@domain' => $userDomain
-            ]);
-    
-            // Retrieve configuration value
-            $domainPlusToken = $this->config('api_zimbra_pleiade.settings')->get('token_plus_domain');
-    
-            // Split configuration value into lines
-            $lines = explode("\n", $domainPlusToken);
-    
-            // Initialize an array to store domains
-            $domainArray = array();
-    
-            // Iterate through each line
-            foreach ($lines as $line) {
-                // Remove leading and trailing spaces
-                $line = trim($line);
-                if (!empty($line)) {
-                    // Split the line into domain and token using "| |" as separator
-                    list($domain, $token) = explode("| |", $line);
-    
-                    // Add the domain to the array
-                    $domainArray[] = $domain;
-                }
-            }
-    
-            $userDomainKey = false;
-    
-            foreach ($domainArray as $key => $domainEntry) {
-                    // Check if the user's domain matches the current domain or is part of the value
-                    if ($userDomain === $domainEntry || strpos($domainEntry, $userDomain) !== false) {
-                        $userDomainKey = $key;
-                        break; // Exit the loop once a match is found
-                    }
-            }
-                // If the user's domain is found, return the corresponding data from $return
-                if ($userDomainKey !== false) {
-                    $userDomainData = $return[$userDomainKey];
-                return new JsonResponse(json_encode([
-                    'domainEntry' => $domainEntry, // Add domainEntry to the JSON response
-                    'userData' => $userDomainData
-                    ]), 200, [], true);        
-                }
-	}
-        else
-        {
-            \Drupal::logger('zimbra_tasks_query')->info('aucun retour de l\'api');
-        }
-        return new JsonResponse(json_encode('null'), 200, [], true);
-}    
-}
-
+  public function get_full_calendar()
+  {
+    \Drupal::logger("zimbra_tasks_query")->info("page calendrier complet target");
+    return [
+      "#markup" => '
+      <div class="d-flex justify-content-center">
+        <div id="spinner-history" class="spinner-border text-primary" role="status">
+        </div>
+      </div>
+      <div id="zimbra_full_calendar"></div>',
+    ];
+  }
 }

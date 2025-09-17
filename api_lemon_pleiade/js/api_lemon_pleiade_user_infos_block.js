@@ -29,6 +29,7 @@
                   var donnees = xhr.response;
                   
                   if(donnees != 'aucune donnée'){
+                    localStorage.setItem('userid', donnees.uid);
                   var cn = donnees.cn;
                     var mail = donnees.mail;
                     var blocLemon;

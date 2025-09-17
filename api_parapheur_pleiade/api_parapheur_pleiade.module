@@ -21,7 +21,7 @@ function api_parapheur_pleiade_preprocess_page(&$variables){
   $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
   $groupData = $tempstore->get('groups');
   $pattern = '/\bdpt-\d+\b/'; // Modèle pour trouver "dpt-" suivi de chiffres, avec des limites de mots (\b)
-
+   $departement = '';
   if (preg_match($pattern, $groupData, $matches)) {
       $departement = str_replace("dpt-", "", $matches[0]);
   }

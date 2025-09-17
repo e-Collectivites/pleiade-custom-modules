@@ -544,7 +544,21 @@ body[data-theme=dark] .btn-accessibility{
 }
 
 div#notifications_alert{
-  padding: 0.1em 1em!important;
-}
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  overflow-wrap: break-word;
+  white-space: normal;
+  overflow-x: hidden;
+  box-sizing: border-box;
 
+}
+.close-button {
+  position: absolute;
+  right: 10px; /* Adjust the value as needed */
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+}
 

@@ -31,7 +31,6 @@
                   
                   if (minutesAgo <= 1) {
                     notification = "Maintenant";
-                    localStorage.removeItem("notificationStatus");
                   } else if (minutesAgo <= 60) {
                     notification = "Il y a " + minutesAgo + " minutes";
                   } else if (minutesAgo <= 1440) { // 1440 minutes = 24 hours
@@ -54,7 +53,7 @@
                 var displayNotif = document.getElementById("notification_alert"); 
                   displayNotif.classList.remove("show");
                 div.innerHTML +=
-                  '<div class="dropdown-item">\
+                  '<div class="dropdown-item" id="emptyNoth">\
                               <h6 class="d-flex justify-content-center">Aucune nouvelle notification</h6>';
               }
             }

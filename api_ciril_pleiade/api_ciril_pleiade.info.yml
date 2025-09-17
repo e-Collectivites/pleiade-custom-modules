@@ -1,0 +1,13 @@
+name: API Pléiade SSO Ciril
+type: module
+description: 'API connector Ciril for Pléiade dashboard'
+# package: Pleiade Ciril
+package: Pleiade
+# version: 8.x +
+core: 8.x
+core_version_requirement: ^9.5 || ^10
+
+# Information 
+version: '1.0.x-dev'
+project: 'api_ciril_pleiade'
+datestamp: 1624364473

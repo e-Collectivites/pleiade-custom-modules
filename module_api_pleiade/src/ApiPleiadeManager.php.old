@@ -1,0 +1,107 @@
+<?php
+
+namespace Drupal\module_api_pleiade;
+
+use Drupal\Component\Serialization\Json;
+
+use GuzzleHttp\Exception\RequestException;
+use Drupal\user\Entity\User;
+use Exception;
+
+/**
+ * API Manager for Pleiade integrations.
+ */
+class ApiPleiadeManager
+{
+
+  protected $settings_humhub;
+
+
+  /** @var \GuzzleHttp\ClientInterface */
+  public $client;
+
+  /**
+   * ApiPleiadeManager constructor.
+   */
+  public function __construct()
+  {
+    $this->client = \Drupal::httpClient();
+    $moduleHandler = \Drupal::service('module_handler');
+
+    $this->settings_humhub = $moduleHandler->moduleExists('api_humhub_pleiade') ? \Drupal::config('api_humhub_pleiade.settings') : NULL;
+  }
+
+  /**
+   * Do CURL request with authorization.
+   *
+   * @param string $endpoint
+   *   A request action of api.
+   * @param string $method
+   *   A method of curl request.
+   * @param Array $inputs
+   *   A data of curl request.
+   *
+   * @return array
+   *   An associate array with respond data.
+   */
+  private function executeCurl($endpoint, $method, $inputs, $api, $application, $zimbra_mail, $zimbra_token, $zimbra_domain)
+  {
+    if  ($application == 'humhub') {
+      try {
+        $response = $this->client->request($method, $api, [
+          'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $inputs["token"]
+          ],
+          'verify' => false,
+          'timeout' => 60
+        ]);
+        return Json::decode($response->getBody()->getContents());
+      } catch (Exception $e) {
+        return Json::decode($e->getMessage());
+      }
+    }
+  }
+
+ public function get_notif_humhub($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/notification/unseen', 'humhub');
+  }
+  public function get_messages_humhub($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/mail', 'humhub');
+  }
+  public function get_spaces($token)
+  {
+    return $this->curlGet([], $token, $this->settings_humhub->get('humhub_url') . '/api/v1/space', 'humhub');
+  }
+
+
+  // --- API Wrappers ---
+
+  public function curlGet($endpoint, $inputs, $api, $application, $email = '', $token = '', $domain = '')
+  {
+    return $this->executeCurl($endpoint, "GET", $inputs, $api, $application, $email, $token, $domain);
+  }
+
+  public function curlPost($endpoint, $inputs, $api, $application)
+  {
+    return $this->executeCurl($endpoint, "POST", $inputs, $api, $application);
+  }
+
+  
+
+  /**
+   * Polyfill for array_key_first for PHP < 7.3.
+   */
+  public static function arrayKeyfirst($array)
+  {
+    if (function_exists('array_key_first')) {
+      return array_key_first($array);
+    }
+    foreach ($array as $key => $unused) {
+      return $key;
+    }
+    return NULL;
+  }
+}

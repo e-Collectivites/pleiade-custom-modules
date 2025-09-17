@@ -2,17 +2,7 @@
 :root {
   --global-color: #1f3889;
 }
-#main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .show #post_it_dashboard{
-  display: unset;
-}
-div#post_it_dashboard {
-    margin-top: 1.25em;
-    /* min-height: 30rem; */
-    border: 1px solid #e9ecef !important;
-    /* padding: 1rem; */
-    background-color: #FFF;
-    
-}
+
 #post_it_dashboad .show{
   height: 450px;
 }
@@ -91,3 +81,20 @@ textarea#message{
 #post_it_dashboard .item{
   z-index: 999999999;
 }
+
+
+#post_it_dashboard {
+  position: relative;
+  overflow: hidden;
+}
+
+.item {
+  position: absolute;
+  z-index: 1;
+  transition: box-shadow 0.2s;
+}
+
+.item:active {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+

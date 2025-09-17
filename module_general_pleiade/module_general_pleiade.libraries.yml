@@ -3,5 +3,6 @@ module_general_pleiade_js:
   js:
     js/module_general_pleiade.js: {}
     js/scrollToApps.js: {}
+
   dependencies:
     - core/jquery
