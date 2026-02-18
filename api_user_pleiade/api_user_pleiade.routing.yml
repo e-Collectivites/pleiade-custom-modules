@@ -47,7 +47,15 @@ api_user_pleiade.user_delete_application:
     _role: 'authenticated'
     _permission: 'access content' 
 
-
+api_user_pleiade.user_modify_application:
+  path: '/v1/api_user_pleiade/user_modify_application'
+  defaults:
+    _controller: '\Drupal\api_user_pleiade\Controller\PleiadeUserController::user_modify_application'
+    _title: 'User Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
+    _permission: 'access content' 
 
 
 

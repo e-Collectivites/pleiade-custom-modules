@@ -25,22 +25,40 @@ class PleiadeAjaxController extends ControllerBase
       $container->get(LemonServiceInterface::class)
     );
   }
-  // function to query LemonLDAP API, myapplications endpoint
-  public function lemon_myapps_query(Request $request)
-  {
-    $return = []; //our variable to fill with data returned by LemonLDAP   
 
+  /**
+   * Function to query LemonLDAP API, myapplications endpoint.
+   *
+   * @param Request $request
+   *   The request object.
+   *
+   * @return JsonResponse
+   *   A JSON response containing the applications or an empty array.
+   */
+  public function lemon_myapps_query(Request $request): JsonResponse
+  {
     $return = $this->lemonService->searchMyApps();
-    if ($return) {
-      return new JsonResponse(json_encode($return), 200, [], true);
+
+    // Since searchMyApps now returns an array with optimized URLs:
+    if (!empty($return)) {
+      return new JsonResponse($return); // JsonResponse automatically handles the encoding
     }
+
+    return new JsonResponse([]);
   }
 
-  // function to query LemonLDAP API, session/my/global endpoint
-  public function lemon_session_query(Request $request)
+  /**
+   * Function to query LemonLDAP API, session/my/global endpoint.
+   *
+   * @param Request $request
+   *   The request object.
+   *
+   * @return JsonResponse
+   *   A JSON response containing session data.
+   */
+  public function lemon_session_query(Request $request): JsonResponse
   {
     unset($_COOKIE["groups"]);
-    $return = []; //our variable to fill with data returned by LemonLDAP
 
     $return = $this->lemonService->searchMySession();
 
@@ -50,69 +68,57 @@ class PleiadeAjaxController extends ControllerBase
       foreach ($groupArray as $group) {
         if (!empty($group)) {
           $dpt = explode("|", $group);
-
           $return['groupes'] .= $dpt[0] . ',';
         }
       }
       $return['groups'] = $return['groupes'];
+
       \Drupal::logger('api_lemon_pleiade')->info('User group: @api', ['@api' => $return['groupes']]);
-      // Store groups in Drupal private tempstore to serve to other modules later
+
+      // Store groups in Drupal private tempstore
       $tempstore = \Drupal::service('tempstore.private')->get('api_lemon_pleiade');
       $tempstore->set('groups', $return["groupes"]);
       setcookie('groups', $return['groups'], time() + 36000, '/');
 
       $email = $return["mail"];
-      // Recherchez l'utilisateur par son adresse e-mail.
       $users = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $email]);
 
-      // Assurez-vous que l'utilisateur a été trouvé.
       if (!empty($users)) {
-        // Obtenez le premier utilisateur correspondant à l'adresse e-mail.
         $user = reset($users);
+        $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
 
-        // Vérifiez si l'utilisateur a un champ user_picture.
         if ($user->hasField('user_picture')) {
-          // Obtenez la valeur du champ user_picture.
           $user_picture_value = $user->get('user_picture')->getValue();
-
           if (!empty($user_picture_value[0]['target_id'])) {
-            // L'utilisateur a une image de profil personnalisée.
             $file = \Drupal\file\Entity\File::load($user_picture_value[0]['target_id']);
             $picture_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
           } else {
-            // Utilisez l'image de profil par défaut de l'utilisateur.
             $field = \Drupal\field\Entity\FieldConfig::loadByName('user', 'user', 'user_picture');
             $default_image = $field->getSetting('default_image');
-
             if ($default_image) {
               $file = \Drupal::service('entity.repository')->loadEntityByUuid('file', $default_image['uuid']);
               if ($file) {
                 $picture_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
-              } else {
-                // L'image par défaut n'a pas pu être chargée, utilisez une URL d'image par défaut.
-                $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
               }
-            } else {
-              // Aucune image de profil par défaut n'est définie, utilisez une URL d'image par défaut.
-              $picture_url = '/themes/custom/pleiadebv/assets/images/users/img_user.png';
             }
           }
-
-          // Maintenant, $picture_url contient l'URL de l'image de profil de l'utilisateur.
           $return['user_picture_url'] = $picture_url;
         } else {
-          // L'utilisateur n'a pas de champ user_picture.
-          \Drupal::logger('api_lemon_pleiade')->warning('L\'utilisateur n\'a pas de champ user_picture.');
+          \Drupal::logger('api_lemon_pleiade')->warning('The user does not have a user_picture field.');
         }
       } else {
-        // Aucun utilisateur trouvé avec cette adresse e-mail.
-        \Drupal::logger('api_lemon_pleiade')->warning('Aucun utilisateur trouvé avec cette adresse e-mail.');
+        \Drupal::logger('api_lemon_pleiade')->warning('No user found with this email address: @mail', ['@mail' => $email]);
       }
 
-      return new JsonResponse(json_encode($return), 200, [], true);
-    } else {
-      return new JsonResponse(json_encode('aucune donnée'), 200, [], true);
+      // Return data with 200 OK
+      return new JsonResponse($return, 200);
     }
+
+    // Return 401 Not Found instead of 200
+    return new JsonResponse([
+      'error' => 'no_session_found',
+      'message' => 'Aucune donnée de session trouvée.'
+    ], 401);
   }
 
   /**
@@ -133,9 +139,18 @@ class PleiadeAjaxController extends ControllerBase
     ];
   }
 
+  /**
+   * Get the meaning of a LemonLDAP error code.
+   *
+   * @param string $code
+   *   The error code.
+   *
+   * @return string
+   *   The meaning of the error code.
+   */
   private function getErrorMeaning(string $code): string
   {
-    // Source: Documentation de LemonLDAP::NG. [1]
+    // Source: LemonLDAP::NG Documentation.
     $meanings = [
       '-4' => 'Authentification réussie',
       '1'  => 'Rechargement de la page',
@@ -150,16 +165,21 @@ class PleiadeAjaxController extends ControllerBase
       '10' => 'Mauvais code de confirmation (Captcha)',
       '11' => 'L\'adresse IP a changé pendant la session',
       '12' => 'Le navigateur a changé pendant la session',
-      // Ajoutez d'autres codes si nécessaire.
     ];
     return $meanings[$code] ?? "Code d'erreur inconnu ($code)";
   }
 
-
+  /**
+   * Returns the content for the connection history page.
+   *
+   * @param Request $request
+   *   The request object.
+   *
+   * @return array
+   *   A render array.
+   */
   public function content(Request $request)
   {
-
-
     $return = $this->lemonService->searchMySession();
 
     if (empty($return) || !isset($return['_loginHistory'])) {
@@ -172,32 +192,32 @@ class PleiadeAjaxController extends ControllerBase
     $success = $return['_loginHistory']['successLogin'] ?? [];
     $failed = $return['_loginHistory']['failedLogin'] ?? [];
 
-    if ($request->get('type') == "success") {
+    $type = $request->get('type');
+    if ($type == "success") {
       $all = $success;
-    } else if ($request->get('type') == "failed") {
+    } else if ($type == "failed") {
       $all = $failed;
     } else {
       $all = array_merge($success, $failed);
     }
 
-
-    // Trier les entrées par date, de la plus récente à la plus ancienne
+    // Sort entries by date, from most recent to oldest.
     usort($all, function ($a, $b) {
       return $b['_utime'] <=> $a['_utime'];
     });
 
-    // Préparer les données pour le template
+    // Prepare data for the template.
     $processed_logs = [];
     foreach ($all as $item) {
       $processed_logs[] = [
-        'status' => $item['error'] ? ((int)$item['error']) < 0 ? 'success' : 'failed' : 'success',
+        'status' => isset($item['error']) && ((int)$item['error']) > 0 ? 'failed' : 'success',
         'timestamp' => $item['_utime'],
         'ip' => $item['ipAddr'],
-        'message' => $item['error'] ?  $this->getErrorMeaning($item['error']) :  "",
+        'message' => $item['error'] ? $this->getErrorMeaning($item['error']) : "Authentification réussie",
       ];
     }
 
-    // Renvoyer les données au template Twig
+    // Return data to the Twig template.
     return [
       '#theme' => 'api_lemon_pleiade_history',
       '#success_count' => count($success),
@@ -206,9 +226,18 @@ class PleiadeAjaxController extends ControllerBase
     ];
   }
 
+  /**
+   * Refreshes the user session.
+   *
+   * @param Request $request
+   *   The request object.
+   *
+   * @return TrustedRedirectResponse
+   *   A redirection to the homepage.
+   */
   public function refresh_session(Request $request)
   {
-      $this->lemonService->refresh_session();
-      return new TrustedRedirectResponse("/");
+    $this->lemonService->refresh_session();
+    return new TrustedRedirectResponse("/");
   }
 }

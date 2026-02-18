@@ -49,7 +49,7 @@ class PleiadeAjaxZimbraController extends ControllerBase
         htmlspecialchars($query, ENT_XML1, 'UTF-8')
       );
 
-      $return = []; 
+      $return = [];
 
       $return = $this->service->searchMyMails($mail_endpoint, $this->email, $this->token, $this->url);
       if ($return) {
@@ -59,6 +59,7 @@ class PleiadeAjaxZimbraController extends ControllerBase
           json_encode([
             "domainEntry" => $this->url,
             "userData" => $userDomainData,
+            "theme" => $this->service->getUserTheme($this->email, $this->token, $this->url),
           ]),
           200,
           [],
@@ -93,9 +94,18 @@ class PleiadeAjaxZimbraController extends ControllerBase
     $tempstore = \Drupal::service("tempstore.private")->get("api_lemon_pleiade");
     $groupData = $tempstore->get("groups");
 
+    // ----- DÉBUT DE LA CORRECTION -----
+
+    // Initialisez $groupDataArray comme un tableau vide.
+    $groupDataArray = [];
+
     if ($groupData !== null) {
+      // Si $groupData existe, on le transforme en tableau.
       $groupDataArray = explode(",", str_replace(", ", ",", $groupData));
     }
+
+    // ----- FIN DE LA CORRECTION -----
+
     if (in_array($settings_zimbra->get("lemon_group"), $groupDataArray)) {
 
       $return = [];
@@ -109,6 +119,7 @@ class PleiadeAjaxZimbraController extends ControllerBase
           json_encode([
             "domainEntry" => $this->url,
             "userData" => $userDomainData,
+            "theme" => $this->service->getUserTheme($this->email, $this->token, $this->url),
           ]),
           200,
           [],
@@ -122,6 +133,19 @@ class PleiadeAjaxZimbraController extends ControllerBase
       \Drupal::logger("zimbra_tasks_query")->error("Pas dans le groupe zimbra");
       return new JsonResponse(json_encode("0"), 200, [], true);
     }
+  }
+  public function get_user_theme()
+  {
+    if ($this->url != "") {
+      $theme = $this->service->getUserTheme($this->email, $this->token, $this->url);
+
+      if ($theme !== null) {
+        return new JsonResponse(['theme' => $theme], 200);
+      }
+    }
+
+    // Return an error or default if the theme could not be fetched.
+    return new JsonResponse(['error' => 'Could not retrieve user theme.'], 404);
   }
 
   public function get_full_calendar()

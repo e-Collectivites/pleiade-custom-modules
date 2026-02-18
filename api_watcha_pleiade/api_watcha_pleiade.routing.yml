@@ -58,5 +58,5 @@ api_watcha_pleiade.watcha_test:
     _format: json
   requirements:
     _role: 'authenticated'
-    _permission: "administer users"
+ 
 

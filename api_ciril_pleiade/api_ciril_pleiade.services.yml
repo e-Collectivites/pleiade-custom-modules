@@ -1,0 +1,7 @@
+services:
+  api_ciril_pleiade.ciril_service:
+    class: 'Drupal\api_ciril_pleiade\Service\CirilService'
+    arguments: ['@logger.factory']
+   
+  Drupal\api_ciril_pleiade\Service\CirilServiceInterface:
+    alias: 'api_ciril_pleiade.ciril_service'

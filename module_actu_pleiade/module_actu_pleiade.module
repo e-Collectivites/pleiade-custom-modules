@@ -1,25 +1,51 @@
 <?php
 
+use Drupal\module_actu_pleiade\Service\ActuPleiadeService;
+
 /**
- * @param $variables
+ * Implements hook_theme().
  */
-
-function module_actu_pleiade_preprocess_page(&$variables){
-
-$config = \Drupal::config('module_actu_pleiade.settings');
-$url_site = $config->get('url_site');
-$actu_interne = $config->get('actu_interne');
-$flux_rss = $config->get('flux_rss');
-$variables['#attached']['drupalSettings']['module_actu_pleiade']['url_site'] = $url_site;
-$variables['#attached']['drupalSettings']['module_actu_pleiade']['flux_rss'] = $flux_rss;
-$variables['#attached']['drupalSettings']['module_actu_pleiade']['actu_interne'] = $actu_interne;
-
-// Add the CSS library
-  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_css';
-
-// Add the JS library
-  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_js';
+function module_actu_pleiade_theme($existing, $type, $theme, $path) {
+  return [
+    'actualites_template' => [
+      'variables' => [
+        'items' => [],
+      ],
+      'template' => 'actualites', 
+    ],
+  ];
 }
 
+/**
+ * Implements hook_preprocess_page().
+ */
+function module_actu_pleiade_preprocess_page(&$variables) {
+  try {
+    $actuService = \Drupal::service('module_actu_pleiade.actu_service');
+    $items = $actuService->getList();
+    $variables['items'] = $items;
 
+    // LCP Optimization: Preload the first image of the carousel
+    if (!empty($items) && isset($items[0]['field_image'])) {
+      $first_image_url = $items[0]['field_image'];
+      
+      $variables['#attached']['html_head_link'][] = [
+        [
+          'rel' => 'preload',
+          'as' => 'image',
+          'href' => $first_image_url,
+          'fetchpriority' => 'high', // Priority hint for the preload
+        ],
+      ];
+    }
+  } catch (\Exception $e) {
+    \Drupal::logger('module_actu_pleiade')->error('Service call failed: ' . $e->getMessage());
+    $variables['items'] = [];
+  }
 
+  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_css';
+  $variables['#attached']['library'][] = 'module_actu_pleiade/module_actu_pleiade_js';
+
+  $config = \Drupal::config('module_actu_pleiade.settings');
+  $variables['#attached']['drupalSettings']['module_actu_pleiade']['url_site'] = $config->get('url_site');
+}

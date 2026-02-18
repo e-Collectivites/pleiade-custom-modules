@@ -4,29 +4,18 @@ namespace Drupal\module_general_pleiade\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
 
-/**
- * Configuration form definition for the Module General Pleiade module.
- */
 class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
 
-  /**
-   * {@inheritdoc}
-   */
   public function getFormId() {
     return 'module_general_pleiade_config_form';
   }
 
-  /**
-   * {@inheritdoc}
-   */
   protected function getEditableConfigNames() {
     return ['module_general_pleiade.settings'];
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('module_general_pleiade.settings');
 
@@ -35,6 +24,48 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
       '#title' => $this->t('Couleur du thème'),
       '#default_value' => $config->get('color_theme'),
       '#description' => $this->t('Sur Firefox, pour passer du code HEXA au code RGB, cliquez sur <a href="https://www.rgbtohex.net/hex-to-rgb/" target="_blank">ce lien.</a>'),
+    ];
+
+    $form['colors_fieldset'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Couleurs des bannières d\'alerte'),
+      '#open' => TRUE,
+    ];
+
+    $form['colors_fieldset']['color_informatif'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Informatif (Mode Clair)'),
+      '#default_value' => $config->get('color_informatif') ?: '#006DAF',
+    ];
+
+    $form['colors_fieldset']['color_informatif_dark'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Informatif (Mode Sombre)'),
+      '#default_value' => $config->get('color_informatif_dark') ?: '#004a75',
+    ];
+
+    $form['colors_fieldset']['color_avertissement'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Avertissement (Mode Clair)'),
+      '#default_value' => $config->get('color_avertissement') ?: '#ffc107',
+    ];
+
+    $form['colors_fieldset']['color_avertissement_dark'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Avertissement (Mode Sombre)'),
+      '#default_value' => $config->get('color_avertissement_dark') ?: '#cc9a06',
+    ];
+
+    $form['colors_fieldset']['color_attention'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Attention (Mode Clair)'),
+      '#default_value' => $config->get('color_attention') ?: '#dc3545',
+    ];
+
+    $form['colors_fieldset']['color_attention_dark'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Couleur Attention (Mode Sombre)'),
+      '#default_value' => $config->get('color_attention_dark') ?: '#a71d2a',
     ];
    
     $form['coll_count'] = [
@@ -92,7 +123,6 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
         '#default_value' => $config->get('row__' . $i . '.site'),
         '#wrapper_attributes' => ['class' => ['inline-field']],
       ];
-
       
       $form['row__' . $i]['logo'] = [
         '#type' => 'textfield',
@@ -118,24 +148,28 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
           'wrapper' => 'edit-row-' . $i . '-logo',
         ],
       ];
-
     }
     return parent::buildForm($form, $form_state);
   }
 
-  /**
-   * {@inheritdoc}
-   */
  public function submitForm(array &$form, FormStateInterface $form_state) {
   $config = $this->config('module_general_pleiade.settings');
 
-  // Save simple fields
   $config->set('color_theme', $form_state->getValue('color_theme'));
+  
+  $config->set('color_informatif', $form_state->getValue('color_informatif'));
+  $config->set('color_informatif_dark', $form_state->getValue('color_informatif_dark'));
+  
+  $config->set('color_avertissement', $form_state->getValue('color_avertissement'));
+  $config->set('color_avertissement_dark', $form_state->getValue('color_avertissement_dark'));
+  
+  $config->set('color_attention', $form_state->getValue('color_attention'));
+  $config->set('color_attention_dark', $form_state->getValue('color_attention_dark'));
+
   $config->set('coll_count', $form_state->getValue('coll_count'));
 
   $count = intval($form_state->getValue('coll_count'));
 
-  // Load existing data from key-value store (if any)
   $kv_store = \Drupal::keyValue("collectivities_store");
   $existing_data = $kv_store->get('global') ?? [];
 
@@ -144,13 +178,12 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
     $row2 = $form_state->getValue('row__' . $i) ?? [];
     $nom = $row1['nom'] ?? '';
   
-    if (empty($nom)) continue; // Skip empty names
+    if (empty($nom)) continue; 
   
-    // Handle logo (URL or uploaded file)
     $logo_value = $row2['logo'] ?? '';
     $upload_fid = $form_state->getValue(['row__' . $i, 'logo_upload'])[0] ?? NULL;
   
-    if ($upload_fid && $file = \Drupal\file\Entity\File::load($upload_fid)) {
+    if ($upload_fid && $file = File::load($upload_fid)) {
       $file->setPermanent();
       $file->save();
       $logo_value = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
@@ -175,12 +208,9 @@ class ModuleGeneralPleiadeConfigForm extends ConfigFormBase {
 
   $config->save();
 
-  // Save merged data to key-value store
   $kv_store->set('global', $existing_data);
 
   parent::submitForm($form, $form_state);
 }
-
-
 
 }

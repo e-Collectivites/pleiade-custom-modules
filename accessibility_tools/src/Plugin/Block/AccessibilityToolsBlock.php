@@ -46,72 +46,112 @@ class AccessibilityToolsBlock extends BlockBase
 
     $isMenuOpened = (bool) $user->get("field_ismenuopened")->value;
     $isWatchaActivated = (bool) $user->get("field_iswatchaactivated")->value && $hasWatchaToken;
-    $isNextCloudActivated = (bool) $user->get("field_isnextcloudactivated")->value && !empty($user->get('field_nextcloud_api_key')->value);
+    $isNextCloudActivated = (bool) $user->get("field_isnextcloudactivated")->value; // && !empty($user->get('field_nextcloud_api_key')->value);
     $isGlpiActivated = (bool) $user->get("field_isglpiactivated")->value;
-
     $isPostitActivated = (bool) $user->get("field_ispostitactivated")->value;
 
     return [
       '#type' => 'inline_template',
       '#template' => <<<HTML
-        <div>
-          <div class="p-3 border-bottom">
-            <div class="mt-2"></div>
-           
-            <span>Taille de la police :</span>
-            <div class="btn-group" role="group" aria-label="Taille de la police" data-control="font-size">
-                <button type="button" class="btn" id="increaseFontSize"><i class="fa-solid fa-arrow-up"></i></button>
-                <button type="button" class="btn" id="decreaseFontSize"><i class="fa-solid fa-arrow-down"></i></button>
-                <button type="button" class="btn" id="resetFontSize"><i class="fa-solid fa-rotate-right"></i></button>
+        <!-- C'est le conteneur principal de votre panneau d'accessibilité -->
+<div class="accessibility-panel">
+    <div class="p-3">
+        <div class="form-group">
+            <label class="form-check-label">Taille de la police :</label>
+            <div class="controls btn-group" data-control="letter-spacing">
+                <button type="button" class="btn btn-par" id="increaseFontSize" aria-label="Augmenter la taille de la police"><i class="fa-solid fa-arrow-up"></i></button>
+                <button type="button" class="btn btn-par" id="decreaseFontSize" aria-label="Diminuer la taille de la police"><i class="fa-solid fa-arrow-down"></i></button>
+                <button type="button" class="btn btn-par" id="resetFontSize" aria-label="Réinitialiser la taille de la police"><i class="fa-solid fa-rotate-right"></i></button>
             </div>
-  
-            <label class="form-check-label" for="space_letters">Espace entre les caractères :</label>
-            <div class="btn-group" role="group" aria-label="Espace entre les caractères" data-control="letter-spacing">
-                <button type="button" class="btn" id="increaseSpaces"><i class="fa-solid fa-arrow-up"></i></button>
-                <button type="button" class="btn" id="decreaseSpaces"><i class="fa-solid fa-arrow-down"></i></button>
-                <button type="button" class="btn" id="resetSpaces"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-check-label" for="font-family-select">Police du texte :</label>
+            <select class="form-control" id="font-family-select" aria-label="Choisir la police du texte">
+                <option value="default">Par défaut</option>
+                <optgroup label="Sans-Serif">
+                    <option value="Arial, Helvetica, sans-serif">Arial</option>
+                    <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                    <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                    <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                    <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                </optgroup>
+                <optgroup label="Serif">
+                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Garamond', serif">Garamond</option>
+                    <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                </optgroup>
+                <optgroup label="Monospace">
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                    <option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
+                    <option value="'Inconsolata', monospace">Inconsolata</option>
+                </optgroup>
+            </select>
+        </div>
+      
+        <div class="form-group">
+           <label class="form-check-label">Espace entre les caractères :</label>
+           <div class="controls">
+                <button type="button" class="btn btn-par" id="increaseSpaces" aria-label="Augmenter l'espace entre les caractères"><i class="fa-solid fa-arrow-up"></i></button>
+                <button type="button" class="btn btn-par" id="decreaseSpaces" aria-label="Diminuer l'espace entre les caractères"><i class="fa-solid fa-arrow-down"></i></button>
+                <button type="button" class="btn btn-par" id="resetSpaces" aria-label="Réinitialiser l'espace entre les caractères"><i class="fa-solid fa-rotate-right"></i></button>
             </div>
-  
-           <!-- Chaque .form-group force un retour à la ligne -->
-<div class="form-group">
-  <label class="form-check-label" for="mode-loupe">Mode loupe :</label>
-  <input type="checkbox" class="form-check-input" id="mode-loupe">
-</div>
-
-<div class="form-group">
-  <label class="form-check-label" for="theme-view"><span>Thème Sombre :</span></label>
-  <input type="checkbox" name="theme-view" class="form-check-input" id="theme-view" />
-</div>
-
-<div class="form-group">
-  <label class="form-check-label" for="contraste">Contraste élevé :</label>
-  <input type="checkbox" class="form-check-input" id="contraste">
-</div>
-
-<div class="form-group">
-  <label class="form-check-label" for="black_and_white">Mode noir et blanc :</label>
-  <input type="checkbox" class="form-check-input" id="black_and_white">
-</div>
-  
-            <hr>
-  <div class="form-group">
-            <label class="form-check-label">Ouverture menu :</label>
-            <input type="checkbox" class="form-check-input persoWidget" data-category="field_ismenuopened" {% if is_menuOpened %}checked{% endif %}>
-  </div><div class="form-group">
-            <label class="form-check-label">Afficher Watcha :</label>
-            <input type="checkbox" class="form-check-input persoWidget" id="persoWatcha" data-category="field_iswatchaactivated" {% if is_watcha %}checked{% endif %}>
-  </div><div class="form-group">
-            <label class="form-check-label">Afficher Activités récentes :</label>
-            <input type="checkbox" class="form-check-input persoWidget" id="persoNextCloud" data-category="field_isnextcloudactivated" {% if is_nextcloud %}checked{% endif %}>
-  </div><div class="form-group">
-            <label class="form-check-label">Afficher GLPI :</label>
-            <input type="checkbox" class="form-check-input persoWidget" id="persoGlpi" data-category="field_isglpiactivated" {% if is_glpi %}checked{% endif %}>
-  </div><div class="form-group">
-            <label class="form-check-label">Afficher Post-It :</label>
-            <input type="checkbox" class="form-check-input persoWidget" id="persoPostit" data-category="field_ispostitactivated" {% if is_postit %}checked{% endif %}>
-         </div> </div>
+        </div>
+        <div class="form-group">
+          <label class="form-check-label" for="mode-loupe">Mode loupe :</label>
+          <input type="checkbox" class="form-check-input" id="mode-loupe">
         </div>
 
+        <div class="form-group">
+          <label class="form-check-label" for="theme-view"><span>Thème Sombre :</span></label>
+          <input type="checkbox" name="theme-view" class="form-check-input" id="theme-view" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-check-label" for="contraste">Contraste élevé :</label>
+          <input type="checkbox" class="form-check-input" id="contraste">
+        </div>
+
+        <div class="form-group">
+          <label class="form-check-label" for="black_and_white">Mode noir et blanc :</label>
+          <input type="checkbox" class="form-check-input" id="black_and_white">
+        </div>
+
+        <!-- NOUVEAU: Bouton pour tout réinitialiser -->
+        <div class="form-group mt-3">
+             <button type="button" class="btn btn-secondary w-100" id="reset-all-accessibility">Réinitialiser les options</button>
+        </div>
+      
+        <hr>
+      
+        <div class="form-group">
+            <label class="form-check-label" for="menu-opened">Ouverture menu :</label>
+            <input type="checkbox" class="form-check-input persoWidget" id="menu-opened" data-category="field_ismenuopened" {% if is_menuOpened %}checked{% endif %}>
+        </div>
+        <div class="form-group">
+            <label class="form-check-label" for="persoWatcha">Afficher Watcha :</label>
+            <input type="checkbox" class="form-check-input persoWidget" id="persoWatcha" data-category="field_iswatchaactivated" {% if is_watcha %}checked{% endif %}>
+        </div>
+        <div class="form-group">
+            <label class="form-check-label" for="persoNextCloud">Afficher Activités récentes :</label>
+            <input type="checkbox" class="form-check-input persoWidget" id="persoNextCloud" data-category="field_isnextcloudactivated" {% if is_nextcloud %}checked{% endif %}>
+        </div>
+        <div class="form-group">
+            <label class="form-check-label" for="persoGlpi">Afficher GLPI :</label>
+            <input type="checkbox" class="form-check-input persoWidget" id="persoGlpi" data-category="field_isglpiactivated" {% if is_glpi %}checked{% endif %}>
+        </div>
+        <div class="form-group">
+            <label class="form-check-label" for="persoPostit">Afficher Post-It :</label>
+            <input type="checkbox" class="form-check-input persoWidget" id="persoPostit" data-category="field_ispostitactivated" {% if is_postit %}checked{% endif %}>
+         </div>
+     </div>
+</div>
         <script>
         (function (Drupal) {
           Drupal.behaviors.userPreferencesToggle = {
@@ -125,40 +165,29 @@ class AccessibilityToolsBlock extends BlockBase
                   checkbox.disabled = true;
                   
                   try {
-                    // --- STEP 1: Update the backend preference ---
-                    // The `await` keyword pauses execution here until the fetch completes.
                     const response = await fetch(setPreferenceUrl);
-                    // --- STEP 2: Verify the backend update was successful ---
-                    // This is a crucial check. We only proceed if the server responded with OK (status 200-299).
                     if (!response.ok) {
-                      // If there was a server error, stop everything and report it.
                       throw new Error(`Server error: \${response.status} \${response.statusText}`);
                     }
                    
-                    // --- STEP 3: Proceed with frontend logic (Watcha, NextCloud, etc.) ---
-                    // This code is now GUARANTEED to run only *after* a successful backend update.
-                    
-                    // --- LOGIC FOR WATCHA ---
                     if (checkbox.id === 'persoWatcha') {
                       if (checkbox.checked) {
                         const hasToken = {{ js_hasWatchaToken }}; 
                         if (hasToken) {
-                          localStorage.setItem('isWatchaActivated', 'true');
+
                          location.reload();
                         } else {
                           window.location.href = Drupal.url('v1/api_watcha_pleiade/watcha_auth_flow');
                         }
                       } else {
-                        localStorage.setItem('isWatchaActivated', 'false');
+                        
                         location.reload();
                       }
-                      return; // Execution stops here for the Watcha case.
+                      return;
                     }
-                    // --- LOGIC FOR NEXTCLOUD ---
+
                     if (checkbox.id === 'persoNextCloud' && checkbox.checked) {
-                     
                       const res = await fetch(Drupal.url('v1/api_nextcloud_pleiade/generateToken'));
-                     
                       if (res.status === 409) {
                         location.reload();
                         return;
@@ -175,18 +204,14 @@ class AccessibilityToolsBlock extends BlockBase
                           }
                         }, 500);
                       }
-                      return; // Execution stops here for the NextCloud case.
+                      return;
                     }
 
-                    // --- DEFAULT ACTION for all other checkboxes ---
-                    // This runs if it's not Watcha or NextCloud (e.g., GLPI, Post-It).
                     location.reload();
 
                   } catch (error) {
                     console.error('Failed to update user preference:', error);
-                    // Re-enable the checkbox so the user can try again.
                     checkbox.disabled = false;
-                    // Optionally, show a user-friendly error message.
                     alert('Une erreur est survenue. Veuillez réessayer.'+ error.message);
                   }
                 });

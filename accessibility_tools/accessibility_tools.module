@@ -29,7 +29,7 @@ function accessibility_tools_preprocess_page(&$variables)
 
 function accessibility_tools_page_attachments(array &$attachments)
 {
- 
+
   $current_user = \Drupal::currentUser();
 
   // Only apply for authenticated users
@@ -43,33 +43,12 @@ function accessibility_tools_page_attachments(array &$attachments)
     }
 
     $account = \Drupal\user\Entity\User::load($current_user->id());
-
-    $is_watcha = ($account->get("field_iswatchaactivated")->value && !empty($account->get('field_watchaaccesstoken')->value)) ? 1 : '0';
-    $is_glpi = $account->get("field_isglpiactivated")->value ?? '';
-    $is_nextcloud =  ($account->get("field_isnextcloudactivated")->value && !empty($account->get('field_nextcloud_api_key')->value)) ? 1 : '0';
-      // \Drupal::logger('api_glpi_pleiade')->alert("between " .($account->get("field_isnextcloudactivated")->value && !empty($account->get('field_nextcloud_api_key')->value)));
     $is_menu = $account->get("field_ismenuopened")->value ?? '';
-    $is_postit = (bool) $account->get("field_ispostitactivated")->value;
-     $is_maarch = (bool) $account->get("field_ismaarchactivated")->value;
     $js_code = <<<JS
   ( function() {
     
-   
-    
-      
-     localStorage.setItem("isMaarchActivated", "$is_maarch");
-      localStorage.setItem("isNextCloudActivated", "$is_nextcloud");
-      localStorage.setItem("isWatchaActivated", "$is_watcha");
-     localStorage.setItem("isPostitActivated", "$is_postit");
-
-      localStorage.setItem("isGlpiActivated", "$is_glpi");
-    
-     
- 
       localStorage.setItem("menuOpen_", "$is_menu");
  
-
-    
   })();
 JS;
 
@@ -81,7 +60,5 @@ JS;
 
       'user_fields_localstorage',
     ];
-
-   
   }
 }

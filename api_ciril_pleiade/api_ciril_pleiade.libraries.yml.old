@@ -1,0 +1,13 @@
+
+  
+   
+api_ciril_pleiade_js:
+  version: 1.x
+  js:
+    js/script.js: {}
+    https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+

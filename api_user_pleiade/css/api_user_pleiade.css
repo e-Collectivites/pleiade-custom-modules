@@ -558,7 +558,12 @@ div#notifications_alert{
   right: 10px; /* Adjust the value as needed */
   background: none;
   border: none;
-  font-size: 25px;
+  font-size: 2rem;
   cursor: pointer;
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  padding: 0;
 }
 

@@ -1,0 +1,21 @@
+<?php
+
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * @param $variables
+ */
+function api_ciril_pleiade_preprocess_page(&$variables){
+
+
+  
+
+
+}
+function api_ciril_pleiade_preprocess_node__landing_page(&$variables) {
+  $variables['#cache']['max-age'] = 0;
+} 
+
+
+
+

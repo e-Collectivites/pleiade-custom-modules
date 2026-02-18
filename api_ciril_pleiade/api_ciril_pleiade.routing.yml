@@ -1,0 +1,25 @@
+api_ciril_pleiade.settings:
+  path: "/admin/config/api_ciril_pleiade/settings"
+  defaults:
+    _form: '\Drupal\api_ciril_pleiade\Form\PleiadeConnectorCirilConfig'
+    _title: "API Ciril Pléiade Settings"
+  requirements:
+    _permission: "administer site configuration"
+
+api_ciril_pleiade.get_purchase_order_documents:
+  path: "/v1/api_ciril_pleiade/documents"
+  defaults: 
+    _controller: '\Drupal\api_ciril_pleiade\Controller\PleiadeAjaxCirilController::getPurchaseOrderDocuments'
+  methods: [GET]
+  options: { _format: json }
+  requirements: 
+    _role: "authenticated"
+
+api_ciril_pleiade.get_purchase_order_documents_by_year:
+  path: "/v1/api_ciril_pleiade/documents/{year}"
+  defaults: 
+    _controller: '\Drupal\api_ciril_pleiade\Controller\PleiadeAjaxCirilController::getPurchaseOrderDocumentsByYear'
+  methods: [GET]
+  options: { _format: json }
+  requirements: 
+    _role: "authenticated"

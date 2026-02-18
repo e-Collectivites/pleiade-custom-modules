@@ -1,14 +1,9 @@
 <?php
 
 /**
- * @param $variables
+ * Implements hook_preprocess_page().
  */
-
-function msg_informatif_pleiade_preprocess_page(&$variables){
-// Add the CSS library
+function msg_informatif_pleiade_preprocess_page(&$variables) {
   $variables['#attached']['library'][] = 'msg_informatif_pleiade/msg_informatif_pleiade_css';
-
-// Add the JS library
   $variables['#attached']['library'][] = 'msg_informatif_pleiade/msg_informatif_pleiade_js';
-  
 }

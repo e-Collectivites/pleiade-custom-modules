@@ -2,9 +2,7 @@
 
 namespace Drupal\api_user_pleiade\Controller;
 
-
 use Drupal\Core\Controller\ControllerBase;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +15,7 @@ class PleiadeUserController extends ControllerBase
   private $annuaireLogin;
   private $annuairePassword;
   private $annuaireUrl;
+  
   public function __construct()
   {
     $this->annuaireLogin =  $this->config("api_user_pleiade.settings")->get("annuaire_login");
@@ -34,49 +33,36 @@ class PleiadeUserController extends ControllerBase
 
   public function user_infos(Request $request)
   {
-
     $current_user = \Drupal::currentUser();
-
-    // Get the user entity.
     $user = \Drupal\user\Entity\User::load($current_user->id());
-
-    // Initialize an array to store user information.
     $user_info = array();
 
-    // Check if the user entity exists.
     if ($user) {
-      // Get all user fields and their values.
       $user_info["field_url_application"] = $user->get("field_url_application")->getValue();
       $user_info["access"] = $user->get("access")->getValue();
       $user_info["created"] = $user->get("created")->getValue();
-      // Iterate through each field.
-      
     }
+    
     if ($user_info) {
-
       return new JsonResponse(json_encode($user_info), 200, [], true);
     } else {
       echo 'erreur lors de la récupération des users';
     }
   }
+  
   public function user_list_query(Request $request)
   {
-
-    // Load the user storage service.
-    $query = \Drupal::entityQuery('user')->accessCheck(TRUE);;
+    $query = \Drupal::entityQuery('user')->accessCheck(TRUE);
     $uids = $query->execute();
     $users = array();
-
 
     foreach ($uids as $uid) {
       $user = \Drupal\user\Entity\User::load($uid);
 
-      // Get user's profile picture URL.
       $picture_url = '';
       if (isset($user->get('user_picture')->entity)) {
         $picture_url = $user->get('user_picture')->entity->createFileUrl();
       } else {
-        // Default image
         $field = \Drupal\field\Entity\FieldConfig::loadByName('user', 'user', 'user_picture');
         $default_image = $field->getSetting('default_image');
         if ($default_image) {
@@ -95,14 +81,11 @@ class PleiadeUserController extends ControllerBase
         }
       }
 
-
-      // Get user's last login timestamp.
       $last_login_timestamp = '';
       if ($user->getLastLoginTime()) {
         $last_login_timestamp = $user->getLastLoginTime();
       }
 
-      // Get user's email.
       $email = '';
       if ($user->getEmail()) {
         $email = $user->getEmail();
@@ -117,7 +100,6 @@ class PleiadeUserController extends ControllerBase
     }
 
     if ($users) {
-
       return new JsonResponse(json_encode($users), 200, [], true);
     } else {
       echo 'erreur lors de la récupération des users';
@@ -126,7 +108,6 @@ class PleiadeUserController extends ControllerBase
 
   public function user_add_application(Request $request)
   {
-    // Load the current user.
     $user = \Drupal\user\Entity\User::load(
       \Drupal::currentUser()->id()
     );
@@ -134,7 +115,6 @@ class PleiadeUserController extends ControllerBase
       return new JsonResponse(['message' => 'User not found.'], 404);
     }
 
-    // Get 'uri' and 'title' from request (POST or GET).
     $uri = $request->get('uri');
     $title = $request->get('title');
 
@@ -142,7 +122,13 @@ class PleiadeUserController extends ControllerBase
       return new JsonResponse(['message' => 'Missing uri or title parameter.'], 400);
     }
 
-    // Current values of the field.
+    // Normalize URI
+    $normalize_uri = function ($u) {
+      return rtrim($u, '/');
+    };
+
+    $normalized_uri = $normalize_uri($uri);
+
     $values = $user->get('field_url_application')->getValue();
 
     $new_value = [
@@ -150,26 +136,83 @@ class PleiadeUserController extends ControllerBase
       'title' => $title,
     ];
 
-    // Check if the URI already exists to avoid duplicates.
+    // Check if the URI already exists to avoid duplicates
     foreach ($values as $existing_value) {
-      if (isset($existing_value['uri']) && $existing_value['uri'] === $new_value['uri']) {
-        return new JsonResponse(['message' => 'This URL already exists in the user field.'], 409);
+      if (isset($existing_value['uri']) && $normalize_uri($existing_value['uri']) === $normalized_uri) {
+        return new JsonResponse(['message' => 'This URI already exists in your favorites.'], 409);
       }
     }
 
-    // Add the new value.
+    // Add the new value
     $values[] = $new_value;
-
-    // Update the field and save.
     $user->set('field_url_application', $values);
     $user->save();
 
-    return new RedirectResponse("/");
+    return new JsonResponse(['message' => 'Application added successfully.'], 200);
+  }
+
+  public function user_modify_application(Request $request)
+  {
+    $user = \Drupal\user\Entity\User::load(
+        \Drupal::currentUser()->id()
+    );
+    if (!$user) {
+        return new JsonResponse(['message' => 'User not found.'], 404);
+    }
+
+    $old_uri = $request->get('old_uri');
+    $old_title = $request->get('old_title');
+    $new_uri = $request->get('new_uri');
+    $new_title = $request->get('new_title');
+
+    if (empty($old_uri) || empty($old_title) || empty($new_uri) || empty($new_title)) {
+        return new JsonResponse(['message' => 'Missing required parameters.'], 400);
+    }
+
+    $normalize_uri = function ($u) {
+        return rtrim($u, '/');
+    };
+
+    $normalized_old_uri = $normalize_uri($old_uri);
+    $normalized_new_uri = $normalize_uri($new_uri);
+
+    $values = $user->get('field_url_application')->getValue();
+
+    $found = false;
+    foreach ($values as $key => $item) {
+        $item_uri = isset($item['uri']) ? $normalize_uri($item['uri']) : '';
+        $item_title = $item['title'] ?? '';
+        
+        if ($item_uri === $normalized_old_uri && $item_title === $old_title) {
+            // Check if new URI doesn't already exist (unless it's the same entry)
+            foreach ($values as $check_key => $check_item) {
+                if ($check_key !== $key) {
+                    $check_uri = isset($check_item['uri']) ? $normalize_uri($check_item['uri']) : '';
+                    if ($check_uri === $normalized_new_uri) {
+                        return new JsonResponse(['message' => 'New URI already exists.'], 409);
+                    }
+                }
+            }
+            
+            $values[$key]['uri'] = $new_uri;
+            $values[$key]['title'] = $new_title;
+            $found = true;
+            break;
+        }
+    }
+
+    if (!$found) {
+        return new JsonResponse(['message' => 'Application not found.'], 404);
+    }
+
+    $user->set('field_url_application', $values);
+    $user->save();
+
+    return new JsonResponse(['message' => 'Application modified successfully.'], 200);
   }
 
   public function user_delete_application(Request $request)
   {
-    // Charger l'utilisateur courant.
     $user = \Drupal\user\Entity\User::load(
       \Drupal::currentUser()->id()
     );
@@ -177,7 +220,6 @@ class PleiadeUserController extends ControllerBase
       return new JsonResponse(['message' => 'Utilisateur introuvable.'], 404);
     }
 
-    // Récupérer 'uri' et 'title' depuis la requête.
     $uri = $request->get('uri');
     $title = $request->get('title');
 
@@ -185,33 +227,28 @@ class PleiadeUserController extends ControllerBase
       return new JsonResponse(['message' => 'Paramètre uri ou title manquant.'], 400);
     }
 
-    // Fonction pour normaliser un URI (supprime slash final seulement si ce n’est pas juste '/')
     $normalize_uri = function ($u) {
       return rtrim($u, '/');
     };
 
     $normalized_uri = $normalize_uri($uri);
 
-    // Récupérer les valeurs actuelles du champ.
     $values = $user->get('field_url_application')->getValue();
 
-    // Filtrer pour supprimer la bonne valeur.
     $new_values = array_filter($values, function ($item) use ($normalized_uri, $title, $normalize_uri) {
       $item_uri = isset($item['uri']) ? $normalize_uri($item['uri']) : '';
       $item_title = $item['title'] ?? '';
       return !($item_uri === $normalized_uri && $item_title === $title);
     });
 
-    // Si rien n’a été supprimé
     if (count($new_values) === count($values)) {
       return new JsonResponse(['message' => 'Aucune correspondance trouvée pour uri et title.'], 404);
     }
 
-    // Mettre à jour et enregistrer
     $user->set('field_url_application', array_values($new_values));
     $user->save();
 
-    return new RedirectResponse("/");
+    return new JsonResponse(['message' => 'Application deleted successfully.'], 200);
   }
 
   public function setVariables(Request $request)
@@ -226,7 +263,6 @@ class PleiadeUserController extends ControllerBase
       $this->user->save();
     }
 
-
     return new JsonResponse([
       "isWatchaActivated" => $this->user->get("field_iswatchaactivated")->value,
       "isGlpiActivated" => $this->user->get("field_isglpiactivated")->value,
@@ -235,9 +271,9 @@ class PleiadeUserController extends ControllerBase
       "isPostitActivated" => $this->user->get("field_ispostitactivated")->value,
     ], 200);
   }
+  
   public function setVariablesValue(Request $request)
   {
-
     $this->user->set($request->get("var"), $request->get("value"));
     $this->user->save();
     return new JsonResponse([], 200);

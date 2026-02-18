@@ -2,11 +2,6 @@
     --global-color: #1f3889;
 }
 
-.fc-scrollgrid-sync-table,
-.fc-scrollgrid-section-header {
-    display: none;
-}
-
 th.d-flex.expediteur {
     width: 20%;
 }
@@ -25,9 +20,14 @@ th.d-flex.expediteur {
     transition: transform .2s;
 }
 
-#main-wrapper[data-sidebartype=full] .fc-media-screen .fc-timegrid-cols>table {
-    width: 85% !important;
-}
+/* 
+ * RÈGLE SUPPRIMÉE : C'est cette règle qui cassait la synchronisation 
+ * entre l'en-tête et le corps du calendrier.
+ *
+ * #main-wrapper[data-sidebartype=full] .fc-media-screen .fc-timegrid-cols>table {
+ *     width: 85% !important;
+ * }
+*/
 
 .fc .fc-toolbar.fc-header-toolbar {
     --bs-bg-opacity: 1;
@@ -47,7 +47,6 @@ th.d-flex.expediteur {
     text-transform: capitalize;
     font-weight: 600;
     font-size: 1.125rem !important;
-
 }
 
 .fc .fc-toolbar.fc-header-toolbar {
@@ -74,10 +73,6 @@ th.d-flex.expediteur {
 .fc-event-content {
     height: 100%;
 }
-
-
-
-
 
 img.profile-pic.rounded-circle {
     object-fit: cover;
@@ -110,7 +105,6 @@ table.dataTable tbody tr {
 
 body[data-theme=dark] .page-link:hover {
     border: 2px solid #dee2e6;
-
 }
 
 body[data-theme=dark] .fc td.fc-timegrid-slot {
@@ -121,19 +115,14 @@ body[data-theme=dark] .fc td.fc-timegrid-slot {
     width: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 1px grey;
-
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
     background: grey;
-
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #272b34;
 }
@@ -151,26 +140,15 @@ body[data-theme=dark] #zimbra_block_mail_id {
     color: #FFF !important;
 }
 
-
 .scroll_on_table {
     height: 400px;
-
 }
-
-
-
 
 @media (max-width: 768px) {
-
     .scroll_on_table {
         height: 350px;
-
     }
-
-  
-   
 }
-
 
 #zimbra_block_agenda_id {
     margin-bottom: 5px;
@@ -179,3 +157,254 @@ body[data-theme=dark] #zimbra_block_mail_id {
 .fc .fc-scroller-harness-liquid {
     height: 370px;
 }
+
+/*
+ * ===================================================
+ * CORRECTIF MISE EN PAGE FULLCALENDAR
+ * ===================================================
+*/
+
+/* Style de base pour les cellules d'en-tête (lundi, mardi...) */
+.fc .fc-col-header-cell {
+    border-bottom-width: 1px;
+    padding: 4px 0;
+    background-color: #f8f9fa; /* Ajoute un fond léger pour l'en-tête */
+}
+
+/* Style pour le texte à l'intérieur de la cellule d'en-tête */
+.fc .fc-col-header-cell-cushion {
+  color: #212529 !important; /* Texte noir/gris foncé */
+  font-size: 0.9em !important;
+  font-weight: 500;
+  text-decoration: none !important;
+  display: inline-block !important;
+}
+
+/* Mise en évidence du jour actuel */
+.fc .fc-day-today {
+    background-color: #fff3cd !important; /* Fond jaune clair comme sur l'image */
+}
+
+.fc .fc-day-today .fc-col-header-cell-cushion {
+    background-color: var(--global-color) !important; /* Utilise votre couleur globale */
+    color: #fff !important;
+    border-radius: 4px;
+    padding: 4px 10px;
+}
+
+/* Mode sombre */
+body[data-theme=dark] .fc .fc-col-header-cell {
+    background-color: #343a40;
+}
+body[data-theme=dark] .fc .fc-col-header-cell-cushion {
+    color: #f8f9fa !important;
+}
+body[data-theme=dark] .fc .fc-day-today {
+    background-color: rgba(255, 243, 205, 0.1) !important;
+}
+
+/* Supprime les interactions de bordure qui font clignoter la popover */
+.popover {
+    pointer-events: auto !important;
+}
+
+/* Style pour l'icône vidéo directe sur l'événement */
+.visio-direct-link {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000 !important;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 5;
+    text-decoration: none;
+}
+
+.visio-direct-link:hover {
+    background: #007bff;
+    color: #fff !important;
+    transform: scale(1.1);
+}
+
+/* Éviter que la popover disparaisse quand on bouge la souris vers elle */
+.popover {
+    pointer-events: auto !important;
+}
+
+/* Le "pont" invisible : crée une zone réactive sous la popover */
+.popover::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 20px; /* Taille du gap entre l'event et la popover */
+    background: transparent;
+}
+
+/* Nettoyage FullCalendar */
+.fc-event-main-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+}
+
+
+/* Position de l'icône vidéo dans le bloc agenda */
+.visio-direct-link-block {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+/* Le pont pour la popover interactive */
+.popover::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background: transparent;
+}
+
+/* Style Now Indicator (la ligne rouge) */
+.fc .fc-now-indicator-line {
+    border-color: red !important;
+    border-width: 2px !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Desktop: Standard Scroll Behavior --- */
+.slick-arrow {
+    display: none !important;
+  }
+  .scroll_on_table {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  /* --- Mobile: App-like Navigation (768px and below) --- */
+  @media (max-width: 768px) {
+    /* Container setup */
+    .vertical-carousel-container {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 10px;
+      padding: 10px 0;
+    }
+  
+    /* The Mail Window */
+    #zimbra_mail_list {
+      height: 350px !important; /* Fixed window height */
+      overflow-y: hidden !important; /* Lock manual scrolling */
+   
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fdfdfd;
+    }
+  
+    /* Styled Navigation Arrows */
+    .slick-arrow {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa !important;
+      color: #333 !important;
+      height: 45px;
+      width: 100%;
+      border: 1px solid #dee2e6 !important;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+  
+    .slick-arrow:active {
+      background-color: #e2e6ea !important;
+      transform: scale(0.98);
+    }
+  
+    /* Mail Item Styling for Mobile */
+    .mail_content {
+      border-bottom: 1px solid #eee !important;
+      padding: 15px !important;
+      background: white;
+    }
+  }
+
+
+
+
+
+
+
+
+
+  @media (max-width: 768px) {
+    /* Forces the Calendar to stay inside its box */
+    #zimbra-fullcalendar {
+      max-height: 400px;
+      overflow: hidden !important;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+  
+    /* Lock manual scrolling on the calendar itself so buttons are used */
+    #zimbra-fullcalendar .fc-scroller {
+      overflow-y: hidden !important;
+    }
+.fc-direction-ltr { /* the element was div#zimbra-fullcalendar */
+
+  height: 100% !important;
+}
+  
+    /* Styled slick arrows for agenda */
+    #agenda-scroll-up, 
+    #agenda-scroll-down {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa !important;
+      color: #333 !important;
+      height: 40px;
+      width: 100%;
+      border: 1px solid #dee2e6 !important;
+      border-radius: 4px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+  }
+
+

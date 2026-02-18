@@ -34,3 +34,14 @@ api_zimbra_pleiade.get_full_calendar:
   requirements:
     _role: 'authenticated'
     _access: 'TRUE'
+
+
+api_zimbra_pleiade.get_user_theme:
+  path: '/v1/api_zimbra_pleiade/get_user_theme'
+  defaults:
+    _controller: '\Drupal\api_zimbra_pleiade\Controller\PleiadeAjaxZimbraController::get_user_theme'
+    _title: 'Zimbra API Tasks Query'
+    _format: json
+  requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'

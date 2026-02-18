@@ -7,3 +7,17 @@ datatable_pleiade.documents_recents:
   requirements:
     _role: 'authenticated'
     _access: 'TRUE'
+
+
+
+datatable_pleiade.documents_recents_params:
+  path: '/v1/datatable_pleiade/documents_recents/{exercice}/{budget}'
+  defaults:
+    _controller: '\Drupal\datatable_pleiade\Controller\DatatableController::documents_recents'
+    _title: 'Get Documents recents with params'
+    _format: json
+    exercice: '2026'
+    budget: '01'
+  requirements:
+    _role: 'authenticated'
+    _access: 'TRUE'

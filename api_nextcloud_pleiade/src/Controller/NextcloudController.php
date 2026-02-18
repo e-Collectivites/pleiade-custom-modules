@@ -48,7 +48,8 @@ class NextCloudController extends ControllerBase
 
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $key =  $user->get('field_nextcloud_api_key')->value;
-
+    //$user->set('field_isnextcloudactivated',$user->get('field_isnextcloudactivated')->value ? 0 : 1);
+     //$user->save();
     if ($key != "") {
       return new JsonResponse([
         'error' => "already exists",
@@ -122,6 +123,7 @@ class NextCloudController extends ControllerBase
       $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
       $user->set('field_nextcloud_api_key', $data['appPassword']);
       $user->set('field_nextcloud_api_user', $data['loginName']);
+   
       $user->save();
       \Drupal::logger('nextcloud')->error('log=' . $data['loginName'] . '||||pass=' .  $data['appPassword']);
       return new JsonResponse([

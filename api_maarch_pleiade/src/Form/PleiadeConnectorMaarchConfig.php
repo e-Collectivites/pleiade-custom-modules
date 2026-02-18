@@ -42,11 +42,6 @@ class PleiadeConnectorMaarchConfig extends ConfigFormBase
       '#default_value' => $config->get('route'),
     ];
 
-    $form['baskets'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Bannettes autorisées (séparées par des virgules)'),
-      '#default_value' => $config->get('baskets'),
-    ];
 
     $form['coll_count'] = [
       '#type' => 'textfield',
@@ -87,6 +82,12 @@ class PleiadeConnectorMaarchConfig extends ConfigFormBase
         '#default_value' => $config->get('row_' . $i . '.token'),
         '#maxlength' => 1024,
       ];
+       $form['row_' . $i]['baskets'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Bannettes autorisées (séparées par des virgules)'),
+       '#wrapper_attributes' => ['class' => ['inline-field']],
+      '#default_value' => $config->get('row_' . $i . '.baskets'),
+    ];
     }
     return parent::buildForm($form, $form_state);
   }
@@ -103,7 +104,6 @@ class PleiadeConnectorMaarchConfig extends ConfigFormBase
     $config->set('url', $form_state->getValue('url'));
     $config->set('route', $form_state->getValue('route'));
     $config->set('key', $form_state->getValue('key'));
-    $config->set('baskets', $form_state->getValue('baskets'));
     $config->set('coll_count', $form_state->getValue('coll_count'));
 
     $count = intval($form_state->getValue('coll_count'));
@@ -116,9 +116,11 @@ class PleiadeConnectorMaarchConfig extends ConfigFormBase
       if (empty($row1['nom'])) continue; // Skip if no name
       $array[$row1['nom']]['token_maarch'] = $row1['token'];
       $array[$row1['nom']]['url_maarch'] = $row1['url'];
+      $array[$row1['nom']]['baskets_maarch'] = $row1['baskets'];
       $config->set('row_' . $i . '.nom', $row1['nom'] ?? '');
       $config->set('row_' . $i . '.url', $row1['url'] ?? '');
       $config->set('row_' . $i . '.token', $row1['token'] ?? '');
+       $config->set('row_' . $i . '.baskets', $row1['baskets'] ?? '');
     }
     $config->save();
     \Drupal::keyValue("collectivities_store")->set('global', $array);

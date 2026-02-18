@@ -18,6 +18,7 @@ class PleiadeAjaxWatchaController extends ControllerBase
 
   protected $watchaService;
   protected $currentUser;
+
   public function __construct(WatchaServiceInterface $watchaService, AccountProxyInterface $current_user)
   {
     $this->watchaService = $watchaService;
@@ -41,13 +42,20 @@ class PleiadeAjaxWatchaController extends ControllerBase
   public function watcha_auth(Request $request)
   {
     $code = $request->query->get('code');
+    
+    // If no code, redirect home with error instead of breaking
     if (!$code) {
-      return new Response("<h1>Missing code parameter.</h1>", 400);
+      \Drupal::messenger()->addError("Authentification annulée ou code manquant.");
+      return new RedirectResponse("/");
     }
 
     $tokenData = $this->watchaService->exchangeCodeForToken($code);
-    if (empty($tokenData['access_token'])) {
-      return new Response("<h1>Token error</h1><pre>" . json_encode($tokenData, JSON_PRETTY_PRINT) . "</pre>", 500);
+    
+    if (isset($tokenData['error']) || empty($tokenData['access_token'])) {
+       // Log error internally, but show user the app
+       \Drupal::logger('api_watcha_pleiade')->error('Watcha Token Error: @err', ['@err' => json_encode($tokenData)]);
+       \Drupal::messenger()->addError("Échec de l'échange de token Watcha.");
+       return new RedirectResponse("/");
     }
 
     $redirectUrl = $this->watchaService->getSynapseRedirectUrl();
@@ -57,16 +65,38 @@ class PleiadeAjaxWatchaController extends ControllerBase
   public function watcha_synapse_callback(Request $request)
   {
     $loginToken = $request->query->get('loginToken');
+    
+    // Case 1: Missing Token
     if (!$loginToken) {
-      return new Response("Erreur : loginToken manquant", 400);
-    }
-
-    $responseData = $this->watchaService->handleSynapseCallback($loginToken);
-    if (isset($responseData['access_token'])) {
+      \Drupal::messenger()->addError("Connexion Watcha impossible : Token manquant.");
       return new RedirectResponse("/");
     }
 
-    return new Response("<h1>" . print_r($responseData, true) . "</h1>");
+    $responseData = $this->watchaService->handleSynapseCallback($loginToken);
+
+    // Case 2: Success
+    if (isset($responseData['access_token'])) {
+      // Optional: Add success message if desired
+      // \Drupal::messenger()->addStatus("Connexion Watcha réussie.");
+      return new RedirectResponse("/");
+    }
+
+    // Case 3: Rate Limit (429) or other Errors
+    if (isset($responseData['error'])) {
+        if ($responseData['error'] === 'rate_limit') {
+             $wait = isset($responseData['retry_after_seconds']) ? ceil($responseData['retry_after_seconds']) : 'quelques';
+             \Drupal::messenger()->addWarning("Le service de discussion est surchargé. Veuillez réessayer dans $wait secondes.");
+        } else {
+             // General error
+             \Drupal::messenger()->addError("Le service de discussion est temporairement indisponible.");
+        }
+    } else {
+        // Fallback for unknown structure
+        \Drupal::messenger()->addError("Erreur inconnue lors de la connexion au chat.");
+    }
+
+    // CRITICAL: Always redirect to the app, never block with a text response.
+    return new RedirectResponse("/");
   }
 
   public function getConfig(Request $request)
@@ -81,49 +111,37 @@ class PleiadeAjaxWatchaController extends ControllerBase
 
   public function watcha_test(Request $request)
   {
-   /* echo "<h2>All Cookies:</h2>";
-    echo "<ul>";
-    foreach ($_COOKIE as $name => $value) {
-        // It's good practice to sanitize the output to prevent XSS attacks
-        $name = htmlspecialchars($name);
-        $value = htmlspecialchars($value);
-        echo "<li><strong>$name</strong>: $value</li>";
-    }
-    echo "</ul>";
-    exit;
-    $this->user = User::load(\Drupal::currentUser()->id());
-    echo $this->user->get('field_watchaaccesstoken')->value;
-    exit;
-    */
-    //  $user_storage =  \Drupal::entityTypeManager()->getStorage('user');
-    // $this->user = $user_storage->load(\Drupal::currentUser()->id());
-    //   return new JsonResponse([
-    //   "isWatchaActivated" => $this->user->get("field_iswatchaactivated")->value,
-    //   "isGlpiActivated" => $this->user->get("field_isglpiactivated")->value,
-    //   "isNextCloudActivated" => $this->user->get("field_isnextcloudactivated")->value,
-    // ], 200);
-    //   print_r(\Drupal::keyValue("collectivities_store")->get('global'));
+    $output = "";
+    $user = User::load($this->currentUser->id());
+    $email = $user ? $user->getEmail() : 'Unknown';
 
-    $array = \Drupal::keyValue("collectivities_store")->get('global', "does not exist");
+    $session = \Drupal::request()->getSession();
+    $cas_attributes = $session->get('cas_attributes');
+    $collectivite = isset($cas_attributes["partner"][0]) ? $cas_attributes["partner"][0] : 'Aucune collectivité';
 
+    $output .= "<h1>Collectivité : $collectivite</h1>";
+    $output .= "<h2>Utilisateur : $email</h2>";
+
+    $store = \Drupal::keyValue("collectivities_store")->get('global', []);
     $labels = ['Site', 'Image', 'Horaire', 'Téléphone', 'Email', 'Token zimbra'];
 
-    //  $collectivite = \Drupal::request()->getSession()->get('cas_attributes')["partner"][0];
-
-    echo "<pre>";
-    foreach ($array as $key => $infoArray) {
-      echo strtoupper($key) . ":\n";
-      foreach ($infoArray as $i => $value) {
-        $label = $labels[$i] ?? "Valeur $i";
-        echo "  $label: $value\n";
+    $output .= "<pre>";
+    if (is_array($store)) {
+      foreach ($store as $key => $infoArray) {
+        $output .= strtoupper($key) . ":\n";
+        if (is_array($infoArray)) {
+          foreach ($infoArray as $i => $value) {
+            $label = $labels[$i] ?? "Valeur $i";
+            $output .= "  $label: $value\n";
+          }
+        } else {
+          $output .= "  Data: " . print_r($infoArray, true) . "\n";
+        }
+        $output .= "\n";
       }
-      echo "\n";
     }
-    echo "</pre>";
+    $output .= "</pre>";
 
-
-    return new Response("donee");
-    // return new Response($this->user->get('field_watchaaccesstoken')->value);
-    //return new Response(\Drupal::request()->getSession()->get('cas_attributes')["partner"][0]);
+    return new Response($output);
   }
 }

@@ -2,7 +2,7 @@ api_user_pleiade_js:
   version: 1.x
   js:
     js/api_user_pleiade.js: {}
-    js/api_user_infos.js: {}
+    #js/api_user_infos.js: {}
     js/lib/steptip.js: {}
     
     

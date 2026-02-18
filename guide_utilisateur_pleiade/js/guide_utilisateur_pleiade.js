@@ -36,7 +36,7 @@
                       '<a target="_blank" href="' + donnees[i].url + '">\
                         <div class="mt-3 d-flex justify-content-center">\
                           <div class="card d-flex align-items-center">\
-                            <img src="'+ donnees[i].image +'" class="card-img-top" alt="Course Image">\
+                            <img src="'+ donnees[i].image +'" class="card-img-top"  alt="Course Image">\
                             <div class="card-body d-flex flex-column align-items-center">\
                               <h5 class="card-title d-flex justify-content-center fs-5">'+ donnees[i].title + '</h5>\
                               <h4>' + donnees[i].sub_title + '</h4>\

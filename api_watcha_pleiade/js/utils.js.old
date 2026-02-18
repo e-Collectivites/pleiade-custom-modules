@@ -195,26 +195,12 @@ function updateTabTitle(inc, watchaBar) {
   const newCount = inc;
   sessionStorage.setItem("notificationsCount", newCount.toString());
 
-  const baseTitle =
-    sessionStorage.getItem("baseTabTitle") || document.title.trim();
+  const baseTitle ="Accueil | TNO Pléiade";
   document.title = newCount > 0 ? `[${newCount}] ${baseTitle}` : baseTitle;
 
   document.querySelectorAll(".noth-span").forEach((el) => el.remove());
 
-  if (watchaBar && newCount > 0) {
-    const badge = `
-      <span class="noth-span">
-        <span class="position-absolute start-75 translate-middle badge rounded-pill bg-danger">
-          ${newCount}
-        </span>
-      </span>`;
-
-    document
-      .querySelector("#menu-category-territoirenumriqueouvertprod  span")
-      ?.insertAdjacentHTML("beforeend", badge);
-    watchaBar.insertAdjacentHTML("beforeend", badge);
-    watchaBar.dataset.value1 = newCount.toString();
-  }
+  setNotificationCount('watcha', newCount);
 }
 
 function showEmptyMessage(container, watchaBar) {

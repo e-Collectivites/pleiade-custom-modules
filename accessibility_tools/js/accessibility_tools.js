@@ -18,99 +18,146 @@
        * =======================================================================
        */
       once('theme-view-toggle', '#theme-view', context).forEach(function (checkbox) {
+        const cleanupFlag = 'v1_layout_cleanup_done';
+        if (localStorage.getItem('tabulator-datatable-documents-state-columns')) {
+          localStorage.removeItem('tabulator-datatable-documents-state-columns');
+          localStorage.removeItem('tabulator-glpi-tabulator-table-columns');
+          localStorage.setItem(cleanupFlag, 'true');
+        }
+
         const $checkbox = $(checkbox);
         const body = $('body');
-
-        // Function to set the theme based on the checkbox state
         const applyTheme = () => {
           const newTheme = $checkbox.is(':checked') ? 'dark' : 'light';
           body.attr('data-theme', newTheme);
         };
-
-        // Attach the event handler
         $checkbox.on('change', function () {
           localStorage.setItem('themeViewChecked', this.checked);
           applyTheme();
         });
-
-        // Initialize theme on page load
         if (localStorage.getItem('themeViewChecked') === 'true') {
           $checkbox.prop('checked', true);
         }
-        applyTheme(); // Apply theme based on initial state
+        applyTheme();
       });
-
 
       /*
        * =======================================================================
-       *   2. Font Size Controls
+       *   2. Font Size Controls (Corrected for Dynamic Content)
        * =======================================================================
        */
-      once('font-size-controls', '.btn-group[data-control="font-size"]', context).forEach(function (controlGroup) {
+      once('font-size-controls', '.btn-group[data-control="letter-spacing"]', context).forEach(function (controlGroup) {
         const $controlGroup = $(controlGroup);
-        const fontElements = $('#menuLemon .sidebar-link, .sidebar-nav ul .nav-small-cap, .sidebar-nav ul .sidebar-item .sidebar-link, #mes_applications .sidebar-link');
+        const storageKey = 'accessibility_font_size_step';
+        const stepAmountInPixels = 2;
 
-        const updateFontSize = (delta) => {
-          fontElements.each(function () {
-            const currentSize = parseInt(window.getComputedStyle(this).fontSize, 10) || 16;
-            this.style.fontSize = (currentSize + delta) + 'px';
-          });
-          const bodySize = parseInt(window.getComputedStyle(document.body).fontSize, 10) || 16;
-          document.body.style.fontSize = (bodySize + delta) + 'px';
-        };
-
-        const resetFontSize = () => {
-          fontElements.css('font-size', ''); // Reset to CSS default
-          document.body.style.fontSize = ''; // Reset to CSS default
+        const applyFontSize = () => {
+          const currentStep = parseInt(localStorage.getItem(storageKey) || '0', 10);
+          const baseFontSize = 16; // Assuming a base font size of 16px for the root element.
+          const newSize = baseFontSize + (currentStep * stepAmountInPixels);
+          document.documentElement.style.fontSize = newSize + 'px';
         };
 
         $controlGroup.on('click', 'button', function () {
           const action = this.id;
-          if (action === 'increaseFontSize') updateFontSize(2);
-          else if (action === 'decreaseFontSize') updateFontSize(-2);
-          else if (action === 'resetFontSize') resetFontSize();
+          let currentStep = parseInt(localStorage.getItem(storageKey) || '0', 10);
+          if (action === 'increaseFontSize') {
+            currentStep = Math.min(3, currentStep + 1);
+          } else if (action === 'decreaseFontSize') {
+            currentStep = Math.max(-3, currentStep - 1);
+          } else if (action === 'resetFontSize') {
+            currentStep = 0;
+          }
+          localStorage.setItem(storageKey, currentStep);
+          applyFontSize();
         });
-      });
 
+        applyFontSize();
+      });
 
       /*
        * =======================================================================
-       *   3. Letter Spacing Controls
+       *   3. Font Family Selection
        * =======================================================================
        */
-      once('letter-spacing-controls', '.btn-group[data-control="letter-spacing"]', context).forEach(function (controlGroup) {
-        let currentSpacing = 0; // This state is now local to this control
+      once('font-family-control', '#font-family-select', context).forEach(function (selectElement) {
+        const $select = $(selectElement);
+        const storageKey = 'accessibility_font_family';
+        const body = document.body;
+
+        const applyFontFamily = () => {
+          const savedFont = localStorage.getItem(storageKey);
+          if (savedFont) {
+            body.style.fontFamily = savedFont;
+            $select.val(savedFont);
+          }
+          else {
+             // If no font is saved, ensure the body's font is reset.
+             body.style.fontFamily = '';
+          }
+        };
+
+        $select.on('change', function () {
+          const selectedFont = $(this).val();
+          if (selectedFont === 'default') {
+             localStorage.removeItem(storageKey);
+          } else {
+             localStorage.setItem(storageKey, selectedFont);
+          }
+          applyFontFamily();
+        });
+
+        applyFontFamily();
+      });
+
+      /*
+       * =======================================================================
+       *   4. Letter Spacing Controls
+       * =======================================================================
+       */
+      once('letter-spacing-controls', '.controls:has(#increaseSpaces)', context).forEach(function (controlGroup) {
+        let currentSpacing = 0;
         const $controlGroup = $(controlGroup);
 
         const updateLetterSpacing = (delta) => {
-          currentSpacing = Math.max(0, currentSpacing + delta);
+          const currentComputedSpacing = parseFloat(window.getComputedStyle(document.body).letterSpacing) || 0;
+          currentSpacing = Math.max(0, currentComputedSpacing + delta);
           document.body.style.letterSpacing = currentSpacing > 0 ? `${currentSpacing}px` : 'normal';
+        };
+
+        const resetLetterSpacing = () => {
+          currentSpacing = 0;
+          document.body.style.letterSpacing = 'normal';
         };
 
         $controlGroup.on('click', 'button', function () {
           const action = this.id;
           if (action === 'increaseSpaces') updateLetterSpacing(1);
           else if (action === 'decreaseSpaces') updateLetterSpacing(-1);
-          else if (action === 'resetSpaces') {
-            currentSpacing = 0; // Reset state
-            document.body.style.letterSpacing = 'normal';
-          }
+          else if (action === 'resetSpaces') resetLetterSpacing();
         });
       });
 
-
       /*
        * =======================================================================
-       *   4. Contrast and B&W Filter Controls
+       *   5. Contrast and B&W Filter Controls
        * =======================================================================
        */
       once('filter-controls', '#contraste, #black_and_white', context).forEach(function (checkbox) {
         const $checkbox = $(checkbox);
+        const elementsToFilter = document.querySelectorAll(
+            ".container-fluid, .left-sidebar, .customizer, .right_position, .navbar-header, #app-footer"
+        );
+        
         const updateFilter = () => {
-          let filterValue = '';
-          if ($('#contraste').is(':checked')) filterValue += 'contrast(2)';
-          if ($('#black_and_white').is(':checked')) filterValue += ' grayscale(1)';
-          document.body.style.filter = filterValue.trim();
+          const filterValue = [
+            $('#contraste').is(':checked') ? 'contrast(2)' : '',
+            $('#black_and_white').is(':checked') ? 'grayscale(1)' : ''
+          ].filter(Boolean).join(' ');
+
+          elementsToFilter.forEach(el => {
+            el.style.filter = filterValue;
+          });
         };
 
         $checkbox.on('change', function () {
@@ -118,33 +165,54 @@
           updateFilter();
         });
 
-        // Initialize state on page load
         if (localStorage.getItem(checkbox.id + 'Checked') === 'true') {
           $checkbox.prop('checked', true);
         }
         updateFilter();
       });
 
-
       /*
        * =======================================================================
-       *   5. Zoom Mode (Magnifying Glass)
+       *   6. Zoom Mode (Magnifying Glass) - REVISED AND IMPROVED
        * =======================================================================
        */
       once('zoom-mode-control', '#mode-loupe', context).forEach(function (checkbox) {
-        // Create the info div only once and append to body
         const mouseInfoDiv = $('<div>').css({
-          // ... your CSS styles ...
-          position: 'fixed', padding: '5px 10px', fontSize: '2rem', borderRadius: '5px', backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(0,0,0,0.8)', color: '#fff', display: 'none', zIndex: '9999999999999', lineHeight: '1.2', pointerEvents: 'none', userSelect: 'none'
+          position: 'fixed',
+          padding: '5px 10px',
+          fontSize: '2rem',
+          borderRadius: '5px',
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          border: '1px solid rgba(0,0,0,0.8)',
+          color: '#fff',
+          display: 'none',
+          zIndex: '9999999999999',
+          lineHeight: '1.2',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          maxWidth: '400px',
+          wordWrap: 'break-word'
         }).appendTo('body')[0];
 
         const handleMouseMove = (event) => {
           const el = event.target;
-          if (['SPAN', 'A', 'TD', 'TH', 'BUTTON', 'P'].includes(el.tagName) || el.tagName.match(/^H[1-6]$/)) {
+          if (!el) return;
+
+          let ownText = '';
+          for (const childNode of el.childNodes) {
+              if (childNode.nodeType === Node.TEXT_NODE) {
+                  ownText += childNode.textContent;
+              }
+          }
+          ownText = ownText.trim();
+
+          let textToShow = ownText || (el.children.length === 0 ? el.textContent.trim() : '');
+
+          if (textToShow) {
             mouseInfoDiv.style.left = `${event.clientX + 20}px`;
             mouseInfoDiv.style.top = `${event.clientY + 20}px`;
-            mouseInfoDiv.textContent = el.textContent.trim();
-            mouseInfoDiv.style.display = el.textContent.trim() ? 'block' : 'none';
+            mouseInfoDiv.textContent = textToShow;
+            mouseInfoDiv.style.display = 'block';
           } else {
             mouseInfoDiv.style.display = 'none';
           }
@@ -152,15 +220,39 @@
 
         $(checkbox).on('change', function () {
           if (this.checked) {
-            document.body.addEventListener('mousemove', handleMouseMove);
+            document.body.addEventListener('mousemove', handleMouseMove, false);
           } else {
-            document.body.removeEventListener('mousemove', handleMouseMove);
+            document.body.removeEventListener('mousemove', handleMouseMove, false);
             mouseInfoDiv.style.display = 'none';
           }
         });
       });
-
+      
+      /*
+       * =======================================================================
+       *   7. NEW: Restore All Defaults
+       * =======================================================================
+       */
+      once('restore-defaults-control', '#reset-all-accessibility', context).forEach(function (button) {
+        $(button).on('click', function() {
+        
+            // List of all localStorage keys used by this script.
+            const keysToRemove = [
+              'themeViewChecked',
+              'accessibility_font_size_step',
+              'accessibility_font_family',
+              'contrasteChecked',
+              'black_and_whiteChecked'
+            ];
+            
+            // Remove each key from localStorage.
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            // Reload the page to apply the default settings.
+            location.reload();
+          
+        });
+      });
     }
   };
-
 })(jQuery, Drupal, once);

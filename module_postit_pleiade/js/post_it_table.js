@@ -1,19 +1,26 @@
 (function ($, Drupal, drupalSettings, once) {
   Drupal.behaviors.postitBehavior = {
     attach: function (context, settings) {
-      if (!drupalSettings.path.isFront) return;
+      
+      // *** MODIFIED: Target the specific ID of your wrapper div (#postit_block_id). ***
+      // If this ID does not exist on the page, the code inside .forEach() will NOT execute.
+      const elements = once("postitBehavior", "#postit_block_id", context);
 
-      once("postitBehavior", "body", context).forEach(() => {
-        const dashboard = document.getElementById("post_it_dashboard");
-        const form = document.getElementById("myForm");
-        const deleteBtn = document.getElementById("delete-button");
-        const submitBtn = document.querySelector("#submit_post_it");
+      elements.forEach((wrapper) => {
+        // *** MODIFIED: Select elements specifically within the found wrapper ***
+        // This ensures strict dependency on your HTML structure.
+        const dashboard = wrapper.querySelector("#post_it_dashboard");
+        const form = wrapper.querySelector("#myForm");
+        const deleteBtn = wrapper.querySelector("#delete-button");
+        const submitBtn = wrapper.querySelector("#submit_post_it");
+
+        // If for some reason the wrapper exists but the inner dashboard is missing, stop.
+        if (!dashboard) return;
 
         let zIndexCounter = 1;
 
-        // *** NEW: Debounce function to limit how often saveItems is called ***
-        // This prevents sending a request to the server on every single keystroke.
-        function debounce(func, delay = 500) { // 500ms delay
+        // Debounce function to limit how often saveItems is called
+        function debounce(func, delay = 500) {
           let timeoutId;
           return function (...args) {
             clearTimeout(timeoutId);
@@ -23,7 +30,6 @@
           };
         }
 
-        // Create a debounced version of the save function
         const debouncedSave = debounce(saveItems);
 
         init();
@@ -40,15 +46,21 @@
 
         function handleFormSubmit(e) {
           e.preventDefault();
-          const message = document.getElementById("message").value.trim();
-          const color = document.getElementById("color").value;
+          // We look inside the wrapper for the inputs to be safe
+          const messageInput = wrapper.querySelector("#message");
+          const colorInput = wrapper.querySelector("#color");
+          
+          const message = messageInput.value.trim();
+          const color = colorInput.value;
+          
           if (!message) return;
 
           const item = createItem(message, 10, 5, color);
           dashboard.appendChild(item);
           makeEditable(item);
           enableDrag(item);
-          document.getElementById("message").value = "";
+          
+          messageInput.value = "";
           saveItems();
         }
 
@@ -58,18 +70,12 @@
             item?.remove();
             saveItems();
           }
-          // The click-to-focus logic is now implicitly handled by the browser
-          // because the drag event won't interfere with clicks on the <p> tag.
         }
 
         function makeEditable(item) {
           const p = item.querySelector("p");
           p.setAttribute("contenteditable", "true");
-
-          // *** MODIFIED: Save automatically while typing (debounced) ***
           p.addEventListener("input", debouncedSave);
-
-          // Also save when the user clicks away, for immediate confirmation.
           p.addEventListener("blur", saveItems);
         }
 
@@ -86,7 +92,6 @@
           item.style.height = "150px";
           item.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
           item.style.borderRadius = "8px";
-          // *** MODIFIED: Set the default cursor for the whole item to 'grab' ***
           item.style.cursor = "grab";
 
           const tape = document.createElement("div");
@@ -99,7 +104,6 @@
           p.style.height = "100%";
           p.style.overflowY = "auto";
           p.style.fontSize = "12px";
-          // *** MODIFIED: The text area should have a 'text' cursor to indicate it's editable ***
           p.style.cursor = "text";
           item.appendChild(p);
 
@@ -115,8 +119,6 @@
 
           return item;
         }
-        
-        // ... (isLight, hexToRgb, deleteAllItems, saveItems, retrieveItems functions remain unchanged) ...
 
         function isLight(color) {
           const rgb = hexToRgb(color);
@@ -153,9 +155,7 @@
 
         function saveItems() {
           const items = [];
-          // Check if dashboard exists to prevent errors if it's not on the page
           if (!dashboard) return;
-          const dashboardRect = dashboard.getBoundingClientRect();
           const itemElements = dashboard.getElementsByClassName("item");
 
           for (let item of itemElements) {
@@ -223,10 +223,7 @@
             offsetY = 0;
           let isDragging = false;
           
-          // *** MODIFIED: Attach listener to the whole item ***
           element.addEventListener("mousedown", function (e) {
-            // *** MODIFIED: CRITICAL CHECK ***
-            // If the click is on the paragraph or the remove button, do not start dragging.
             if (e.target.tagName === "P" || e.target.classList.contains("remove-btn")) {
               return;
             }
@@ -235,10 +232,10 @@
             isDragging = true;
             zIndexCounter++;
             element.style.zIndex = zIndexCounter;
-            // Change cursor to 'grabbing' during drag
             element.style.cursor = "grabbing";
 
             const rect = element.getBoundingClientRect();
+            // Important: Use the scoped dashboard element
             const dashboardRect = dashboard.getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
@@ -269,7 +266,6 @@
             function onMouseUp() {
               if (isDragging) {
                 isDragging = false;
-                // Restore the 'grab' cursor when drag ends
                 element.style.cursor = "grab";
                 saveItems();
                 document.removeEventListener("mousemove", onMouseMove);

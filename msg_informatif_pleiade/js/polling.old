@@ -1,0 +1,73 @@
+(function (Drupal, drupalSettings, once) {
+  "use strict";
+
+  Drupal.behaviors.APIalerteBlocksBehavior = {
+    attach: function (context, settings) {
+      
+      const POLLING_INTERVAL = 60000; 
+      
+      const classMap = {
+        "Informatif": "bg-info",
+        "Avertissement": "bg-warning",
+        "Attention": "bg-danger"
+      };
+
+      const previousDataMap = new WeakMap();
+
+      function fetchAndDisplayAlerts(element) {
+        const url = Drupal.url("v1/msg_informatif_pleiade/message_fields") + "?t=" + new Date().getTime();
+
+        fetch(url)
+          .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+          })
+          .then(data => {
+
+            const currentDataString = JSON.stringify(data);
+            
+            const lastDataString = previousDataMap.get(element);
+
+            if (currentDataString === lastDataString) {
+              return;
+            }
+
+            previousDataMap.set(element, currentDataString);
+
+            element.innerHTML = '';
+
+            if (data && data.length > 0) {
+              const fragment = document.createDocumentFragment();
+
+              data.forEach(alerte => {
+                const alertDiv = document.createElement("div");
+                
+                alertDiv.innerHTML = alerte.field_message_a_afficher; 
+                
+                alertDiv.classList.add(
+                  "py-2", "px-5", "text-white", "d-flex", 
+                  "align-items-center", "justify-content-center",
+                  classMap[alerte.importance] || "bg-secondary"
+                );
+                
+                fragment.appendChild(alertDiv);
+              });
+
+              element.appendChild(fragment);
+            }
+          })
+          .catch(error => console.error("Error fetching alerts:", error));
+      }
+
+      const elements = once("APIalerteBlocksBehavior", ".message_avertissement", context);
+      
+      elements.forEach(element => {
+        fetchAndDisplayAlerts(element);
+
+        setInterval(() => {
+          fetchAndDisplayAlerts(element);
+        }, POLLING_INTERVAL);
+      });
+    },
+  };
+})(Drupal, drupalSettings, once);

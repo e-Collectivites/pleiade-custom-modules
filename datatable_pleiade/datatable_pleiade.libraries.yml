@@ -8,7 +8,6 @@ datatable_pleiade_css:
   version: 1.x
   css:
     theme:
-      css/datatable_pleiade.css: {}
       css/tabulator.css: {}
   dependencies:
     - core/jquery

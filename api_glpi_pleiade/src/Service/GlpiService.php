@@ -23,9 +23,48 @@ class GlpiService implements GlpiServiceInterface
         $moduleHandler = \Drupal::service('module_handler');
         $this->settings_glpi = $moduleHandler->moduleExists('api_glpi_pleiade') ? \Drupal::config('api_glpi_pleiade.settings') : NULL;
 
-        $this->client = new Client(['on_stats' => function (TransferStats $stats) {
-            \Drupal::logger('api_glpi_pleiade')->info('Request to :: ' . $stats->getEffectiveUri() . " took :: " . $stats->getTransferTime() . " seconds");
-        }]);
+        $this->client = new Client([
+    'on_stats' => function (TransferStats $stats) {
+        $uri = $stats->getEffectiveUri();
+        $time = $stats->getTransferTime();
+
+        if ($stats->hasResponse()) {
+            $status = $stats->getResponse()->getStatusCode();
+
+            if ($status < 400) {
+                // Succès
+                \Drupal::logger('api_glpi_pleiade')->info(
+                    "✅ Success: Request to {uri} returned status {status} in {time} seconds",
+                    [
+                        'uri' => $uri,
+                        'status' => $status,
+                        'time' => $time,
+                    ]
+                );
+            } else {
+                // Erreur côté API
+                \Drupal::logger('api_glpi_pleiade')->error(
+                    "❌ Error: Request to {uri} failed with status {status} in {time} seconds",
+                    [
+                        'uri' => $uri,
+                        'status' => $status,
+                        'time' => $time,
+                        'response' => (string) $stats->getResponse()->getBody(),
+                    ]
+                );
+            }
+        } else {
+            // Erreur sans réponse (timeout, DNS, etc.)
+            \Drupal::logger('api_glpi_pleiade')->error(
+                "❌ Error: Request to {uri} failed with no response in {time} seconds",
+                [
+                    'uri' => $uri,
+                    'time' => $time,
+                ]
+            );
+        }
+    }
+]);
 
         $this->glpi_url = $this->settings_glpi->get('glpi_url');
         $this->app_token = $this->settings_glpi->get('app_token');

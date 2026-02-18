@@ -1,9 +1,21 @@
-.message_avertissement p{
-        margin-bottom: 0px!important
-    }
-    
 .message_avertissement{
     position: relative;
     top: 70px;
   }  
     
+
+.message_avertissement > div {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.alert.alert-warning.text-center {
+      background-color: unset;
+         border:none;
+}

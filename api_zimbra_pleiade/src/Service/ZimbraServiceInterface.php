@@ -9,4 +9,6 @@ interface ZimbraServiceInterface
 
     public function searchMyTasks(string $tasksEndpoint, string $email, string $token, string $domain);
 
+
+    public function getUserTheme(string $email, string $token, string $domain);
 }

@@ -1,11 +1,8 @@
 <?php
 
-// Use Drupal private tempstore to serve to other modules later
 use Drupal\user\PrivateTempStoreFactory;
+use Drupal\user\Entity\User;
 
-/**
- * @param $variables
- */
 function api_lemon_pleiade_preprocess_page(&$variables){
 
   $config = \Drupal::config('api_lemon_pleiade.settings');
@@ -16,19 +13,12 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $field_lemon_sessioninfo_url = $config->get('field_lemon_sessioninfo_url');
   $field_lemon_totp_url = $config->get('field_lemon_totp_url');
   
-  // Get groups in Drupal private tempstore to serve to other modules later
-   $tempstore = \Drupal::service('tempstore.private'); 
+   $tempstore = \Drupal::service('tempstore.private');
    $store = $tempstore->get('api_lemon_pleiade');
    $groups = $store->get('groups');
 
-  
-  // Add the CSS library
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_css';
-
-  // Add the JS library
   
-
-  // Pass variables to Drupal.Settings
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_url'] = $field_lemon_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_myapps_url'] = $field_lemon_myapps_url;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_sessioninfo_url'] = $field_lemon_sessioninfo_url;
@@ -36,28 +26,128 @@ function api_lemon_pleiade_preprocess_page(&$variables){
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['user_groups'] =  $groups;
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['field_lemon_block_id'] =  $field_lemon_block_id;
   $variables['#attached']['library'][] = 'api_lemon_pleiade/api_lemon_pleiade_js';
-  // Define spinner for our JS modules
+
   $variables['#attached']['drupalSettings']['api_lemon_pleiade']['spinner'] = 
    ' <div class="d-flex justify-content-center align-items-center"><div id="spinner-div-menu" class="spinner-border text-primary" role="status"></div></div>';
 
+  $lemonService = \Drupal::service('api_lemon_pleiade.lemon_service');
+  $appsData = $lemonService->searchMyApps();
+
+  $category_icons = [
+    "E-administration" => "fa-people-arrows",
+    "Documents" => "fa-folder-open",
+    "Collaboratif" => "fa-users",
+    "Support et formation" => "fa-circle-info",
+    "Mes applications" => "fa-star",
+    "Territoire Numérique Ouvert - Prod" => "fa-people-group",
+    "Territoire Numérique Ouvert - Test" => "fa-people-group",
+    "Applications PROD" => "fa-list",
+    "Applications TEST" => "fa-list",
+    "Documentation" => "fa-file",
+    "Sécurité" => "fa-shield-halved",
+    "Nos services" => "fa-handshake",
+    "Suite Territoriale Nationale" => "fa-boxes-packing",
+  ];
+  $pastilles = [
+    "Applications PROD" => "pastille_apps_prod",
+    "Collaboratif" => "pastille_collab",
+  ];
+  $menu_structure = [];
+
+  $user = User::load(\Drupal::currentUser()->id());
+  
+  if ($appsData && isset($appsData['myapplications'])) {
+    
+    $orderToUse = ["Applications PROD", "Territoire Numérique Ouvert - Prod", "Sécurité", "Suite Territoriale Nationale", "Documentation", "Applications TEST", "Territoire Numérique Ouvert - Test"];
+
+    if ($user && $user->hasField('field_menu_order') && !$user->get('field_menu_order')->isEmpty()) {
+        $rawOrder = $user->get('field_menu_order')->value;
+        $customOrder = json_decode($rawOrder, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($customOrder) && count($customOrder) > 0) {
+            $orderToUse = $customOrder;
+        }
+    }
+
+    usort($appsData['myapplications'], function($a, $b) use ($orderToUse) {
+      $posA = array_search($a['Category'], $orderToUse);
+      $posB = array_search($b['Category'], $orderToUse);
+      if ($posA === false) $posA = 999;
+      if ($posB === false) $posB = 999;
+      return $posA - $posB;
+    });
+
+    foreach ($appsData['myapplications'] as $index => $categoryData) {
+      $categoryName = $categoryData['Category'];
+      $cleanId = 'menu-category-' . preg_replace('/[^\w]/', '', strtolower($categoryName));
+
+      $processedApps = [];
+      foreach ($categoryData['Applications'] as $appData) {
+        $appName = array_key_first($appData);
+        $appDetails = $appData[$appName];
+
+        $appTip = $appDetails['AppTip'] ?? '';
+        $appId = $appTip ? preg_replace('/[^\w]/', '', strtolower($appTip)) : preg_replace('/[^\w]/', '', strtolower($appName));
+        $target = "_blank";
+        if ($categoryName === "E-administration" && $appDetails['AppDesc'] !== "Gestion des users/collectivités") {
+             if (in_array($appDetails['AppDesc'], ['Consulter nos solutions', 'Consulter nos formations', 'Consulter nos guides utilisateurs', 'Demander une visio'])) {
+                 $target = $appTip;
+             }
+        } elseif ($appTip === "Watcha") {
+            $target = "watcha";
+        }
+
+        $processedApps[] = [
+          'name' => $appName,
+          'id' => $appId,
+          'desc' => $appDetails['AppDesc'],
+          'uri' => $appDetails['AppUri'],
+          'tip' => $appTip,
+          'icon' => $appDetails['AppIcon'],
+          'logo' => $appDetails['AppLogo'],
+          'target' => $target,
+        ];
+      }
+
+      $menu_structure[] = [
+        'name' => $categoryName,
+        'id' => $cleanId,
+        'icon_class' => $category_icons[$categoryName] ?? '',
+        'pastille_class' => $pastilles[$categoryName] ?? '',
+        'index' => $index,
+        'apps' => $processedApps,
+      ];
+    }
+  }
+  $variables['lemon_menu_structure'] = $menu_structure;
+
+  $favorites = [];
+  if ($user && $user->hasField('field_url_application') && !$user->get('field_url_application')->isEmpty()) {
+    foreach ($user->get('field_url_application')->getValue() as $item) {
+      $favorites[] = [
+        'uri' => $item['uri'],
+        'title' => $item['title'],
+      ];
+    }
+  }
+
+  if ($user && $user->hasField('field_favoris_menu_order') && !$user->get('field_favoris_menu_order')->isEmpty()) {
+      $rawFavOrder = $user->get('field_favoris_menu_order')->value;
+      $favOrder = json_decode($rawFavOrder, true);
+      if (json_last_error() === JSON_ERROR_NONE && is_array($favOrder) && count($favOrder) > 0) {
+          usort($favorites, function($a, $b) use ($favOrder) {
+              $posA = array_search($a['title'], $favOrder);
+              $posB = array_search($b['title'], $favOrder);
+              if ($posA === false) $posA = 999;
+              if ($posB === false) $posB = 999;
+              return $posA - $posB;
+          });
+      }
+  }
+
+  $variables['lemon_favorites'] = $favorites;
+
 } 
 
-
-// function api_lemon_pleiade_page_attachments(array &$page) {
-
-//   if (\Drupal::service('path.matcher')->isFrontPage()) {
-//   $page['#attached']['library'][] = 'api_lemon_pleiade/sortable_pleiade_js';
-//   }
-// }
-
-
-
-/**
- * Implements hook_library_info_alter().
- * 
- * https://www.drupal.org/project/drupal/issues/3274688
- * 
- */
 function api_lemon_pleiade_library_info_alter(&$libraries, $extension) {
   foreach ($libraries as &$library) {
     if (!in_array('core/jquery.once', $library['dependencies'] ?? [])) {
@@ -74,10 +164,7 @@ function api_lemon_pleiade_library_info_alter(&$libraries, $extension) {
 
 function api_lemon_pleiade_theme($existing, $type, $theme, $path) {
   return [
-    // C'est le nom de votre thème. Il doit correspondre EXACTEMENT
-    // à ce qui est dans le contrôleur.
     'api_lemon_pleiade_history' => [
-      // Ici on liste les variables que le template peut recevoir.
       'variables' => [
           'success_count' => 0, 
           'failed_count' => 0, 
